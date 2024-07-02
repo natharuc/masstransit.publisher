@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masstransit.Publisher.Domai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masstransit.Publisher.Windows", "..\Masstransit.Publisher.Windows\Masstransit.Publisher.Windows.csproj", "{AA062E5A-1330-4960-AB40-B4CA98C322B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E9344710-447E-4B75-A11B-581606225F6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masstransit.Publisher.Tests", "..\Masstransit.Publisher.Tests\Masstransit.Publisher.Tests.csproj", "{2595D053-43A7-4DF9-AE7F-6AB65288B5F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +31,16 @@ Global
 		{AA062E5A-1330-4960-AB40-B4CA98C322B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA062E5A-1330-4960-AB40-B4CA98C322B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA062E5A-1330-4960-AB40-B4CA98C322B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2595D053-43A7-4DF9-AE7F-6AB65288B5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2595D053-43A7-4DF9-AE7F-6AB65288B5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2595D053-43A7-4DF9-AE7F-6AB65288B5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2595D053-43A7-4DF9-AE7F-6AB65288B5F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2595D053-43A7-4DF9-AE7F-6AB65288B5F1} = {E9344710-447E-4B75-A11B-581606225F6B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED281FBF-457B-417E-8D21-7321037BEA5E}
