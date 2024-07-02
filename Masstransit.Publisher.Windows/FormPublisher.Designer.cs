@@ -146,7 +146,7 @@
             buttonEnviar.TabIndex = 8;
             buttonEnviar.Text = "Send";
             buttonEnviar.UseVisualStyleBackColor = true;
-            buttonEnviar.Click += buttonEnviar_Click;
+            buttonEnviar.Click += buttonSend_Click;
             // 
             // buttonPublicar
             // 
@@ -158,7 +158,7 @@
             buttonPublicar.TabIndex = 10;
             buttonPublicar.Text = "Publish";
             buttonPublicar.UseVisualStyleBackColor = true;
-            buttonPublicar.Click += buttonPublicar_Click;
+            buttonPublicar.Click += buttonPublish_Click;
             // 
             // buttonGerarJson
             // 
@@ -170,7 +170,7 @@
             buttonGerarJson.TabIndex = 11;
             buttonGerarJson.Text = "Generate";
             buttonGerarJson.UseVisualStyleBackColor = true;
-            buttonGerarJson.Click += buttonGerarJson_Click;
+            buttonGerarJson.Click += buttonGenerateJson_Click;
             // 
             // dataGridViewAutoComplete
             // 

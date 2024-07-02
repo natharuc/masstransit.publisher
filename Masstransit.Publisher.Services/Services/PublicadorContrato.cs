@@ -7,12 +7,7 @@ namespace Masstransit.Publisher.Services.Services
 {
     public class PublisherService : IPublisherService
     {
-        private readonly IBusControl _busControl;
-
-        public PublisherService(IBusControl busControl)
-        {
-            _busControl = busControl;
-        }
+        private IBusControl? _busControl;
 
         private async Task<List<PublisherServiceResponse>> Process(IEnumerable<ContractMessage> messages, string queue, Func<IEnumerable<ContractMessage>, string, Task<PublisherServiceResponse>> action)
         {
@@ -132,5 +127,9 @@ namespace Masstransit.Publisher.Services.Services
             };
         }
 
+        public void Setup(IBusControl busControl)
+        {
+            _busControl = busControl;
+        }
     }
 }

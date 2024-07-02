@@ -1,5 +1,5 @@
 ﻿using Masstransit.Publisher.Domain.Classes;
-using Masstransit.Publisher.Services.Services;
+using Masstransit.Publisher.Domain.Interfaces;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -13,49 +13,44 @@ namespace Masstransit.Publisher.Windows
         private Contract _selectedContract { get; set; }
 
         private const string ConfigFileName = "config.json";
+        private IMockInterfaceService _mockInterfaceService;
+        private IPublisherService _publisherService;
 
-        public FormPublisher()
+        public FormPublisher(IMockInterfaceService mockInterfaceService,IPublisherService publisherService)
         {
             InitializeComponent();
+            _mockInterfaceService = mockInterfaceService;
+            _publisherService = publisherService;
         }
 
         private void FormPublicador_Load(object sender, EventArgs e)
         {
-            CarregarUltimaConfiguracao();
+            LoadLastConfiguration();
 
             dataGridViewAutoComplete.Hide();
         }
 
-        private async void buttonEnviar_Click(object sender, EventArgs e)
+        private async void buttonSend_Click(object sender, EventArgs e)
         {
-            try
+            Validate();
+
+            SaveLastConfiguration();
+
+            var contractMessage = new ContractMessage()
             {
-                Validar();
+                Contract = _selectedContract,
+                Body = richTextBoxJson.Text.Trim(),
+            };
 
-                SalvarUltimaConfiguracao();
+            ConfigurePublisher();
 
-                var evento = new ContractMessage()
-                {
-                    Contract = _selectedContract,
-                    Body = richTextBoxJson.Text.Trim(),
-                };
+            await _publisherService.Send(contractMessage, textBoxQueue.Text);
 
-                var publicador = ObterPublicador();
-
-                await publicador.Send(evento, textBoxQueue.Text);
-
-                MessageBox.Show("Evento enviado com sucesso", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
+            MessageBox.Show("Event sent successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 
-        private void SalvarUltimaConfiguracao()
+        private void SaveLastConfiguration()
         {
             var configuracao = new LocalConfiguration()
             {
@@ -71,7 +66,7 @@ namespace Masstransit.Publisher.Windows
             System.IO.File.WriteAllText(ConfigFileName, json);
         }
 
-        private void CarregarUltimaConfiguracao()
+        private void LoadLastConfiguration()
         {
             if (System.IO.File.Exists(ConfigFileName))
             {
@@ -92,7 +87,7 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void Validar(bool isPublish = false)
+        private void Validate(bool isPublish = false)
         {
             if (string.IsNullOrWhiteSpace(textBoxContract.Text))
                 throw new InvalidOperationException("Contract is required");
@@ -107,16 +102,14 @@ namespace Masstransit.Publisher.Windows
                 throw new InvalidOperationException("Connection string is required");
         }
 
-        private PublisherService ObterPublicador()
+        private void ConfigurePublisher()
         {
-            var buscontrol = ObterBusControl();
+            var buscontrol = GetBusControl();
 
-            var publicador = new PublisherService(buscontrol);
-
-            return publicador;
+            _publisherService.Setup(buscontrol);
         }
 
-        private IBusControl ObterBusControl()
+        private IBusControl GetBusControl()
         {
             var serviceCollection = new ServiceCollection();
 
@@ -152,55 +145,41 @@ namespace Masstransit.Publisher.Windows
             return buscontrol;
         }
 
-        private async void buttonPublicar_Click(object sender, EventArgs e)
+        private async void buttonPublish_Click(object sender, EventArgs e)
         {
-            try
+            Validate(true);
+
+            SaveLastConfiguration();
+
+            var evento = new ContractMessage()
             {
-                Validar(true);
+                Contract = _selectedContract,
+                Body = richTextBoxJson.Text.Trim(),
+            };
 
-                SalvarUltimaConfiguracao();
+            ConfigurePublisher();
 
-                var evento = new ContractMessage()
-                {
-                    Contract = _selectedContract,
-                    Body = richTextBoxJson.Text.Trim(),
-                };
+            await _publisherService.Publish(evento);
 
-                var publicador = ObterPublicador();
-
-                await publicador.Publish(evento);
-
-                MessageBox.Show("Evento publicado com sucesso", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            MessageBox.Show("Event published successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void buttonGerarJson_Click(object sender, EventArgs e)
+        private void buttonGenerateJson_Click(object sender, EventArgs e)
         {
-            try
+            if (_selectedContract == null)
             {
-                var tipo = _selectedContract.Type;
-
-                if (tipo == null)
-                {
-                    MessageBox.Show("Contract not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var mockObject = FictObject.GenerateMockObject(tipo);
-
-                var json = JsonConvert.SerializeObject(mockObject, Formatting.Indented);
-
-                richTextBoxJson.Text = json;
+                MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textBoxContract.Focus();
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            var tipo = _selectedContract.Type;
+
+            var mockObject = _mockInterfaceService.Generate(tipo);
+
+            var json = JsonConvert.SerializeObject(mockObject, Formatting.Indented);
+
+            richTextBoxJson.Text = json;
         }
 
         private void textBoxContrato_TextChanged(object sender, EventArgs e)
@@ -241,7 +220,7 @@ namespace Masstransit.Publisher.Windows
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    SelecionarContratoFocadoNoGrid();
+                    SelectFocuseGridContract();
                     break;
                 case Keys.Down:
                     dataGridViewAutoComplete.Focus();
@@ -255,12 +234,12 @@ namespace Masstransit.Publisher.Windows
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    SelecionarContratoFocadoNoGrid();
+                    SelectFocuseGridContract();
                     break;
             }
         }
 
-        private void SelecionarContratoFocadoNoGrid()
+        private void SelectFocuseGridContract()
         {
             if (!dataGridViewAutoComplete.Visible) return;
 
@@ -275,7 +254,7 @@ namespace Masstransit.Publisher.Windows
 
         private void dataGridViewAutoComplete_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            SelecionarContratoFocadoNoGrid();
+            SelectFocuseGridContract();
         }
 
         private void linkLabelSelectDll_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -290,7 +269,7 @@ namespace Masstransit.Publisher.Windows
 
                     LoadContractFromDllFile(fileName);
 
-                    SalvarUltimaConfiguracao();
+                    SaveLastConfiguration();
 
                     MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
