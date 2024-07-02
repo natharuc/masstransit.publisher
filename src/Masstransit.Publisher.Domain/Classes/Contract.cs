@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Publicador.Classes
+namespace Masstransit.Publisher.Domain.Classes
 {
     public class Contract
     {

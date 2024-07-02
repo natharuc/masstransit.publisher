@@ -1,23 +1,15 @@
-﻿using MassTransit;
-using Publicador.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Message = Publicador.Classes.Message;
+﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Interfaces;
+using Masstransit.Publisher.Services.Extensions;
+using MassTransit;
 
-namespace Publicador.Services
+namespace Masstransit.Publisher.Services.Services
 {
-    public class PublisherService
+    public class PublisherService : IPublisherService
     {
-        private readonly IBusControl _busControl;
-        
-        public PublisherService(IBusControl busControl)
-        {
-            _busControl = busControl;
-        }
+        private IBusControl? _busControl;
 
-        private async Task<List<PublisherServiceResponse>> Process(IEnumerable<Message> messages, string queue, Func<IEnumerable<Message>, string, Task<PublisherServiceResponse>> action)
+        private async Task<List<PublisherServiceResponse>> Process(IEnumerable<ContractMessage> messages, string queue, Func<IEnumerable<ContractMessage>, string, Task<PublisherServiceResponse>> action)
         {
             var result = new List<PublisherServiceResponse>();
 
@@ -46,41 +38,41 @@ namespace Publicador.Services
                 }).ToList();
         }
 
-        public async Task<List<PublisherServiceResponse>> Publish(IEnumerable<Message> events)
+        public async Task<List<PublisherServiceResponse>> Publish(IEnumerable<ContractMessage> events)
         {
-            return await Process(events, string.Empty,async (eventos, queue) =>
+            return await Process(events, string.Empty, async (eventos, queue) =>
             {
-                return await _Publish(eventos);
+                return await _publish(eventos);
             });
         }
 
-        public async Task<PublisherServiceResponse> Publish(Message eventoRecebido)
+        public async Task<PublisherServiceResponse> Publish(ContractMessage eventoRecebido)
         {
-            var eventos = new List<Message> { eventoRecebido };
+            var eventos = new List<ContractMessage> { eventoRecebido };
 
             var result = await Publish(eventos);
 
             return result.First();
         }
 
-        public async Task<PublisherServiceResponse> Send(Message eventoRecebido, string queue)
+        public async Task<PublisherServiceResponse> Send(ContractMessage eventoRecebido, string queue)
         {
-            var eventos = new List<Message> { eventoRecebido };
+            var eventos = new List<ContractMessage> { eventoRecebido };
 
             var result = await Send(eventos, queue);
 
             return result.First();
         }
 
-        public async Task<List<PublisherServiceResponse>> Send(IEnumerable<Message> events, string queue)
+        public async Task<List<PublisherServiceResponse>> Send(IEnumerable<ContractMessage> events, string queue)
         {
             return await Process(events, queue, async (eventos, _queue) =>
             {
-                return await _Send(eventos, _queue);
+                return await _send(eventos, _queue);
             });
         }
 
-        private async Task<PublisherServiceResponse> _Publish(IEnumerable<Message> events)
+        private async Task<PublisherServiceResponse> _publish(IEnumerable<ContractMessage> events)
         {
 
             var firstMessage = events.First();
@@ -106,7 +98,7 @@ namespace Publicador.Services
             };
         }
 
-        private async Task<PublisherServiceResponse> _Send(IEnumerable<Message> events, string queue)
+        private async Task<PublisherServiceResponse> _send(IEnumerable<ContractMessage> events, string queue)
         {
 
             var firstMessage = events.First();
@@ -135,54 +127,9 @@ namespace Publicador.Services
             };
         }
 
-    }
-
-    public static class ObjectExtensions
-    {
-        public static void SetPropertyValue(this object obj, string propertyName, object value)
+        public void Setup(IBusControl busControl)
         {
-            obj.GetType().GetProperty(propertyName).SetValue(obj, value);
-        }
-    }
-
-    public class PublisherServiceResponse
-    {
-        public Contract Contract { get; set; }
-        public int SendedEvents { get; set; }
-        public string Message { get; set; }
-    }
-
-    public static class ListExtensions
-    {
-        public static List<List<T>> Paginar<T>(this List<T> lista, int tamanhoPagina)
-        {
-            var paginas = new List<List<T>>();
-
-            var pagina = new List<T>();
-
-            foreach (var item in lista)
-            {
-                pagina.Add(item);
-
-                if (pagina.Count == tamanhoPagina)
-                {
-                    paginas.Add(pagina);
-
-                    pagina = new List<T>();
-                }
-            }
-
-            if (pagina.Any())
-            {
-                paginas.Add(pagina);
-            }
-
-            return paginas;
-        }
-
-        public static List<List<T>> Page<T>(this IEnumerable<T> lista, int tamanhoPagina)
-        {
-            return lista.ToList().Paginar(tamanhoPagina);
+            _busControl = busControl;
         }
     }
 }

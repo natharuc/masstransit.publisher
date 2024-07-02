@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Globalization;
 
-namespace Publicador.Services
+namespace Masstransit.Publisher.Services.Services
 {
     public static class JsonToInterfaceConverter
     {

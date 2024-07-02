@@ -1,4 +1,4 @@
-﻿namespace Publicador
+﻿namespace Masstransit.Publisher.Windows
 {
     internal class LocalConfiguration
     {

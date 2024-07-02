@@ -1,29 +1,19 @@
-﻿using System;
+﻿using Masstransit.Publisher.Domain.Interfaces;
 using System.Collections;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Reflection;
 
-namespace Publicador.Services
+namespace Masstransit.Publisher.Services.Services
 {
-    public static class FictObject
+    public class MockInterfaceService : IMockInterfaceService
     {
-        private static Dictionary<Type, object> _instances = new Dictionary<Type, object>();
-
-        public static object GenerateMockObject(Type interfaceType)
+        public object Generate(Type interfaceType)
         {
             if (!interfaceType.IsInterface && !interfaceType.IsClass)
                 throw new ArgumentException("The type has been a class or inteface.");
 
-            if (_instances.ContainsKey(interfaceType))
-            {
-                return _instances[interfaceType];
-            }
-
             var mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object>;
-            _instances[interfaceType] = mockObject;
-
+            
             foreach (var property in GetAllProperties(interfaceType))
             {
                 mockObject[property.Name] = GetMockValue(property.PropertyType);
@@ -32,7 +22,7 @@ namespace Publicador.Services
             return mockObject;
         }
 
-        public static object GetMockValue(Type propertyType)
+        private object GetMockValue(Type propertyType)
         {
             if (propertyType == typeof(int))
                 return 123;
@@ -51,16 +41,16 @@ namespace Publicador.Services
             if (typeof(IEnumerable).IsAssignableFrom(propertyType) && propertyType.IsGenericType)
                 return CreateList(propertyType);
             if (propertyType.IsClass || propertyType.IsInterface)
-                return GenerateMockObject(propertyType);
+                return Generate(propertyType);
 
 
             return Activator.CreateInstance(propertyType);
         }
 
-        public static object CreateList(Type listType)
+        private object CreateList(Type listType)
         {
             var itemType = listType.GetGenericArguments()[0];
-            var listInstance = Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType)) as IList;
+            var listInstance = new List<object>();
 
             if (listInstance != null)
             {
@@ -70,7 +60,7 @@ namespace Publicador.Services
             return listInstance;
         }
 
-        public static IEnumerable<PropertyInfo> GetAllProperties(Type type)
+        private IEnumerable<PropertyInfo> GetAllProperties(Type type)
         {
             var propertyInfos = new List<PropertyInfo>();
 

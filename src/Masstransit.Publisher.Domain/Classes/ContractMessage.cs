@@ -1,6 +1,6 @@
-﻿namespace Publicador.Classes
+﻿namespace Masstransit.Publisher.Domain.Classes
 {
-    public class Message
+    public class ContractMessage
     {
         public Contract Contract { get; set; }
         public string Body { get; set; }
@@ -12,4 +12,5 @@
             }
         }
     }
+
 }
