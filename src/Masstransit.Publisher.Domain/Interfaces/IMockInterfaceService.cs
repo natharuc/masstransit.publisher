@@ -2,6 +2,6 @@
 {
     public interface IMockInterfaceService
     {
-        object Generate(Type interfaceType);
+        object Mock(Type interfaceType);
     }
 }
