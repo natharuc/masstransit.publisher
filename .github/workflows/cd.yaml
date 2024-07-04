@@ -1,16 +1,9 @@
-name: CI
+name: CD
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main ]
-    paths:
-      - src/**
-
-  pull_request:
-    branches: [ main ]
-    paths:
-      - src/**
+    tags:
+      - release-*
 
 permissions:
   packages: write
