@@ -1,0 +1,31 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - release-*
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+      - name: Restore
+        run: dotnet restore src
+      - name: Build
+        run: dotnet build -c Release --no-restore src
+      - run: Compress-Archive -Path src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows/* -Destination Masstransit.Publisher.zip
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "Masstransit.Publisher.zip,src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows/*.exe"
