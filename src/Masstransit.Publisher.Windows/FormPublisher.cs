@@ -44,7 +44,7 @@ namespace Masstransit.Publisher.Windows
 
             ConfigurePublisher();
 
-            await _publisherService.Send(contractMessage, textBoxQueue.Text);
+            await _publisherService.Send(contractMessage, textBoxQueue.Text.Trim());
 
             MessageBox.Show("Event sent successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -164,7 +164,7 @@ namespace Masstransit.Publisher.Windows
             MessageBox.Show("Event published successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void buttonGenerateJson_Click(object sender, EventArgs e)
+        private void buttonMockJson_Click(object sender, EventArgs e)
         {
             if (_selectedContract == null)
             {
@@ -175,9 +175,11 @@ namespace Masstransit.Publisher.Windows
 
             var tipo = _selectedContract.Type;
 
-            var mockObject = _mockInterfaceService.Generate(tipo);
+            var mockObject = _mockInterfaceService.Mock(tipo);
 
             var json = JsonConvert.SerializeObject(mockObject, Formatting.Indented);
+
+            labelJson.Text = $"Json ({json.Length} characters)";
 
             richTextBoxJson.Text = json;
         }
@@ -246,6 +248,8 @@ namespace Masstransit.Publisher.Windows
             var contract = (Contract)dataGridViewAutoComplete.CurrentRow.DataBoundItem;
 
             _selectedContract = contract;
+
+            richTextBoxJson.Text = string.Empty;
 
             textBoxContract.Text = contract.Name;
 

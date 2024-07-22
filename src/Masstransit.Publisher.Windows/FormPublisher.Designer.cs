@@ -40,7 +40,7 @@
             button1 = new Button();
             buttonEnviar = new Button();
             buttonPublicar = new Button();
-            buttonGerarJson = new Button();
+            buttonMockJson = new Button();
             dataGridViewAutoComplete = new DataGridView();
             linkLabelSelectDll = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
@@ -160,17 +160,17 @@
             buttonPublicar.UseVisualStyleBackColor = true;
             buttonPublicar.Click += buttonPublish_Click;
             // 
-            // buttonGerarJson
+            // buttonMockJson
             // 
-            buttonGerarJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            buttonGerarJson.Font = new Font("Ubuntu", 10F);
-            buttonGerarJson.Location = new Point(15, 533);
-            buttonGerarJson.Name = "buttonGerarJson";
-            buttonGerarJson.Size = new Size(121, 45);
-            buttonGerarJson.TabIndex = 11;
-            buttonGerarJson.Text = "Generate";
-            buttonGerarJson.UseVisualStyleBackColor = true;
-            buttonGerarJson.Click += buttonGenerateJson_Click;
+            buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            buttonMockJson.Font = new Font("Ubuntu", 10F);
+            buttonMockJson.Location = new Point(15, 533);
+            buttonMockJson.Name = "buttonMockJson";
+            buttonMockJson.Size = new Size(121, 45);
+            buttonMockJson.TabIndex = 11;
+            buttonMockJson.Text = "Mock";
+            buttonMockJson.UseVisualStyleBackColor = true;
+            buttonMockJson.Click += buttonMockJson_Click;
             // 
             // dataGridViewAutoComplete
             // 
@@ -211,7 +211,7 @@
             ClientSize = new Size(898, 590);
             Controls.Add(linkLabelSelectDll);
             Controls.Add(dataGridViewAutoComplete);
-            Controls.Add(buttonGerarJson);
+            Controls.Add(buttonMockJson);
             Controls.Add(buttonPublicar);
             Controls.Add(buttonEnviar);
             Controls.Add(button1);
@@ -247,7 +247,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button buttonEnviar;
         private System.Windows.Forms.Button buttonPublicar;
-        private System.Windows.Forms.Button buttonGerarJson;
+        private System.Windows.Forms.Button buttonMockJson;
         private System.Windows.Forms.DataGridView dataGridViewAutoComplete;
         private System.Windows.Forms.LinkLabel linkLabelSelectDll;
     }

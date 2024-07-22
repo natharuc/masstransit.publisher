@@ -1,4 +1,5 @@
 ﻿using Masstransit.Publisher.Domain.Interfaces;
+using MassTransit.Internals;
 using System.Collections;
 using System.Dynamic;
 using System.Reflection;
@@ -7,13 +8,23 @@ namespace Masstransit.Publisher.Services.Services
 {
     public class MockInterfaceService : IMockInterfaceService
     {
-        public object Generate(Type interfaceType)
+        private Random _random;
+
+        public MockInterfaceService()
+        {
+            _random = new Random();
+        }
+
+        public object Mock(Type interfaceType)
         {
             if (!interfaceType.IsInterface && !interfaceType.IsClass)
                 throw new ArgumentException("The type has been a class or inteface.");
 
-            var mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object>;
-            
+            var mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object?>;
+
+            if (mockObject == null)
+                throw new InvalidOperationException("The mock object could not be created.");
+
             foreach (var property in GetAllProperties(interfaceType))
             {
                 mockObject[property.Name] = GetMockValue(property.PropertyType);
@@ -22,37 +33,61 @@ namespace Masstransit.Publisher.Services.Services
             return mockObject;
         }
 
-        private object GetMockValue(Type propertyType)
+        private object? GetMockValue(Type propertyType)
         {
             if (propertyType == typeof(int))
-                return 123;
+                return _random.Next();
+            if (propertyType == typeof(long))
+                return _random.Next();
+            if (propertyType == typeof(Guid))
+                return Guid.NewGuid();
             if (propertyType == typeof(string))
-                return "Sample String";
+                return propertyType.Name + Guid.NewGuid().ToString();
             if (propertyType == typeof(DateTime))
                 return DateTime.Now;
             if (propertyType == typeof(bool))
-                return true;
+                return _random.Next(0, 1) == 1;
             if (propertyType == typeof(double))
-                return 123.45;
+                return _random.NextDouble();
+            if (propertyType == typeof(decimal))
+                return Convert.ToDecimal(_random.NextDouble());
             if (propertyType.IsEnum)
-                return Enum.GetValues(propertyType).GetValue(0);
+                return GetRandomEnumPosition(propertyType);
             if (propertyType.IsArray)
-                return Array.CreateInstance(propertyType.GetElementType(), 1);
+                return MockList(propertyType);
             if (typeof(IEnumerable).IsAssignableFrom(propertyType) && propertyType.IsGenericType)
-                return CreateList(propertyType);
+                return MockList(propertyType);
             if (propertyType.IsClass || propertyType.IsInterface)
-                return Generate(propertyType);
+                return Mock(propertyType);
+            
+            var instance = Activator.CreateInstance(propertyType);
 
-
-            return Activator.CreateInstance(propertyType);
+            return instance;
         }
 
-        private object CreateList(Type listType)
+        private object GetRandomEnumPosition(Type propertyType)
+        {
+            var enumValues = Enum.GetValues(propertyType);
+
+            var randomIndex = _random.Next(0, enumValues.Length);
+
+            var randomEnumValue = enumValues.GetValue(randomIndex);
+
+            if (randomEnumValue == null)
+                throw new InvalidOperationException("The random enum value could not be created.");
+
+            return randomEnumValue;
+
+        }
+
+        private object MockList(Type listType)
         {
             var itemType = listType.GetGenericArguments()[0];
             var listInstance = new List<object>();
 
-            if (listInstance != null)
+            var count = _random.Next(1, 10);
+
+            for (int i = 0; i < count; i++)
             {
                 listInstance.Add(GetMockValue(itemType));
             }
@@ -74,12 +109,11 @@ namespace Masstransit.Publisher.Services.Services
                 while (queue.Count > 0)
                 {
                     var subType = queue.Dequeue();
-                    foreach (var subInterface in subType.GetInterfaces())
+                    foreach (var subInterface in from subInterface in subType.GetInterfaces()
+                                                 where considered.Add(subInterface)
+                                                 select subInterface)
                     {
-                        if (considered.Add(subInterface))
-                        {
-                            queue.Enqueue(subInterface);
-                        }
+                        queue.Enqueue(subInterface);
                     }
 
                     var typeProperties = subType.GetProperties(
