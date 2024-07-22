@@ -82,7 +82,7 @@ namespace Masstransit.Publisher.Services.Services
 
         private object MockList(Type listType)
         {
-            var itemType = listType.GetGenericArguments()[0];
+            var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
             var listInstance = new List<object>();
 
             var count = _random.Next(1, 10);
