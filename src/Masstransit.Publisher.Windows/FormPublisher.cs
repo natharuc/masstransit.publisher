@@ -9,14 +9,15 @@ namespace Masstransit.Publisher.Windows
 {
     public partial class FormPublisher : Form
     {
-        public List<Contract> Contratos { get; private set; } = new List<Contract>();
-        private Contract _selectedContract { get; set; }
+        public List<Contract> Contracts { get; private set; } = new List<Contract>();
+        private Contract? selectedContract { get; set; } 
 
         private const string ConfigFileName = "config.json";
         private IMockInterfaceService _mockInterfaceService;
         private IPublisherService _publisherService;
+        private bool _genericTypeSelecting;
 
-        public FormPublisher(IMockInterfaceService mockInterfaceService,IPublisherService publisherService)
+        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService)
         {
             InitializeComponent();
             _mockInterfaceService = mockInterfaceService;
@@ -36,9 +37,16 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
+            if (selectedContract == null)
+            {
+                MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textBoxContract.Focus();
+                return;
+            }
+
             var contractMessage = new ContractMessage()
             {
-                Contract = _selectedContract,
+                Contract = selectedContract,
                 Body = richTextBoxJson.Text.Trim(),
             };
 
@@ -75,15 +83,16 @@ namespace Masstransit.Publisher.Windows
                 var configuracao = Newtonsoft.Json.JsonConvert.DeserializeObject<LocalConfiguration>(json);
 
                 LoadContractFromDllFile(configuracao.DllFile);
-                if (Contratos.Any())
+                if (Contracts.Any())
                 {
                     textBoxContract.Text = configuracao.Contract;
-                    _selectedContract = Contratos.FirstOrDefault(c => c.Name == configuracao.Contract);
+                    selectedContract = Contracts.FirstOrDefault(c => c.Name == configuracao.Contract);
                 }
 
                 richTextBoxJson.Text = configuracao.Json;
                 textBoxQueue.Text = configuracao.Queue;
                 richTextBoxConnectionString.Text = configuracao.ConnectionString;
+                labelSelectedContract.Text = selectedContract?.ToString();
             }
         }
 
@@ -138,7 +147,7 @@ namespace Masstransit.Publisher.Windows
                 return settings;
             }
 
-            var provider  = serviceCollection.BuildServiceProvider();
+            var provider = serviceCollection.BuildServiceProvider();
 
             var buscontrol = provider.GetRequiredService<IBusControl>();
 
@@ -153,7 +162,7 @@ namespace Masstransit.Publisher.Windows
 
             var evento = new ContractMessage()
             {
-                Contract = _selectedContract,
+                Contract = selectedContract,
                 Body = richTextBoxJson.Text.Trim(),
             };
 
@@ -166,14 +175,14 @@ namespace Masstransit.Publisher.Windows
 
         private void buttonMockJson_Click(object sender, EventArgs e)
         {
-            if (_selectedContract == null)
+            if (selectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
-            var tipo = _selectedContract.Type;
+            var tipo = selectedContract.GetFullType();
 
             var mockObject = _mockInterfaceService.Mock(tipo);
 
@@ -184,7 +193,7 @@ namespace Masstransit.Publisher.Windows
             richTextBoxJson.Text = json;
         }
 
-        private void textBoxContrato_TextChanged(object sender, EventArgs e)
+        private void textBoxContract_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxContract.Text.Trim()))
             {
@@ -192,18 +201,19 @@ namespace Masstransit.Publisher.Windows
             }
             else
             {
-                if (Contratos.Any())
+                if (Contracts.Any())
                 {
+                    var contracts = Contracts.FindAll(c => c.Name.ToLower().Contains(textBoxContract.Text.Trim().ToLower()));
 
-                    var contratos = Contratos.FindAll(c => c.Name.ToLower().Contains(textBoxContract.Text.Trim().ToLower()));
-
-                    if (contratos.Any())
+                    if (contracts.Any())
                     {
                         dataGridViewAutoComplete.DataSource = null;
 
-                        dataGridViewAutoComplete.DataSource = contratos;
+                        dataGridViewAutoComplete.DataSource = contracts;
 
                         dataGridViewAutoComplete.Columns["Name"].Visible = false;
+                        dataGridViewAutoComplete.Columns["RequiresGeneric"].Visible = false;
+                        dataGridViewAutoComplete.Columns["GenericType"].Visible = false;
 
                         dataGridViewAutoComplete.Show();
 
@@ -217,7 +227,7 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void textBoxContrato_KeyDown(object sender, KeyEventArgs e)
+        private void textBoxContract_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -247,13 +257,41 @@ namespace Masstransit.Publisher.Windows
 
             var contract = (Contract)dataGridViewAutoComplete.CurrentRow.DataBoundItem;
 
-            _selectedContract = contract;
+            if (_genericTypeSelecting)
+            {
+                if (contract.RequiresGeneric)
+                {
+                    MessageBox.Show("You cannot select a contract that requires a generic type as a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            richTextBoxJson.Text = string.Empty;
+                selectedContract.GenericType = contract;
+                _genericTypeSelecting = false;
+            }
+            else
+            {
 
-            textBoxContract.Text = contract.Name;
 
+                selectedContract = contract;
+
+                richTextBoxJson.Text = string.Empty;
+
+                textBoxContract.Text = contract.Name;
+
+                if (contract.RequiresGeneric)
+                {
+                    MessageBox.Show("This contract requires a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    _genericTypeSelecting = true;
+
+                    textBoxContract.Focus();
+                }
+
+            }
+            
             dataGridViewAutoComplete.Hide();
+
+            labelSelectedContract.Text = selectedContract.ToString();
         }
 
         private void dataGridViewAutoComplete_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -289,12 +327,12 @@ namespace Masstransit.Publisher.Windows
 
             var assembly = System.Reflection.Assembly.LoadFrom(fileName);
 
-            var contratos = assembly.GetTypes()
+            var contracts = assembly.GetTypes()
                 .Select(t => new Contract(t.FullName, t))
                 .ToList();
 
-            Contratos.Clear();
-            Contratos.AddRange(contratos);
+            Contracts.Clear();
+            Contracts.AddRange(contracts);
 
             linkLabelSelectDll.Text = file.Name;
             linkLabelSelectDll.Tag = file.FullName;

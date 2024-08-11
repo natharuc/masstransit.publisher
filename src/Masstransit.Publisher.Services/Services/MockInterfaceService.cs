@@ -1,5 +1,4 @@
 ﻿using Masstransit.Publisher.Domain.Interfaces;
-using MassTransit.Internals;
 using System.Collections;
 using System.Dynamic;
 using System.Reflection;
@@ -37,6 +36,8 @@ namespace Masstransit.Publisher.Services.Services
         {
             if (propertyType == typeof(int))
                 return _random.Next();
+            if (propertyType == typeof(Uri))
+                return new Uri($@"https://{Guid.NewGuid()}.com");
             if (propertyType == typeof(long))
                 return _random.Next();
             if (propertyType == typeof(Guid))
