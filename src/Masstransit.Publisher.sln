@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masstransit.Publisher.Servi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{346738C3-4078-4394-BE76-C8B2B0B2EF7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masstransit.Publisher.Tests", "Masstransit.Publisher.Tests\Masstransit.Publisher.Tests.csproj", "{2040E6F0-5313-48A9-8F11-79C1C301D545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masstransit.Publisher.Tests", "Masstransit.Publisher.Tests\Masstransit.Publisher.Tests.csproj", "{2040E6F0-5313-48A9-8F11-79C1C301D545}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

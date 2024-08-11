@@ -43,34 +43,35 @@
             buttonMockJson = new Button();
             dataGridViewAutoComplete = new DataGridView();
             linkLabelSelectDll = new LinkLabel();
+            labelSelectedContract = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             SuspendLayout();
             // 
             // textBoxContract
             // 
             textBoxContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxContract.Font = new Font("Ubuntu", 15F);
+            textBoxContract.Font = new Font("Ubuntu", 15F, FontStyle.Regular, GraphicsUnit.Point);
             textBoxContract.Location = new Point(15, 96);
             textBoxContract.Name = "textBoxContract";
             textBoxContract.Size = new Size(874, 30);
             textBoxContract.TabIndex = 3;
-            textBoxContract.TextChanged += textBoxContrato_TextChanged;
-            textBoxContract.KeyDown += textBoxContrato_KeyDown;
+            textBoxContract.TextChanged += textBoxContract_TextChanged;
+            textBoxContract.KeyDown += textBoxContract_KeyDown;
             // 
             // richTextBoxJson
             // 
             richTextBoxJson.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxJson.BorderStyle = BorderStyle.None;
-            richTextBoxJson.Location = new Point(15, 150);
+            richTextBoxJson.Location = new Point(15, 171);
             richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(874, 323);
+            richTextBoxJson.Size = new Size(874, 302);
             richTextBoxJson.TabIndex = 5;
             richTextBoxJson.Text = "";
             // 
             // labelContrato
             // 
             labelContrato.AutoSize = true;
-            labelContrato.Font = new Font("Ubuntu", 10F);
+            labelContrato.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             labelContrato.Location = new Point(12, 75);
             labelContrato.Name = "labelContrato";
             labelContrato.Size = new Size(65, 18);
@@ -80,8 +81,8 @@
             // labelJson
             // 
             labelJson.AutoSize = true;
-            labelJson.Font = new Font("Ubuntu", 10F);
-            labelJson.Location = new Point(12, 129);
+            labelJson.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            labelJson.Location = new Point(12, 150);
             labelJson.Name = "labelJson";
             labelJson.Size = new Size(43, 18);
             labelJson.TabIndex = 4;
@@ -91,7 +92,7 @@
             // 
             labelFila.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             labelFila.AutoSize = true;
-            labelFila.Font = new Font("Ubuntu", 10F);
+            labelFila.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             labelFila.Location = new Point(12, 476);
             labelFila.Name = "labelFila";
             labelFila.Size = new Size(51, 18);
@@ -101,7 +102,7 @@
             // textBoxQueue
             // 
             textBoxQueue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxQueue.Font = new Font("Ubuntu", 15F);
+            textBoxQueue.Font = new Font("Ubuntu", 15F, FontStyle.Regular, GraphicsUnit.Point);
             textBoxQueue.Location = new Point(15, 497);
             textBoxQueue.Name = "textBoxQueue";
             textBoxQueue.Size = new Size(874, 30);
@@ -120,7 +121,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Ubuntu", 10F);
+            label1.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
             label1.Size = new Size(122, 18);
@@ -139,7 +140,7 @@
             // buttonEnviar
             // 
             buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonEnviar.Font = new Font("Ubuntu", 10F);
+            buttonEnviar.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             buttonEnviar.Location = new Point(768, 533);
             buttonEnviar.Name = "buttonEnviar";
             buttonEnviar.Size = new Size(121, 45);
@@ -151,7 +152,7 @@
             // buttonPublicar
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonPublicar.Font = new Font("Ubuntu", 10F);
+            buttonPublicar.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             buttonPublicar.Location = new Point(641, 533);
             buttonPublicar.Name = "buttonPublicar";
             buttonPublicar.Size = new Size(121, 45);
@@ -163,7 +164,7 @@
             // buttonMockJson
             // 
             buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            buttonMockJson.Font = new Font("Ubuntu", 10F);
+            buttonMockJson.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             buttonMockJson.Location = new Point(15, 533);
             buttonMockJson.Name = "buttonMockJson";
             buttonMockJson.Size = new Size(121, 45);
@@ -182,11 +183,11 @@
             dataGridViewAutoComplete.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewAutoComplete.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewAutoComplete.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dataGridViewAutoComplete.Location = new Point(15, 132);
+            dataGridViewAutoComplete.Location = new Point(15, 171);
             dataGridViewAutoComplete.Name = "dataGridViewAutoComplete";
             dataGridViewAutoComplete.RowHeadersVisible = false;
             dataGridViewAutoComplete.RowTemplate.Height = 30;
-            dataGridViewAutoComplete.Size = new Size(874, 341);
+            dataGridViewAutoComplete.Size = new Size(874, 302);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
             dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
@@ -204,11 +205,21 @@
             linkLabelSelectDll.TextAlign = ContentAlignment.MiddleRight;
             linkLabelSelectDll.LinkClicked += linkLabelSelectDll_LinkClicked;
             // 
+            // labelContratoSelecionado
+            // 
+            labelSelectedContract.Font = new Font("Ubuntu", 9F, FontStyle.Italic, GraphicsUnit.Point);
+            labelSelectedContract.Location = new Point(15, 129);
+            labelSelectedContract.Name = "labelContratoSelecionado";
+            labelSelectedContract.Size = new Size(874, 18);
+            labelSelectedContract.TabIndex = 14;
+            labelSelectedContract.Text = "...";
+            // 
             // FormPublisher
             // 
             AutoScaleDimensions = new SizeF(6F, 16F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(898, 590);
+            Controls.Add(labelSelectedContract);
             Controls.Add(linkLabelSelectDll);
             Controls.Add(dataGridViewAutoComplete);
             Controls.Add(buttonMockJson);
@@ -223,7 +234,7 @@
             Controls.Add(labelContrato);
             Controls.Add(richTextBoxJson);
             Controls.Add(textBoxContract);
-            Font = new Font("Ubuntu", 8.25F);
+            Font = new Font("Ubuntu", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 4, 3, 4);
             Name = "FormPublisher";
@@ -250,6 +261,7 @@
         private System.Windows.Forms.Button buttonMockJson;
         private System.Windows.Forms.DataGridView dataGridViewAutoComplete;
         private System.Windows.Forms.LinkLabel linkLabelSelectDll;
+        private Label labelSelectedContract;
     }
 }
 

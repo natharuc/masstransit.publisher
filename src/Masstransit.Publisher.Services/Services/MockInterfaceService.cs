@@ -1,5 +1,4 @@
 ﻿using Masstransit.Publisher.Domain.Interfaces;
-using MassTransit.Internals;
 using System.Collections;
 using System.Dynamic;
 using System.Reflection;
@@ -37,6 +36,8 @@ namespace Masstransit.Publisher.Services.Services
         {
             if (propertyType == typeof(int))
                 return _random.Next();
+            if (propertyType == typeof(Uri))
+                return new Uri($@"https://{Guid.NewGuid()}.com");
             if (propertyType == typeof(long))
                 return _random.Next();
             if (propertyType == typeof(Guid))
@@ -82,7 +83,7 @@ namespace Masstransit.Publisher.Services.Services
 
         private object MockList(Type listType)
         {
-            var itemType = listType.GetGenericArguments()[0];
+            var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
             var listInstance = new List<object>();
 
             var count = _random.Next(1, 10);

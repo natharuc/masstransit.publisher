@@ -1,7 +1,6 @@
 ﻿using MassTransit.Serialization.JsonConverters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
 using System.Globalization;
 
 namespace Masstransit.Publisher.Services.Services
