@@ -10,7 +10,7 @@ namespace Masstransit.Publisher.Windows
     public partial class FormPublisher : Form
     {
         public List<Contract> Contracts { get; private set; } = new List<Contract>();
-        private Contract? selectedContract { get; set; } 
+        private Contract? selectedContract { get; set; }
 
         private const string ConfigFileName = "config.json";
         private IMockInterfaceService _mockInterfaceService;
@@ -109,6 +109,9 @@ namespace Masstransit.Publisher.Windows
 
             if (string.IsNullOrWhiteSpace(richTextBoxConnectionString.Text))
                 throw new InvalidOperationException("Connection string is required");
+
+            if (selectedContract.RequiresGeneric && selectedContract.GenericType == null)
+                throw new InvalidOperationException("Select a type for the generic type");
         }
 
         private void ConfigurePublisher()
@@ -178,6 +181,13 @@ namespace Masstransit.Publisher.Windows
             if (selectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textBoxContract.Focus();
+                return;
+            }
+
+            if (selectedContract.RequiresGeneric && selectedContract.GenericType == null)
+            {
+                MessageBox.Show("Select a type for the generic type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
@@ -288,7 +298,7 @@ namespace Masstransit.Publisher.Windows
                 }
 
             }
-            
+
             dataGridViewAutoComplete.Hide();
 
             labelSelectedContract.Text = selectedContract.ToString();

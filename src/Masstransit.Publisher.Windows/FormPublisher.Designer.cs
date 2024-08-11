@@ -74,9 +74,9 @@
             labelContrato.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
             labelContrato.Location = new Point(12, 75);
             labelContrato.Name = "labelContrato";
-            labelContrato.Size = new Size(65, 18);
+            labelContrato.Size = new Size(107, 18);
             labelContrato.TabIndex = 2;
-            labelContrato.Text = "Contract";
+            labelContrato.Text = "Search contract";
             // 
             // labelJson
             // 
@@ -205,11 +205,11 @@
             linkLabelSelectDll.TextAlign = ContentAlignment.MiddleRight;
             linkLabelSelectDll.LinkClicked += linkLabelSelectDll_LinkClicked;
             // 
-            // labelContratoSelecionado
+            // labelSelectedContract
             // 
             labelSelectedContract.Font = new Font("Ubuntu", 9F, FontStyle.Italic, GraphicsUnit.Point);
             labelSelectedContract.Location = new Point(15, 129);
-            labelSelectedContract.Name = "labelContratoSelecionado";
+            labelSelectedContract.Name = "labelSelectedContract";
             labelSelectedContract.Size = new Size(874, 18);
             labelSelectedContract.TabIndex = 14;
             labelSelectedContract.Text = "...";
