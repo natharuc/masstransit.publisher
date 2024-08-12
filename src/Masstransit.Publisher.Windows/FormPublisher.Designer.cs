@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPublisher));
             textBoxContract = new TextBox();
             richTextBoxJson = new RichTextBox();
@@ -44,16 +45,18 @@
             dataGridViewAutoComplete = new DataGridView();
             linkLabelSelectDll = new LinkLabel();
             labelSelectedContract = new Label();
+            buttonConfigMock = new Button();
+            toolTip = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             SuspendLayout();
             // 
             // textBoxContract
             // 
             textBoxContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxContract.Font = new Font("Ubuntu", 15F, FontStyle.Regular, GraphicsUnit.Point);
-            textBoxContract.Location = new Point(15, 96);
+            textBoxContract.Location = new Point(11, 77);
+            textBoxContract.Margin = new Padding(2);
             textBoxContract.Name = "textBoxContract";
-            textBoxContract.Size = new Size(874, 30);
+            textBoxContract.Size = new Size(972, 22);
             textBoxContract.TabIndex = 3;
             textBoxContract.TextChanged += textBoxContract_TextChanged;
             textBoxContract.KeyDown += textBoxContract_KeyDown;
@@ -62,29 +65,30 @@
             // 
             richTextBoxJson.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxJson.BorderStyle = BorderStyle.None;
-            richTextBoxJson.Location = new Point(15, 171);
+            richTextBoxJson.Location = new Point(12, 137);
+            richTextBoxJson.Margin = new Padding(2);
             richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(874, 302);
+            richTextBoxJson.Size = new Size(971, 369);
             richTextBoxJson.TabIndex = 5;
             richTextBoxJson.Text = "";
             // 
             // labelContrato
             // 
             labelContrato.AutoSize = true;
-            labelContrato.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            labelContrato.Location = new Point(12, 75);
+            labelContrato.Location = new Point(12, 62);
+            labelContrato.Margin = new Padding(2, 0, 2, 0);
             labelContrato.Name = "labelContrato";
-            labelContrato.Size = new Size(107, 18);
+            labelContrato.Size = new Size(86, 13);
             labelContrato.TabIndex = 2;
             labelContrato.Text = "Search contract";
             // 
             // labelJson
             // 
             labelJson.AutoSize = true;
-            labelJson.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            labelJson.Location = new Point(12, 150);
+            labelJson.Location = new Point(12, 122);
+            labelJson.Margin = new Padding(2, 0, 2, 0);
             labelJson.Name = "labelJson";
-            labelJson.Size = new Size(43, 18);
+            labelJson.Size = new Size(34, 13);
             labelJson.TabIndex = 4;
             labelJson.Text = "JSON";
             // 
@@ -92,47 +96,49 @@
             // 
             labelFila.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             labelFila.AutoSize = true;
-            labelFila.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            labelFila.Location = new Point(12, 476);
+            labelFila.Location = new Point(12, 513);
+            labelFila.Margin = new Padding(2, 0, 2, 0);
             labelFila.Name = "labelFila";
-            labelFila.Size = new Size(51, 18);
+            labelFila.Size = new Size(41, 13);
             labelFila.TabIndex = 6;
             labelFila.Text = "Queue";
             // 
             // textBoxQueue
             // 
             textBoxQueue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxQueue.Font = new Font("Ubuntu", 15F, FontStyle.Regular, GraphicsUnit.Point);
-            textBoxQueue.Location = new Point(15, 497);
+            textBoxQueue.Location = new Point(12, 528);
+            textBoxQueue.Margin = new Padding(2);
             textBoxQueue.Name = "textBoxQueue";
-            textBoxQueue.Size = new Size(874, 30);
+            textBoxQueue.Size = new Size(972, 22);
             textBoxQueue.TabIndex = 7;
             // 
             // richTextBoxConnectionString
             // 
             richTextBoxConnectionString.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxConnectionString.BorderStyle = BorderStyle.None;
-            richTextBoxConnectionString.Location = new Point(15, 31);
+            richTextBoxConnectionString.Location = new Point(12, 24);
+            richTextBoxConnectionString.Margin = new Padding(2);
             richTextBoxConnectionString.Name = "richTextBoxConnectionString";
-            richTextBoxConnectionString.Size = new Size(874, 41);
+            richTextBoxConnectionString.Size = new Size(971, 33);
             richTextBoxConnectionString.TabIndex = 1;
             richTextBoxConnectionString.Text = "";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(12, 9);
+            label1.Location = new Point(11, 9);
+            label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(122, 18);
+            label1.Size = new Size(101, 13);
             label1.TabIndex = 0;
             label1.Text = "Connection String";
             // 
             // button1
             // 
-            button1.Location = new Point(512, 1024);
+            button1.Location = new Point(512, 832);
+            button1.Margin = new Padding(2);
             button1.Name = "button1";
-            button1.Size = new Size(75, 23);
+            button1.Size = new Size(74, 19);
             button1.TabIndex = 8;
             button1.Text = "button1";
             button1.UseVisualStyleBackColor = true;
@@ -140,10 +146,11 @@
             // buttonEnviar
             // 
             buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonEnviar.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonEnviar.Location = new Point(768, 533);
+            buttonEnviar.FlatStyle = FlatStyle.Flat;
+            buttonEnviar.Location = new Point(859, 554);
+            buttonEnviar.Margin = new Padding(2);
             buttonEnviar.Name = "buttonEnviar";
-            buttonEnviar.Size = new Size(121, 45);
+            buttonEnviar.Size = new Size(121, 37);
             buttonEnviar.TabIndex = 8;
             buttonEnviar.Text = "Send";
             buttonEnviar.UseVisualStyleBackColor = true;
@@ -152,10 +159,11 @@
             // buttonPublicar
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonPublicar.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonPublicar.Location = new Point(641, 533);
+            buttonPublicar.FlatStyle = FlatStyle.Flat;
+            buttonPublicar.Location = new Point(734, 554);
+            buttonPublicar.Margin = new Padding(2);
             buttonPublicar.Name = "buttonPublicar";
-            buttonPublicar.Size = new Size(121, 45);
+            buttonPublicar.Size = new Size(121, 37);
             buttonPublicar.TabIndex = 10;
             buttonPublicar.Text = "Publish";
             buttonPublicar.UseVisualStyleBackColor = true;
@@ -164,10 +172,11 @@
             // buttonMockJson
             // 
             buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            buttonMockJson.Font = new Font("Ubuntu", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonMockJson.Location = new Point(15, 533);
+            buttonMockJson.FlatStyle = FlatStyle.Flat;
+            buttonMockJson.Location = new Point(11, 554);
+            buttonMockJson.Margin = new Padding(2);
             buttonMockJson.Name = "buttonMockJson";
-            buttonMockJson.Size = new Size(121, 45);
+            buttonMockJson.Size = new Size(121, 37);
             buttonMockJson.TabIndex = 11;
             buttonMockJson.Text = "Mock";
             buttonMockJson.UseVisualStyleBackColor = true;
@@ -179,15 +188,16 @@
             dataGridViewAutoComplete.AllowUserToDeleteRows = false;
             dataGridViewAutoComplete.AllowUserToResizeColumns = false;
             dataGridViewAutoComplete.AllowUserToResizeRows = false;
-            dataGridViewAutoComplete.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dataGridViewAutoComplete.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridViewAutoComplete.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewAutoComplete.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewAutoComplete.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dataGridViewAutoComplete.Location = new Point(15, 171);
+            dataGridViewAutoComplete.Location = new Point(12, 137);
+            dataGridViewAutoComplete.Margin = new Padding(2);
             dataGridViewAutoComplete.Name = "dataGridViewAutoComplete";
             dataGridViewAutoComplete.RowHeadersVisible = false;
             dataGridViewAutoComplete.RowTemplate.Height = 30;
-            dataGridViewAutoComplete.Size = new Size(874, 302);
+            dataGridViewAutoComplete.Size = new Size(971, 369);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
             dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
@@ -196,9 +206,10 @@
             // linkLabelSelectDll
             // 
             linkLabelSelectDll.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabelSelectDll.Location = new Point(437, 77);
+            linkLabelSelectDll.Location = new Point(530, 62);
+            linkLabelSelectDll.Margin = new Padding(2, 0, 2, 0);
             linkLabelSelectDll.Name = "linkLabelSelectDll";
-            linkLabelSelectDll.Size = new Size(452, 16);
+            linkLabelSelectDll.Size = new Size(452, 13);
             linkLabelSelectDll.TabIndex = 13;
             linkLabelSelectDll.TabStop = true;
             linkLabelSelectDll.Text = "Select .dll";
@@ -207,21 +218,37 @@
             // 
             // labelSelectedContract
             // 
-            labelSelectedContract.Font = new Font("Ubuntu", 9F, FontStyle.Italic, GraphicsUnit.Point);
-            labelSelectedContract.Location = new Point(15, 129);
+            labelSelectedContract.Location = new Point(12, 101);
+            labelSelectedContract.Margin = new Padding(2, 0, 2, 0);
             labelSelectedContract.Name = "labelSelectedContract";
-            labelSelectedContract.Size = new Size(874, 18);
+            labelSelectedContract.Size = new Size(919, 15);
             labelSelectedContract.TabIndex = 14;
             labelSelectedContract.Text = "...";
             // 
+            // buttonConfigMock
+            // 
+            buttonConfigMock.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            buttonConfigMock.BackColor = SystemColors.Control;
+            buttonConfigMock.BackgroundImageLayout = ImageLayout.Zoom;
+            buttonConfigMock.FlatStyle = FlatStyle.Flat;
+            buttonConfigMock.Image = Properties.Resources.settings;
+            buttonConfigMock.Location = new Point(136, 554);
+            buttonConfigMock.Margin = new Padding(2);
+            buttonConfigMock.Name = "buttonConfigMock";
+            buttonConfigMock.Size = new Size(35, 37);
+            buttonConfigMock.TabIndex = 15;
+            toolTip.SetToolTip(buttonConfigMock, "Mock Settings");
+            buttonConfigMock.UseVisualStyleBackColor = false;
+            buttonConfigMock.Click += buttonConfigMock_Click;
+            // 
             // FormPublisher
             // 
-            AutoScaleDimensions = new SizeF(6F, 16F);
+            AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(898, 590);
+            ClientSize = new Size(991, 598);
+            Controls.Add(buttonConfigMock);
             Controls.Add(labelSelectedContract);
             Controls.Add(linkLabelSelectDll);
-            Controls.Add(dataGridViewAutoComplete);
             Controls.Add(buttonMockJson);
             Controls.Add(buttonPublicar);
             Controls.Add(buttonEnviar);
@@ -232,11 +259,12 @@
             Controls.Add(textBoxQueue);
             Controls.Add(labelJson);
             Controls.Add(labelContrato);
-            Controls.Add(richTextBoxJson);
             Controls.Add(textBoxContract);
-            Font = new Font("Ubuntu", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
+            Controls.Add(dataGridViewAutoComplete);
+            Controls.Add(richTextBoxJson);
+            Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
+            Margin = new Padding(2, 4, 2, 4);
             Name = "FormPublisher";
             Text = "Masstransit - Publisher";
             Load += FormPublicador_Load;
@@ -262,6 +290,8 @@
         private System.Windows.Forms.DataGridView dataGridViewAutoComplete;
         private System.Windows.Forms.LinkLabel linkLabelSelectDll;
         private Label labelSelectedContract;
+        private Button buttonConfigMock;
+        private ToolTip toolTip;
     }
 }
 

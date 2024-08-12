@@ -1,5 +1,6 @@
 ﻿using Masstransit.Publisher.Domain.Classes;
 using Masstransit.Publisher.Domain.Interfaces;
+using Masstransit.Publisher.Windows.Forms;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -12,15 +13,16 @@ namespace Masstransit.Publisher.Windows
         public List<Contract> Contracts { get; private set; } = new List<Contract>();
         private Contract? selectedContract { get; set; }
 
-        private const string ConfigFileName = "config.json";
-        private IMockInterfaceService _mockInterfaceService;
+
+        private IMockInterfaceService _mockService;
         private IPublisherService _publisherService;
         private bool _genericTypeSelecting;
+        private LocalConfiguration? _localConfiguration;
 
         public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService)
         {
             InitializeComponent();
-            _mockInterfaceService = mockInterfaceService;
+            _mockService = mockInterfaceService;
             _publisherService = publisherService;
         }
 
@@ -60,38 +62,35 @@ namespace Masstransit.Publisher.Windows
 
         private void SaveLastConfiguration()
         {
-            var configuracao = new LocalConfiguration()
+            var newConfiguration = new LocalConfiguration()
             {
                 Contract = textBoxContract.Text.Trim(),
                 Json = richTextBoxJson.Text.Trim(),
                 Queue = textBoxQueue.Text.Trim(),
                 ConnectionString = richTextBoxConnectionString.Text.Trim(),
-                DllFile = linkLabelSelectDll.Tag?.ToString()
+                DllFile = linkLabelSelectDll.Tag?.ToString(),
+                MockSettings = _localConfiguration?.MockSettings
             };
 
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(configuracao);
-
-            System.IO.File.WriteAllText(ConfigFileName, json);
+            LocalConfiguration.SaveToJsonFile(newConfiguration);
         }
 
         private void LoadLastConfiguration()
         {
-            if (System.IO.File.Exists(ConfigFileName))
+            _localConfiguration = LocalConfiguration.LoadFromJsonFile();
+
+            if (_localConfiguration.HasConfiguration)
             {
-                var json = System.IO.File.ReadAllText(ConfigFileName);
-
-                var configuracao = Newtonsoft.Json.JsonConvert.DeserializeObject<LocalConfiguration>(json);
-
-                LoadContractFromDllFile(configuracao.DllFile);
+                LoadContractFromDllFile(_localConfiguration.DllFile);
                 if (Contracts.Any())
                 {
-                    textBoxContract.Text = configuracao.Contract;
-                    selectedContract = Contracts.FirstOrDefault(c => c.Name == configuracao.Contract);
+                    textBoxContract.Text = _localConfiguration.Contract;
+                    selectedContract = Contracts.FirstOrDefault(c => c.Name == _localConfiguration.Contract);
                 }
 
-                richTextBoxJson.Text = configuracao.Json;
-                textBoxQueue.Text = configuracao.Queue;
-                richTextBoxConnectionString.Text = configuracao.ConnectionString;
+                richTextBoxJson.Text = _localConfiguration.Json;
+                textBoxQueue.Text = _localConfiguration.Queue;
+                richTextBoxConnectionString.Text = _localConfiguration.ConnectionString;
                 labelSelectedContract.Text = selectedContract?.ToString();
             }
         }
@@ -110,7 +109,7 @@ namespace Masstransit.Publisher.Windows
             if (string.IsNullOrWhiteSpace(richTextBoxConnectionString.Text))
                 throw new InvalidOperationException("Connection string is required");
 
-            if (selectedContract.RequiresGeneric && selectedContract.GenericType == null)
+            if (selectedContract != null && selectedContract.RequiresGeneric && selectedContract.GenericType == null)
                 throw new InvalidOperationException("Select a type for the generic type");
         }
 
@@ -194,7 +193,7 @@ namespace Masstransit.Publisher.Windows
 
             var tipo = selectedContract.GetFullType();
 
-            var mockObject = _mockInterfaceService.Mock(tipo);
+            var mockObject = _mockService.Mock(tipo, _localConfiguration.MockSettings);
 
             var json = JsonConvert.SerializeObject(mockObject, Formatting.Indented);
 
@@ -346,6 +345,18 @@ namespace Masstransit.Publisher.Windows
 
             linkLabelSelectDll.Text = file.Name;
             linkLabelSelectDll.Tag = file.FullName;
+        }
+
+        private void buttonConfigMock_Click(object sender, EventArgs e)
+        {
+            using (var form = new FormMockSettings(_mockService, _localConfiguration ?? new LocalConfiguration()))
+            {
+                form.ShowDialog();
+
+                _localConfiguration = form.LocalConfiguration;
+
+                SaveLastConfiguration();
+            }
         }
     }
 }
