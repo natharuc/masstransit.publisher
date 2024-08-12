@@ -1,4 +1,5 @@
-﻿using Masstransit.Publisher.Domain.Interfaces;
+﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Interfaces;
 using System.Collections;
 using System.Dynamic;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace Masstransit.Publisher.Services.Services
             _random = new Random();
         }
 
-        public object Mock(Type interfaceType)
+        public object Mock(Type interfaceType, List<MockSettings>? mockSettings)
         {
             if (!interfaceType.IsInterface && !interfaceType.IsClass)
                 throw new ArgumentException("The type has been a class or inteface.");
@@ -26,13 +27,41 @@ namespace Masstransit.Publisher.Services.Services
 
             foreach (var property in GetAllProperties(interfaceType))
             {
-                mockObject[property.Name] = GetMockValue(property.PropertyType);
+                if (Ignore(property, mockSettings)) continue;
+
+                if (ConfigValue(property, mockSettings) != null)
+                {
+                    mockObject[property.Name] = ConfigValue(property, mockSettings);
+                    continue;
+                }
+
+                mockObject[property.Name] = GetMockValue(property.PropertyType, mockSettings);
             }
 
             return mockObject;
         }
 
-        private object? GetMockValue(Type propertyType)
+        private bool Ignore(PropertyInfo property, List<MockSettings>? mockSettings)
+        {
+            if (mockSettings == null) return false;
+
+            return mockSettings
+                .Where(x => x.Name == property.Name)
+                .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
+                .Any(x => x.Ignore);
+        }
+
+        private object? ConfigValue(PropertyInfo property, List<MockSettings>? mockSettings)
+        {
+            if (mockSettings == null) return null;
+
+            return mockSettings
+                .Where(x => x.Name == property.Name)
+                .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
+                .FirstOrDefault()?.Value;
+        }
+
+        private object? GetMockValue(Type propertyType, List<MockSettings>? mockSettings)
         {
             if (propertyType == typeof(int))
                 return _random.Next();
@@ -55,12 +84,12 @@ namespace Masstransit.Publisher.Services.Services
             if (propertyType.IsEnum)
                 return GetRandomEnumPosition(propertyType);
             if (propertyType.IsArray)
-                return MockList(propertyType);
+                return MockList(propertyType, mockSettings);
             if (typeof(IEnumerable).IsAssignableFrom(propertyType) && propertyType.IsGenericType)
-                return MockList(propertyType);
+                return MockList(propertyType, mockSettings);
             if (propertyType.IsClass || propertyType.IsInterface)
-                return Mock(propertyType);
-            
+                return Mock(propertyType, mockSettings);
+
             var instance = Activator.CreateInstance(propertyType);
 
             return instance;
@@ -81,7 +110,7 @@ namespace Masstransit.Publisher.Services.Services
 
         }
 
-        private object MockList(Type listType)
+        private object MockList(Type listType, List<MockSettings>? mockSettings)
         {
             var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
             var listInstance = new List<object>();
@@ -90,7 +119,7 @@ namespace Masstransit.Publisher.Services.Services
 
             for (int i = 0; i < count; i++)
             {
-                listInstance.Add(GetMockValue(itemType));
+                listInstance.Add(GetMockValue(itemType, mockSettings));
             }
 
             return listInstance;
@@ -139,6 +168,27 @@ namespace Masstransit.Publisher.Services.Services
             }
 
             return propertyInfos;
+        }
+
+        public List<string> GetMockTypes()
+        {
+            return new List<string>()
+            {
+                "Any",
+                typeof(int).Name,
+                typeof(Uri).Name,
+                typeof(long).Name,
+                typeof(Guid).Name,
+                typeof(string).Name,
+                typeof(DateTime).Name,
+                typeof(bool).Name,
+                typeof(double).Name,
+                typeof(decimal).Name,
+                "Enum",
+                "Array",
+                "List",
+                "Object"
+            };
         }
     }
 }
