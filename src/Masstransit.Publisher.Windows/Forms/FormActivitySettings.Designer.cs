@@ -78,6 +78,7 @@
             MinimizeBox = false;
             Name = "FormActivitySettings";
             Padding = new Padding(5);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Activity Settings";
             FormClosing += FormActivitySettings_FormClosing;
             KeyDown += FormActivitySettings_KeyDown;
