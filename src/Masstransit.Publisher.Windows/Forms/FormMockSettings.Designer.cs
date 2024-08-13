@@ -78,6 +78,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimizeBox = false;
             Name = "FormMockSettings";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Mock Settings";
             FormClosing += FormMockSettings_FormClosing;
             panelTittle.ResumeLayout(false);

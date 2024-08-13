@@ -2,6 +2,8 @@
 using Masstransit.Publisher.Domain.Interfaces;
 using Masstransit.Publisher.Services.Extensions;
 using MassTransit;
+using MassTransit.Courier.Contracts;
+using Newtonsoft.Json;
 
 namespace Masstransit.Publisher.Services.Services
 {
@@ -130,6 +132,94 @@ namespace Masstransit.Publisher.Services.Services
         public void Setup(IBusControl busControl)
         {
             _busControl = busControl;
+        }
+
+
+        private Guid GetTrackingNumber(string json,ActivitySettings activitySettings)
+        {
+            if (string.IsNullOrEmpty(json))
+                throw new InvalidOperationException("Json is required to get the tracking number");
+
+            var jsonObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+            if (jsonObject == null)
+                throw new InvalidOperationException("Json is invalid");
+
+            if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
+                throw new InvalidOperationException("Activity settings is required to get the tracking number");
+
+            if (jsonObject.ContainsKey(activitySettings.TrackingNumberProperty))
+            {
+                var trackingNumber = jsonObject[activitySettings.TrackingNumberProperty];
+
+                if (trackingNumber == null)
+                    throw new InvalidOperationException($"Tracking number property '{activitySettings.TrackingNumberProperty}' is null");
+
+                return Guid.Parse(trackingNumber.ToString());
+            }
+            else
+            {
+                throw new InvalidOperationException($"Tracking number property '{activitySettings.TrackingNumberProperty}' not found in json");
+            }
+        }
+
+
+        public async Task ExecuteActivity(ContractMessage conctractMessage, ActivitySettings activitySettings)
+        {
+            if (_busControl == null)
+                throw new InvalidOperationException("Bus control is required to execute the activity");
+
+            if (activitySettings == null)
+                throw new InvalidOperationException("Activity settings is required to execute the activity");
+
+            if (activitySettings.Activities.Count == 0)
+                throw new InvalidOperationException("Activity settings is required to execute the activity");
+
+            if (string.IsNullOrEmpty(activitySettings.FaultQueue))
+                throw new InvalidOperationException("Fault queue is required to execute the activity");
+
+            if (string.IsNullOrEmpty(activitySettings.SuccessQueue))
+                throw new InvalidOperationException("Success queue is required to execute the activity");
+
+            if (string.IsNullOrEmpty(conctractMessage.Body))
+                throw new InvalidOperationException("Message body is required to execute the activity");
+            
+            var trakingNumber = GetTrackingNumber(conctractMessage.Body, activitySettings);
+
+            var slipBuilder = new RoutingSlipBuilder(trakingNumber);
+
+            var message = JsonToInterfaceConverter.Deserialize(conctractMessage.Body, conctractMessage.Contract.Type);
+
+            foreach (var activity in activitySettings.Activities)
+            {
+                slipBuilder.AddActivity(activity.Name, new Uri($"queue:{activity.Queue}"));
+            }
+
+            await slipBuilder.AddSubscription(new Uri($"queue:{activitySettings.FaultQueue}"),
+                  RoutingSlipEvents.Faulted, RoutingSlipEventContents.All, x =>
+                  {
+                      return x.Send(new ActivityFaulted()
+                      {
+                          TrackingNumber = trakingNumber,
+                          Message = message
+                      });
+                  });
+
+            await slipBuilder.AddSubscription(new Uri($"queue:{activitySettings.SuccessQueue}"),
+                 RoutingSlipEvents.Completed, RoutingSlipEventContents.All, x =>
+                 {
+                     return x.Send(new ActivityCompleted()
+                     {
+                         TrackingNumber = trakingNumber,
+                         Message = message
+                     });
+                 });
+
+            slipBuilder.SetVariables(message);
+
+            var routingSlip = slipBuilder.Build();
+
+            await _busControl.Execute(routingSlip);
         }
     }
 }

@@ -17,11 +17,12 @@ namespace Masstransit.Publisher.Windows
         private IMockInterfaceService _mockService;
         private IPublisherService _publisherService;
         private bool _genericTypeSelecting;
-        private LocalConfiguration? _localConfiguration;
+        private LocalConfiguration _localConfiguration;
 
         public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService)
         {
             InitializeComponent();
+            _localConfiguration = new LocalConfiguration();
             _mockService = mockInterfaceService;
             _publisherService = publisherService;
         }
@@ -46,11 +47,7 @@ namespace Masstransit.Publisher.Windows
                 return;
             }
 
-            var contractMessage = new ContractMessage()
-            {
-                Contract = selectedContract,
-                Body = richTextBoxJson.Text.Trim(),
-            };
+            var contractMessage = GetContractMessage();
 
             ConfigurePublisher();
 
@@ -58,6 +55,15 @@ namespace Masstransit.Publisher.Windows
 
             MessageBox.Show("Event sent successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+        }
+
+        private ContractMessage GetContractMessage()
+        {
+            return new ContractMessage()
+            {
+                Contract = selectedContract,
+                Body = richTextBoxJson.Text.Trim(),
+            };
         }
 
         private void SaveLastConfiguration()
@@ -69,7 +75,8 @@ namespace Masstransit.Publisher.Windows
                 Queue = textBoxQueue.Text.Trim(),
                 ConnectionString = richTextBoxConnectionString.Text.Trim(),
                 DllFile = linkLabelSelectDll.Tag?.ToString(),
-                MockSettings = _localConfiguration?.MockSettings
+                MockSettings = _localConfiguration?.MockSettings,
+                ActivitySettings = _localConfiguration?.ActivitySettings
             };
 
             LocalConfiguration.SaveToJsonFile(newConfiguration);
@@ -92,6 +99,7 @@ namespace Masstransit.Publisher.Windows
                 textBoxQueue.Text = _localConfiguration.Queue;
                 richTextBoxConnectionString.Text = _localConfiguration.ConnectionString;
                 labelSelectedContract.Text = selectedContract?.ToString();
+
             }
         }
 
@@ -162,15 +170,11 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            var evento = new ContractMessage()
-            {
-                Contract = selectedContract,
-                Body = richTextBoxJson.Text.Trim(),
-            };
+            var message = GetContractMessage();
 
             ConfigurePublisher();
 
-            await _publisherService.Publish(evento);
+            await _publisherService.Publish(message);
 
             MessageBox.Show("Event published successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -358,5 +362,31 @@ namespace Masstransit.Publisher.Windows
                 SaveLastConfiguration();
             }
         }
+
+        private void buttonActivitySettings_Click(object sender, EventArgs e)
+        {
+            using (var form = new FormActivitySettings(_localConfiguration.ActivitySettings))
+            {
+                form.ShowDialog();
+
+                _localConfiguration.ActivitySettings = form.ActivitySettings;
+
+                SaveLastConfiguration();
+            }
+        }
+
+        private async void buttonExecuteActivity_Click(object sender, EventArgs e)
+        {
+            var conctractMessage = GetContractMessage();
+
+            ConfigurePublisher();
+
+            await _publisherService.ExecuteActivity(conctractMessage, _localConfiguration.ActivitySettings);
+
+            SaveLastConfiguration();
+
+            MessageBox.Show("Activity executed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
     }
 }
