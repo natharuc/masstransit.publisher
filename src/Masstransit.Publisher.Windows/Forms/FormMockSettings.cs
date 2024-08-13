@@ -34,6 +34,8 @@ namespace Masstransit.Publisher.Windows.Forms
 
         private void FormMockSettings_FormClosing(object sender, FormClosingEventArgs e)
         {
+            linkLabelNew.Focus();
+
             LocalConfiguration.MockSettings = new List<MockSettings>();
 
             foreach (UserControlMockSettings userControlMockSettings in flowLayoutPanel.Controls)

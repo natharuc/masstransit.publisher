@@ -47,6 +47,8 @@
             labelSelectedContract = new Label();
             buttonConfigMock = new Button();
             toolTip = new ToolTip(components);
+            buttonExecuteActivity = new Button();
+            buttonActivitySettings = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             SuspendLayout();
             // 
@@ -56,7 +58,7 @@
             textBoxContract.Location = new Point(11, 77);
             textBoxContract.Margin = new Padding(2);
             textBoxContract.Name = "textBoxContract";
-            textBoxContract.Size = new Size(972, 22);
+            textBoxContract.Size = new Size(712, 22);
             textBoxContract.TabIndex = 3;
             textBoxContract.TextChanged += textBoxContract_TextChanged;
             textBoxContract.KeyDown += textBoxContract_KeyDown;
@@ -68,7 +70,7 @@
             richTextBoxJson.Location = new Point(12, 137);
             richTextBoxJson.Margin = new Padding(2);
             richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(971, 369);
+            richTextBoxJson.Size = new Size(711, 374);
             richTextBoxJson.TabIndex = 5;
             richTextBoxJson.Text = "";
             // 
@@ -96,7 +98,7 @@
             // 
             labelFila.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             labelFila.AutoSize = true;
-            labelFila.Location = new Point(12, 513);
+            labelFila.Location = new Point(12, 518);
             labelFila.Margin = new Padding(2, 0, 2, 0);
             labelFila.Name = "labelFila";
             labelFila.Size = new Size(41, 13);
@@ -106,10 +108,10 @@
             // textBoxQueue
             // 
             textBoxQueue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxQueue.Location = new Point(12, 528);
+            textBoxQueue.Location = new Point(12, 533);
             textBoxQueue.Margin = new Padding(2);
             textBoxQueue.Name = "textBoxQueue";
-            textBoxQueue.Size = new Size(972, 22);
+            textBoxQueue.Size = new Size(712, 22);
             textBoxQueue.TabIndex = 7;
             // 
             // richTextBoxConnectionString
@@ -119,7 +121,7 @@
             richTextBoxConnectionString.Location = new Point(12, 24);
             richTextBoxConnectionString.Margin = new Padding(2);
             richTextBoxConnectionString.Name = "richTextBoxConnectionString";
-            richTextBoxConnectionString.Size = new Size(971, 33);
+            richTextBoxConnectionString.Size = new Size(711, 33);
             richTextBoxConnectionString.TabIndex = 1;
             richTextBoxConnectionString.Text = "";
             // 
@@ -147,7 +149,7 @@
             // 
             buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonEnviar.FlatStyle = FlatStyle.Flat;
-            buttonEnviar.Location = new Point(859, 554);
+            buttonEnviar.Location = new Point(599, 559);
             buttonEnviar.Margin = new Padding(2);
             buttonEnviar.Name = "buttonEnviar";
             buttonEnviar.Size = new Size(121, 37);
@@ -160,7 +162,7 @@
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonPublicar.FlatStyle = FlatStyle.Flat;
-            buttonPublicar.Location = new Point(734, 554);
+            buttonPublicar.Location = new Point(474, 559);
             buttonPublicar.Margin = new Padding(2);
             buttonPublicar.Name = "buttonPublicar";
             buttonPublicar.Size = new Size(121, 37);
@@ -173,7 +175,7 @@
             // 
             buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonMockJson.FlatStyle = FlatStyle.Flat;
-            buttonMockJson.Location = new Point(11, 554);
+            buttonMockJson.Location = new Point(11, 559);
             buttonMockJson.Margin = new Padding(2);
             buttonMockJson.Name = "buttonMockJson";
             buttonMockJson.Size = new Size(121, 37);
@@ -197,7 +199,7 @@
             dataGridViewAutoComplete.Name = "dataGridViewAutoComplete";
             dataGridViewAutoComplete.RowHeadersVisible = false;
             dataGridViewAutoComplete.RowTemplate.Height = 30;
-            dataGridViewAutoComplete.Size = new Size(971, 369);
+            dataGridViewAutoComplete.Size = new Size(711, 374);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
             dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
@@ -206,7 +208,7 @@
             // linkLabelSelectDll
             // 
             linkLabelSelectDll.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabelSelectDll.Location = new Point(530, 62);
+            linkLabelSelectDll.Location = new Point(270, 62);
             linkLabelSelectDll.Margin = new Padding(2, 0, 2, 0);
             linkLabelSelectDll.Name = "linkLabelSelectDll";
             linkLabelSelectDll.Size = new Size(452, 13);
@@ -232,7 +234,7 @@
             buttonConfigMock.BackgroundImageLayout = ImageLayout.Zoom;
             buttonConfigMock.FlatStyle = FlatStyle.Flat;
             buttonConfigMock.Image = Properties.Resources.settings;
-            buttonConfigMock.Location = new Point(136, 554);
+            buttonConfigMock.Location = new Point(131, 559);
             buttonConfigMock.Margin = new Padding(2);
             buttonConfigMock.Name = "buttonConfigMock";
             buttonConfigMock.Size = new Size(35, 37);
@@ -241,11 +243,43 @@
             buttonConfigMock.UseVisualStyleBackColor = false;
             buttonConfigMock.Click += buttonConfigMock_Click;
             // 
+            // buttonExecuteActivity
+            // 
+            buttonExecuteActivity.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonExecuteActivity.FlatStyle = FlatStyle.Flat;
+            buttonExecuteActivity.Location = new Point(349, 559);
+            buttonExecuteActivity.Margin = new Padding(2);
+            buttonExecuteActivity.Name = "buttonExecuteActivity";
+            buttonExecuteActivity.Size = new Size(121, 37);
+            buttonExecuteActivity.TabIndex = 16;
+            buttonExecuteActivity.Text = "Execute";
+            toolTip.SetToolTip(buttonExecuteActivity, "Execute Activity");
+            buttonExecuteActivity.UseVisualStyleBackColor = true;
+            buttonExecuteActivity.Click += buttonExecuteActivity_Click;
+            // 
+            // button2
+            // 
+            buttonActivitySettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonActivitySettings.BackColor = SystemColors.Control;
+            buttonActivitySettings.BackgroundImageLayout = ImageLayout.Zoom;
+            buttonActivitySettings.FlatStyle = FlatStyle.Flat;
+            buttonActivitySettings.Image = Properties.Resources.settings;
+            buttonActivitySettings.Location = new Point(315, 559);
+            buttonActivitySettings.Margin = new Padding(2);
+            buttonActivitySettings.Name = "buttonActivitySettings";
+            buttonActivitySettings.Size = new Size(35, 37);
+            buttonActivitySettings.TabIndex = 17;
+            toolTip.SetToolTip(buttonActivitySettings, "Execute Activity Settings");
+            buttonActivitySettings.UseVisualStyleBackColor = false;
+            buttonActivitySettings.Click += buttonActivitySettings_Click;
+            // 
             // FormPublisher
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(991, 598);
+            ClientSize = new Size(731, 603);
+            Controls.Add(buttonActivitySettings);
+            Controls.Add(buttonExecuteActivity);
             Controls.Add(buttonConfigMock);
             Controls.Add(labelSelectedContract);
             Controls.Add(linkLabelSelectDll);
@@ -292,6 +326,8 @@
         private Label labelSelectedContract;
         private Button buttonConfigMock;
         private ToolTip toolTip;
+        private Button buttonExecuteActivity;
+        private Button buttonActivitySettings;
     }
 }
 

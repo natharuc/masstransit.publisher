@@ -8,7 +8,13 @@ namespace Masstransit.Publisher.Windows
     {
         public LocalConfiguration()
         {
-            MockSettings = new List<MockSettings>();
+            MockSettings = new();
+            ActivitySettings = new()
+            {
+                FaultQueue = "fault",
+                SuccessQueue = "success",
+                Activities = new()
+            };
         }
 
         public const string ConfigFileName = "config.json";
@@ -26,7 +32,8 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        public List<MockSettings> MockSettings { get;  set; }
+        public List<MockSettings> MockSettings { get; set; }
+        public ActivitySettings ActivitySettings { get; set; }
 
         public static LocalConfiguration LoadFromJsonFile()
         {
@@ -34,7 +41,12 @@ namespace Masstransit.Publisher.Windows
             {
                 var json = File.ReadAllText(ConfigFileName);
 
-                return JsonConvert.DeserializeObject<LocalConfiguration>(json) ?? new LocalConfiguration();
+                var savedConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(json);
+
+                if(savedConfiguration == null)
+                    return new LocalConfiguration();
+
+                return savedConfiguration;
             }
 
             return new LocalConfiguration();
