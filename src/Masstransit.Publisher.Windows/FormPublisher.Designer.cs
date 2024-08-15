@@ -49,6 +49,7 @@
             toolTip = new ToolTip(components);
             buttonExecuteActivity = new Button();
             buttonActivitySettings = new Button();
+            buttonSenderSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             SuspendLayout();
             // 
@@ -162,7 +163,7 @@
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonPublicar.FlatStyle = FlatStyle.Flat;
-            buttonPublicar.Location = new Point(474, 559);
+            buttonPublicar.Location = new Point(479, 559);
             buttonPublicar.Margin = new Padding(2);
             buttonPublicar.Name = "buttonPublicar";
             buttonPublicar.Size = new Size(121, 37);
@@ -247,7 +248,7 @@
             // 
             buttonExecuteActivity.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonExecuteActivity.FlatStyle = FlatStyle.Flat;
-            buttonExecuteActivity.Location = new Point(349, 559);
+            buttonExecuteActivity.Location = new Point(320, 559);
             buttonExecuteActivity.Margin = new Padding(2);
             buttonExecuteActivity.Name = "buttonExecuteActivity";
             buttonExecuteActivity.Size = new Size(121, 37);
@@ -257,14 +258,14 @@
             buttonExecuteActivity.UseVisualStyleBackColor = true;
             buttonExecuteActivity.Click += buttonExecuteActivity_Click;
             // 
-            // button2
+            // buttonActivitySettings
             // 
             buttonActivitySettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonActivitySettings.BackColor = SystemColors.Control;
             buttonActivitySettings.BackgroundImageLayout = ImageLayout.Zoom;
             buttonActivitySettings.FlatStyle = FlatStyle.Flat;
             buttonActivitySettings.Image = Properties.Resources.settings;
-            buttonActivitySettings.Location = new Point(315, 559);
+            buttonActivitySettings.Location = new Point(286, 559);
             buttonActivitySettings.Margin = new Padding(2);
             buttonActivitySettings.Name = "buttonActivitySettings";
             buttonActivitySettings.Size = new Size(35, 37);
@@ -273,11 +274,28 @@
             buttonActivitySettings.UseVisualStyleBackColor = false;
             buttonActivitySettings.Click += buttonActivitySettings_Click;
             // 
+            // buttonSenderSettings
+            // 
+            buttonSenderSettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonSenderSettings.BackColor = SystemColors.Control;
+            buttonSenderSettings.BackgroundImageLayout = ImageLayout.Zoom;
+            buttonSenderSettings.FlatStyle = FlatStyle.Flat;
+            buttonSenderSettings.Image = Properties.Resources.settings;
+            buttonSenderSettings.Location = new Point(445, 559);
+            buttonSenderSettings.Margin = new Padding(2);
+            buttonSenderSettings.Name = "buttonSenderSettings";
+            buttonSenderSettings.Size = new Size(35, 37);
+            buttonSenderSettings.TabIndex = 18;
+            toolTip.SetToolTip(buttonSenderSettings, "Sender Settings");
+            buttonSenderSettings.UseVisualStyleBackColor = false;
+            buttonSenderSettings.Click += buttonSenderSettings_Click;
+            // 
             // FormPublisher
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(731, 603);
+            Controls.Add(buttonSenderSettings);
             Controls.Add(buttonActivitySettings);
             Controls.Add(buttonExecuteActivity);
             Controls.Add(buttonConfigMock);
@@ -328,6 +346,7 @@
         private ToolTip toolTip;
         private Button buttonExecuteActivity;
         private Button buttonActivitySettings;
+        private Button buttonSenderSettings;
     }
 }
 

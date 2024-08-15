@@ -8,7 +8,7 @@
         {
             get
             {
-                return Contract?.Type != null;
+                return Contract?.GetFullType() != null;
             }
         }
     }

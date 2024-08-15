@@ -85,12 +85,12 @@ namespace Masstransit.Publisher.Services.Services
 
             foreach (var message in events)
             {
-                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.Type);
+                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType());
 
                 listaEventos.Add(evento);
             }
 
-            await _busControl.PublishBatch(listaEventos, firstMessage.Contract.Type);
+            await _busControl.PublishBatch(listaEventos, firstMessage.Contract.GetFullType());
 
             return new PublisherServiceResponse
             {
@@ -112,14 +112,14 @@ namespace Masstransit.Publisher.Services.Services
 
             foreach (var message in events)
             {
-                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.Type);
+                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType());
 
                 listaEventos.Add(evento);
             }
 
             var sendEntPoint = await _busControl.GetSendEndpoint(new Uri($"queue:{queue}"));
 
-            await sendEntPoint.SendBatch(listaEventos, firstMessage.Contract.Type);
+            await sendEntPoint.SendBatch(listaEventos, firstMessage.Contract.GetFullType());
 
             return new PublisherServiceResponse
             {
@@ -188,7 +188,7 @@ namespace Masstransit.Publisher.Services.Services
 
             var slipBuilder = new RoutingSlipBuilder(trakingNumber);
 
-            var message = JsonToInterfaceConverter.Deserialize(conctractMessage.Body, conctractMessage.Contract.Type);
+            var message = JsonToInterfaceConverter.Deserialize(conctractMessage.Body, conctractMessage.Contract.GetFullType());
 
             foreach (var activity in activitySettings.Activities)
             {

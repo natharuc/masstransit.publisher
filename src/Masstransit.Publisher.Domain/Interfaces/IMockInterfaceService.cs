@@ -4,7 +4,7 @@ namespace Masstransit.Publisher.Domain.Interfaces
 {
     public interface IMockInterfaceService
     {
-        List<string> GetMockTypes();
-        object Mock(Type interfaceType, List<MockSettings>? mockSettings);
+        object Mock(Type type, MockSettings? mockSettings);
+        object GetMockValue(Type type, MockSettings? mockSettings);
     }
 }

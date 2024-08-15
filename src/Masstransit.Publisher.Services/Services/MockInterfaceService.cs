@@ -8,16 +8,16 @@ namespace Masstransit.Publisher.Services.Services
 {
     public class MockInterfaceService : IMockInterfaceService
     {
-        private Random _random;
+        private readonly Random _random;
 
         public MockInterfaceService()
         {
             _random = new Random();
         }
 
-        public object Mock(Type interfaceType, List<MockSettings>? mockSettings)
+        public object Mock(Type type, MockSettings? mockSettings)
         {
-            if (!interfaceType.IsInterface && !interfaceType.IsClass)
+            if (!type.IsInterface && !type.IsClass)
                 throw new ArgumentException("The type has been a class or inteface.");
 
             var mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object?>;
@@ -25,7 +25,7 @@ namespace Masstransit.Publisher.Services.Services
             if (mockObject == null)
                 throw new InvalidOperationException("The mock object could not be created.");
 
-            foreach (var property in GetAllProperties(interfaceType))
+            foreach (var property in GetAllProperties(type))
             {
                 if (Ignore(property, mockSettings)) continue;
 
@@ -41,27 +41,28 @@ namespace Masstransit.Publisher.Services.Services
             return mockObject;
         }
 
-        private bool Ignore(PropertyInfo property, List<MockSettings>? mockSettings)
+        private bool Ignore(PropertyInfo property, MockSettings? mockSettings)
         {
             if (mockSettings == null) return false;
 
-            return mockSettings
+            return mockSettings.CustomProperties
                 .Where(x => x.Name == property.Name)
                 .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
                 .Any(x => x.Ignore);
         }
 
-        private object? ConfigValue(PropertyInfo property, List<MockSettings>? mockSettings)
+        private object? ConfigValue(PropertyInfo property, MockSettings? mockSettings)
         {
             if (mockSettings == null) return null;
 
-            return mockSettings
+            return mockSettings.CustomProperties
+                .Where(x => !x.RegenerateBeforeSending)
                 .Where(x => x.Name == property.Name)
                 .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
                 .FirstOrDefault()?.Value;
         }
 
-        private object? GetMockValue(Type propertyType, List<MockSettings>? mockSettings)
+        public object? GetMockValue(Type propertyType, MockSettings? mockSettings)
         {
             if (propertyType == typeof(int))
                 return _random.Next();
@@ -110,12 +111,12 @@ namespace Masstransit.Publisher.Services.Services
 
         }
 
-        private object MockList(Type listType, List<MockSettings>? mockSettings)
+        private object MockList(Type listType, MockSettings? mockSettings)
         {
             var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
             var listInstance = new List<object>();
 
-            var count = _random.Next(1, 10);
+            var count = _random.Next(mockSettings.MinArrayLength, mockSettings.MaxArrayLength);
 
             for (int i = 0; i < count; i++)
             {
@@ -170,25 +171,5 @@ namespace Masstransit.Publisher.Services.Services
             return propertyInfos;
         }
 
-        public List<string> GetMockTypes()
-        {
-            return new List<string>()
-            {
-                "Any",
-                typeof(int).Name,
-                typeof(Uri).Name,
-                typeof(long).Name,
-                typeof(Guid).Name,
-                typeof(string).Name,
-                typeof(DateTime).Name,
-                typeof(bool).Name,
-                typeof(double).Name,
-                typeof(decimal).Name,
-                "Enum",
-                "Array",
-                "List",
-                "Object"
-            };
-        }
     }
 }

@@ -5,13 +5,14 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Masstransit.Publisher.Windows
 {
     public partial class FormPublisher : Form
     {
         public List<Contract> Contracts { get; private set; } = new List<Contract>();
-        private Contract? selectedContract { get; set; }
+        private Contract? _selectedContract { get; set; }
 
 
         private IMockInterfaceService _mockService;
@@ -40,7 +41,7 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            if (selectedContract == null)
+            if (_selectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
@@ -59,18 +60,46 @@ namespace Masstransit.Publisher.Windows
 
         private ContractMessage GetContractMessage()
         {
+            RegenerateJson();
+
             return new ContractMessage()
             {
-                Contract = selectedContract,
+                Contract = _selectedContract,
                 Body = richTextBoxJson.Text.Trim(),
             };
+        }
+
+        private void RegenerateJson()
+        {
+            if (_localConfiguration.MockSettings.CustomProperties.Exists(n => n.RegenerateBeforeSending))
+            {
+                var currentObject = JsonConvert.DeserializeObject<JObject>(richTextBoxJson.Text);
+
+                var regenerateProperties = _localConfiguration.MockSettings.CustomProperties.FindAll(n => n.RegenerateBeforeSending);
+
+                if (regenerateProperties.Any())
+                {
+                    foreach (var property in regenerateProperties)
+                    {
+                        var objectProperty = currentObject[property.Name];
+
+                        var type = Type.GetType("System." + property.Type);
+
+                        var newValue = _mockService.GetMockValue(type, _localConfiguration.MockSettings);
+
+                        currentObject[property.Name] = JToken.FromObject(newValue);
+                    }
+
+                    richTextBoxJson.Text = JsonConvert.SerializeObject(currentObject, Formatting.Indented);
+                }
+            }
         }
 
         private void SaveLastConfiguration()
         {
             var newConfiguration = new LocalConfiguration()
             {
-                Contract = textBoxContract.Text.Trim(),
+                Contract = _selectedContract,
                 Json = richTextBoxJson.Text.Trim(),
                 Queue = textBoxQueue.Text.Trim(),
                 ConnectionString = richTextBoxConnectionString.Text.Trim(),
@@ -89,23 +118,29 @@ namespace Masstransit.Publisher.Windows
             if (_localConfiguration.HasConfiguration)
             {
                 LoadContractFromDllFile(_localConfiguration.DllFile);
+
                 if (Contracts.Any())
                 {
-                    textBoxContract.Text = _localConfiguration.Contract;
-                    selectedContract = Contracts.FirstOrDefault(c => c.Name == _localConfiguration.Contract);
+                    _selectedContract = _localConfiguration.Contract;
+
+                    if (_selectedContract != null)
+                    {
+                        _selectedContract.FillTypes(Contracts);
+
+                        labelSelectedContract.Text = _selectedContract.ToString();
+                    }
                 }
 
                 richTextBoxJson.Text = _localConfiguration.Json;
                 textBoxQueue.Text = _localConfiguration.Queue;
                 richTextBoxConnectionString.Text = _localConfiguration.ConnectionString;
-                labelSelectedContract.Text = selectedContract?.ToString();
 
             }
         }
 
         private void Validate(bool isPublish = false)
         {
-            if (string.IsNullOrWhiteSpace(textBoxContract.Text))
+            if (_selectedContract == null)
                 throw new InvalidOperationException("Contract is required");
 
             if (string.IsNullOrWhiteSpace(richTextBoxJson.Text))
@@ -117,7 +152,7 @@ namespace Masstransit.Publisher.Windows
             if (string.IsNullOrWhiteSpace(richTextBoxConnectionString.Text))
                 throw new InvalidOperationException("Connection string is required");
 
-            if (selectedContract != null && selectedContract.RequiresGeneric && selectedContract.GenericType == null)
+            if (_selectedContract != null && _selectedContract.RequiresGeneric && _selectedContract.GenericContract == null)
                 throw new InvalidOperationException("Select a type for the generic type");
         }
 
@@ -181,21 +216,21 @@ namespace Masstransit.Publisher.Windows
 
         private void buttonMockJson_Click(object sender, EventArgs e)
         {
-            if (selectedContract == null)
+            if (_selectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
-            if (selectedContract.RequiresGeneric && selectedContract.GenericType == null)
+            if (_selectedContract.RequiresGeneric && _selectedContract.GenericContract == null)
             {
                 MessageBox.Show("Select a type for the generic type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
-            var tipo = selectedContract.GetFullType();
+            var tipo = _selectedContract.GetFullType();
 
             var mockObject = _mockService.Mock(tipo, _localConfiguration.MockSettings);
 
@@ -224,9 +259,9 @@ namespace Masstransit.Publisher.Windows
 
                         dataGridViewAutoComplete.DataSource = contracts;
 
-                        dataGridViewAutoComplete.Columns["Name"].Visible = false;
-                        dataGridViewAutoComplete.Columns["RequiresGeneric"].Visible = false;
-                        dataGridViewAutoComplete.Columns["GenericType"].Visible = false;
+                        dataGridViewAutoComplete.Columns[nameof(Contract.Name)].Visible = true;
+                        dataGridViewAutoComplete.Columns[nameof(Contract.RequiresGeneric)].Visible = false;
+                        dataGridViewAutoComplete.Columns[nameof(Contract.GenericContract)].Visible = false;
 
                         dataGridViewAutoComplete.Show();
 
@@ -278,14 +313,14 @@ namespace Masstransit.Publisher.Windows
                     return;
                 }
 
-                selectedContract.GenericType = contract;
+                _selectedContract.GenericContract = contract;
                 _genericTypeSelecting = false;
             }
             else
             {
 
 
-                selectedContract = contract;
+                _selectedContract = contract;
 
                 richTextBoxJson.Text = string.Empty;
 
@@ -304,7 +339,7 @@ namespace Masstransit.Publisher.Windows
 
             dataGridViewAutoComplete.Hide();
 
-            labelSelectedContract.Text = selectedContract.ToString();
+            labelSelectedContract.Text = _selectedContract.ToString();
         }
 
         private void dataGridViewAutoComplete_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -341,7 +376,7 @@ namespace Masstransit.Publisher.Windows
             var assembly = System.Reflection.Assembly.LoadFrom(fileName);
 
             var contracts = assembly.GetTypes()
-                .Select(t => new Contract(t.FullName, t))
+                .Select(t => new Contract(t))
                 .ToList();
 
             Contracts.Clear();
@@ -388,5 +423,9 @@ namespace Masstransit.Publisher.Windows
             MessageBox.Show("Activity executed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void buttonSenderSettings_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
