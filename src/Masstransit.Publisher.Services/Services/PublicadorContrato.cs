@@ -1,4 +1,5 @@
 ﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Classes.Statics;
 using Masstransit.Publisher.Domain.Interfaces;
 using Masstransit.Publisher.Services.Extensions;
 using MassTransit;
@@ -11,6 +12,12 @@ namespace Masstransit.Publisher.Services.Services
     public class PublisherService : IPublisherService
     {
         private IBusControl? _busControl;
+        private readonly ILogService _logService;
+
+        public PublisherService(ILogService logService)
+        {
+            _logService = logService;
+        }
 
         private async Task<List<PublisherServiceResponse>> Process(IEnumerable<ContractMessage> messages, string queue, Func<IEnumerable<ContractMessage>, string, Task<PublisherServiceResponse>> action)
         {
@@ -93,6 +100,8 @@ namespace Masstransit.Publisher.Services.Services
 
             await _busControl.PublishBatch(listaEventos, firstMessage.Contract.GetFullType());
 
+            await _logService.Send(Queues.Log, $"{listaEventos.Count} events has been published to {firstMessage.Contract}");
+
             return new PublisherServiceResponse
             {
                 Contract = firstMessage.Contract,
@@ -122,6 +131,8 @@ namespace Masstransit.Publisher.Services.Services
 
             await sendEntPoint.SendBatch(listaEventos, firstMessage.Contract.GetFullType());
 
+            await _logService.Send(Queues.Log, $"{listaEventos.Count} events has been seended to {queue}");
+
             return new PublisherServiceResponse
             {
                 Contract = firstMessage.Contract,
@@ -136,7 +147,7 @@ namespace Masstransit.Publisher.Services.Services
         }
 
 
-        private Guid GetTrackingNumber(string json,ActivitySettings activitySettings)
+        private Guid GetTrackingNumber(string json, ActivitySettings activitySettings)
         {
             if (string.IsNullOrEmpty(json))
                 throw new InvalidOperationException("Json is required to get the tracking number");
@@ -187,7 +198,7 @@ namespace Masstransit.Publisher.Services.Services
 
             if (string.IsNullOrEmpty(conctractMessage.Body))
                 throw new InvalidOperationException("Message body is required to execute the activity");
-            
+
             var trakingNumber = GetTrackingNumber(conctractMessage.Body, activitySettings);
 
             var slipBuilder = new RoutingSlipBuilder(trakingNumber);
@@ -222,8 +233,10 @@ namespace Masstransit.Publisher.Services.Services
             slipBuilder.SetVariables(message);
 
             var routingSlip = slipBuilder.Build();
-
+            
             await _busControl.Execute(routingSlip);
+
+            await _logService.Send(Queues.Log, $"Activity {activitySettings.Activities[0].Name} started with tracking number {trakingNumber}");
         }
 
         public async Task ExecuteActivity(IEnumerable<ContractMessage> messages, ActivitySettings activitySettings)
