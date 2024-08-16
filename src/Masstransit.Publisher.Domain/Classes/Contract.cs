@@ -2,38 +2,65 @@
 {
     public class Contract
     {
-        public Contract? GenericType { get; set; }
-        public string Name { get; set; }
-        public Type Type { get; set; }
-        
-        public bool RequiresGeneric => Type.IsGenericType && GenericType == null;
-
-        public Contract(string name, Type type)
+        public Contract()
         {
-            Name = name;
-            Type = type;
+            
+        }
+
+        public Contract? GenericContract { get; set; }
+        public string Name { get; set; }
+
+        private Type _type { get; set; }
+        
+        public Type GetFullType()
+        {
+            if (GenericContract != null)
+            {
+                return _type.MakeGenericType(GenericContract.GetFullType());
+            }
+
+            return _type;
+        }
+
+        public bool RequiresGeneric => GetFullType().IsGenericType && GenericContract == null;
+
+        public Contract(Type type)
+        {
+            FillName(type);
+            _type = type;
+        }
+
+        private void FillName(Type type)
+        {
+            Name = type?.FullName ?? throw new ArgumentNullException(nameof(type));
         }
 
         public override string ToString()
         {
             var name = Name;
 
-            if (GenericType != null)
+            if (GenericContract != null)
             {
-                name += $"<{GenericType}>";
+                name += $"<{GenericContract}>";
             }
 
             return name;
         }
 
-        public Type GetFullType()
+        public void FillTypes(List<Contract> contracts)
         {
-            if (GenericType != null)
+            var contract = contracts.FirstOrDefault(c => c.Name == Name);
+
+            if (contract != null)
             {
-                return Type.MakeGenericType(GenericType.GetFullType());
+                _type = contract.GetFullType();
+                FillName(_type);
             }
 
-            return Type;
+            if (GenericContract != null)
+            {
+                GenericContract.FillTypes(contracts);
+            }
         }
     }
 }

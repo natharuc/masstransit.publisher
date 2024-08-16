@@ -9,6 +9,10 @@ namespace Masstransit.Publisher.Windows
         public LocalConfiguration()
         {
             MockSettings = new();
+            SenderSettings = new()
+            {
+                MessageCount = 1,
+            };
             ActivitySettings = new()
             {
                 FaultQueue = "fault",
@@ -20,7 +24,7 @@ namespace Masstransit.Publisher.Windows
         public const string ConfigFileName = "config.json";
         public DateTime? LastSave { get; set; }
         public string DllFile { get; set; } = string.Empty;
-        public string Contract { get; set; } = string.Empty;
+        public Contract? Contract { get; set; } 
         public string Json { get; set; } = string.Empty;
         public string Queue { get; set; } = string.Empty;
         public string ConnectionString { get; set; } = string.Empty;
@@ -32,8 +36,9 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        public List<MockSettings> MockSettings { get; set; }
+        public MockSettings MockSettings { get; set; }
         public ActivitySettings ActivitySettings { get; set; }
+        public SenderSettings SenderSettings { get; set; }
 
         public static LocalConfiguration LoadFromJsonFile()
         {

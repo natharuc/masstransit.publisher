@@ -8,24 +8,27 @@ namespace Masstransit.Publisher.Windows.Forms
     {
         private readonly IMockInterfaceService _mockService;
 
-        public LocalConfiguration LocalConfiguration { get;  set; }
+        public LocalConfiguration LocalConfiguration { get; set; }
 
         public FormMockSettings(IMockInterfaceService mockService, LocalConfiguration localConfiguration)
         {
             InitializeComponent();
 
             LocalConfiguration = localConfiguration ?? throw new ArgumentNullException(nameof(localConfiguration));
-            
+
             if (localConfiguration.MockSettings == null)
                 throw new InvalidOperationException("The mock settings could not be null.");
 
             _mockService = mockService;
 
-            foreach (var mockSetting in LocalConfiguration.MockSettings)
+            numericUpDownMaxArrayLength.Value = localConfiguration.MockSettings.MaxArrayLength;
+            numericUpDownMinArrayLength.Value = localConfiguration.MockSettings.MinArrayLength;
+
+            foreach (var mockSetting in LocalConfiguration.MockSettings.CustomProperties)
             {
-                var userControlMockSettings = new UserControlMockSettings(_mockService, mockSetting, () =>
+                var userControlMockSettings = new UserControlMockSettings(mockSetting, () =>
                 {
-                    LocalConfiguration.MockSettings.Remove(mockSetting);
+                    LocalConfiguration.MockSettings.CustomProperties.Remove(mockSetting);
                 });
 
                 flowLayoutPanel.Controls.Add(userControlMockSettings);
@@ -34,26 +37,57 @@ namespace Masstransit.Publisher.Windows.Forms
 
         private void FormMockSettings_FormClosing(object sender, FormClosingEventArgs e)
         {
-            linkLabelNew.Focus();
+            buttonNewCustomSettings.Focus();
 
-            LocalConfiguration.MockSettings = new List<MockSettings>();
+            var newMockSettings = new MockSettings()
+            {
+                MaxArrayLength = (int)numericUpDownMaxArrayLength.Value,
+                MinArrayLength = (int)numericUpDownMinArrayLength.Value,
+                CustomProperties = new List<CustomPropertyMockSettings>()
+            };
 
             foreach (UserControlMockSettings userControlMockSettings in flowLayoutPanel.Controls)
             {
-                LocalConfiguration.MockSettings.Add(userControlMockSettings.MockSettings);
+                newMockSettings.CustomProperties.Add(userControlMockSettings.MockSettings);
             }
+
+            if(newMockSettings.CustomProperties.Exists(n => n.Invalid))
+            {
+                var messages = newMockSettings.CustomProperties
+                    .Where(n => n.Invalid)
+                    .Select(n => n.InvalidMessage)
+                    .ToList();
+
+                MessageBox.Show(string.Join(Environment.NewLine, messages), "Invalid custom properties", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                e.Cancel = true;
+
+                return;
+            }
+
+            LocalConfiguration.MockSettings = newMockSettings;
         }
 
         private void linkLabelNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var mockSetting = new MockSettings();
+            NewCustomPropertySetting();
+        }
 
-            var userControlMockSettings = new UserControlMockSettings(_mockService, mockSetting, () =>
+        private void NewCustomPropertySetting()
+        {
+            var mockSetting = new CustomPropertyMockSettings();
+
+            var userControlMockSettings = new UserControlMockSettings(mockSetting, () =>
             {
-                LocalConfiguration.MockSettings.Remove(mockSetting);
+                LocalConfiguration.MockSettings.CustomProperties.Remove(mockSetting);
             });
 
             flowLayoutPanel.Controls.Add(userControlMockSettings);
+        }
+
+        private void buttonNewCustomSettings_Click(object sender, EventArgs e)
+        {
+            NewCustomPropertySetting();
         }
     }
 }

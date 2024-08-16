@@ -31,42 +31,98 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMockSettings));
             flowLayoutPanel = new FlowLayoutPanel();
             panelTittle = new Panel();
-            linkLabelNew = new LinkLabel();
+            buttonNewCustomSettings = new Button();
+            groupBoxArraySettings = new GroupBox();
+            labelMaxElementsOnArrays = new Label();
+            labelMinElementsOnArrays = new Label();
+            numericUpDownMaxArrayLength = new NumericUpDown();
+            numericUpDownMinArrayLength = new NumericUpDown();
             panelTittle.SuspendLayout();
+            groupBoxArraySettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMinArrayLength).BeginInit();
             SuspendLayout();
             // 
             // flowLayoutPanel
             // 
             flowLayoutPanel.Dock = DockStyle.Fill;
-            flowLayoutPanel.Location = new Point(0, 25);
+            flowLayoutPanel.Location = new Point(0, 88);
             flowLayoutPanel.Name = "flowLayoutPanel";
             flowLayoutPanel.Padding = new Padding(5);
-            flowLayoutPanel.Size = new Size(574, 527);
+            flowLayoutPanel.Size = new Size(574, 464);
             flowLayoutPanel.TabIndex = 0;
             // 
             // panelTittle
             // 
-            panelTittle.Controls.Add(linkLabelNew);
+            panelTittle.Controls.Add(buttonNewCustomSettings);
+            panelTittle.Controls.Add(groupBoxArraySettings);
             panelTittle.Dock = DockStyle.Top;
             panelTittle.Location = new Point(0, 0);
             panelTittle.Name = "panelTittle";
-            panelTittle.Size = new Size(574, 25);
+            panelTittle.Padding = new Padding(5);
+            panelTittle.Size = new Size(574, 88);
             panelTittle.TabIndex = 0;
             // 
-            // linkLabelNew
+            // buttonNewCustomSettings
             // 
-            linkLabelNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabelNew.AutoSize = true;
-            linkLabelNew.LinkColor = Color.Black;
-            linkLabelNew.Location = new Point(6, 5);
-            linkLabelNew.Margin = new Padding(2, 0, 2, 0);
-            linkLabelNew.Name = "linkLabelNew";
-            linkLabelNew.Size = new Size(31, 15);
-            linkLabelNew.TabIndex = 15;
-            linkLabelNew.TabStop = true;
-            linkLabelNew.Text = "New";
-            linkLabelNew.TextAlign = ContentAlignment.MiddleRight;
-            linkLabelNew.LinkClicked += linkLabelNew_LinkClicked;
+            buttonNewCustomSettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonNewCustomSettings.FlatStyle = FlatStyle.Flat;
+            buttonNewCustomSettings.Location = new Point(7, 48);
+            buttonNewCustomSettings.Margin = new Padding(2);
+            buttonNewCustomSettings.Name = "buttonNewCustomSettings";
+            buttonNewCustomSettings.Size = new Size(235, 33);
+            buttonNewCustomSettings.TabIndex = 17;
+            buttonNewCustomSettings.Text = "New custom property settings";
+            buttonNewCustomSettings.UseVisualStyleBackColor = true;
+            buttonNewCustomSettings.Click += buttonNewCustomSettings_Click;
+            // 
+            // groupBoxArraySettings
+            // 
+            groupBoxArraySettings.Controls.Add(labelMaxElementsOnArrays);
+            groupBoxArraySettings.Controls.Add(labelMinElementsOnArrays);
+            groupBoxArraySettings.Controls.Add(numericUpDownMaxArrayLength);
+            groupBoxArraySettings.Controls.Add(numericUpDownMinArrayLength);
+            groupBoxArraySettings.Dock = DockStyle.Right;
+            groupBoxArraySettings.Location = new Point(359, 5);
+            groupBoxArraySettings.Name = "groupBoxArraySettings";
+            groupBoxArraySettings.Size = new Size(210, 78);
+            groupBoxArraySettings.TabIndex = 16;
+            groupBoxArraySettings.TabStop = false;
+            groupBoxArraySettings.Text = "Number of Elements on Arrays";
+            // 
+            // labelMaxElementsOnArrays
+            // 
+            labelMaxElementsOnArrays.AutoSize = true;
+            labelMaxElementsOnArrays.Location = new Point(110, 25);
+            labelMaxElementsOnArrays.Name = "labelMaxElementsOnArrays";
+            labelMaxElementsOnArrays.Size = new Size(30, 15);
+            labelMaxElementsOnArrays.TabIndex = 3;
+            labelMaxElementsOnArrays.Text = "Max";
+            // 
+            // labelMinElementsOnArrays
+            // 
+            labelMinElementsOnArrays.AutoSize = true;
+            labelMinElementsOnArrays.Location = new Point(17, 25);
+            labelMinElementsOnArrays.Name = "labelMinElementsOnArrays";
+            labelMinElementsOnArrays.Size = new Size(28, 15);
+            labelMinElementsOnArrays.TabIndex = 2;
+            labelMinElementsOnArrays.Text = "Min";
+            // 
+            // numericUpDownMaxArrayLength
+            // 
+            numericUpDownMaxArrayLength.Location = new Point(110, 43);
+            numericUpDownMaxArrayLength.Maximum = new decimal(new int[] { 999999999, 0, 0, 0 });
+            numericUpDownMaxArrayLength.Name = "numericUpDownMaxArrayLength";
+            numericUpDownMaxArrayLength.Size = new Size(88, 23);
+            numericUpDownMaxArrayLength.TabIndex = 1;
+            // 
+            // numericUpDownMinArrayLength
+            // 
+            numericUpDownMinArrayLength.Location = new Point(17, 43);
+            numericUpDownMinArrayLength.Maximum = new decimal(new int[] { 999999999, 0, 0, 0 });
+            numericUpDownMinArrayLength.Name = "numericUpDownMinArrayLength";
+            numericUpDownMinArrayLength.Size = new Size(87, 23);
+            numericUpDownMinArrayLength.TabIndex = 0;
             // 
             // FormMockSettings
             // 
@@ -82,7 +138,10 @@
             Text = "Mock Settings";
             FormClosing += FormMockSettings_FormClosing;
             panelTittle.ResumeLayout(false);
-            panelTittle.PerformLayout();
+            groupBoxArraySettings.ResumeLayout(false);
+            groupBoxArraySettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMinArrayLength).EndInit();
             ResumeLayout(false);
         }
 
@@ -90,6 +149,11 @@
 
         private FlowLayoutPanel flowLayoutPanel;
         private Panel panelTittle;
-        private LinkLabel linkLabelNew;
+        private GroupBox groupBoxArraySettings;
+        private NumericUpDown numericUpDownMinArrayLength;
+        private NumericUpDown numericUpDownMaxArrayLength;
+        private Label labelMinElementsOnArrays;
+        private Label labelMaxElementsOnArrays;
+        private Button buttonNewCustomSettings;
     }
 }

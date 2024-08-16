@@ -2,29 +2,15 @@
 {
     public class MockSettings
     {
-        public string? Name { get; set; }
-        public string? Value { get; set; }
-        public string? Type { get; set; }
-        public bool Ignore { get; set; }
-    }
+        public int MaxArrayLength { get; set; }
+        public int MinArrayLength { get; set; }
 
-    public class ActivitySettings
-    {
-        public ActivitySettings()
+        public List<CustomPropertyMockSettings> CustomProperties { get; set; }
+
+        public MockSettings()
         {
-            Activities = new List<Activity>();
+            CustomProperties = new List<CustomPropertyMockSettings>();
         }
 
-        public string? TrackingNumberProperty { get; set; }
-        public string? SuccessQueue { get; set; }
-        public string? FaultQueue { get; set; }
-        public List<Activity> Activities { get; set; }
-
-    }
-
-    public class Activity
-    {
-        public string? Name { get; set; }
-        public string? Queue { get; set; }
     }
 }
