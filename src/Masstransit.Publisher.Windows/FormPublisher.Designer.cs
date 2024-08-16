@@ -35,8 +35,7 @@
             labelContrato = new Label();
             labelJson = new Label();
             richTextBoxConnectionString = new RichTextBox();
-            label1 = new Label();
-            button1 = new Button();
+            labelConnectionString = new Label();
             buttonEnviar = new Button();
             buttonPublicar = new Button();
             buttonMockJson = new Button();
@@ -49,11 +48,13 @@
             buttonActivitySettings = new Button();
             buttonSenderSettings = new Button();
             tabControl = new TabControl();
-            tabPage3 = new TabPage();
-            tabPage4 = new TabPage();
+            tabPageSender = new TabPage();
+            tabPageLog = new TabPage();
+            listBoxLog = new ListBox();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             tabControl.SuspendLayout();
-            tabPage3.SuspendLayout();
+            tabPageSender.SuspendLayout();
+            tabPageLog.SuspendLayout();
             SuspendLayout();
             // 
             // textBoxContract
@@ -109,25 +110,15 @@
             richTextBoxConnectionString.TabIndex = 1;
             richTextBoxConnectionString.Text = "";
             // 
-            // label1
+            // labelConnectionString
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(5, 13);
-            label1.Margin = new Padding(2, 0, 2, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(101, 13);
-            label1.TabIndex = 0;
-            label1.Text = "Connection String";
-            // 
-            // button1
-            // 
-            button1.Location = new Point(506, 836);
-            button1.Margin = new Padding(2);
-            button1.Name = "button1";
-            button1.Size = new Size(74, 19);
-            button1.TabIndex = 8;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            labelConnectionString.AutoSize = true;
+            labelConnectionString.Location = new Point(5, 13);
+            labelConnectionString.Margin = new Padding(2, 0, 2, 0);
+            labelConnectionString.Name = "labelConnectionString";
+            labelConnectionString.Size = new Size(101, 13);
+            labelConnectionString.TabIndex = 0;
+            labelConnectionString.Text = "Connection String";
             // 
             // buttonEnviar
             // 
@@ -275,8 +266,8 @@
             // 
             // tabControl
             // 
-            tabControl.Controls.Add(tabPage3);
-            tabControl.Controls.Add(tabPage4);
+            tabControl.Controls.Add(tabPageSender);
+            tabControl.Controls.Add(tabPageLog);
             tabControl.Dock = DockStyle.Fill;
             tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
@@ -284,42 +275,51 @@
             tabControl.Size = new Size(731, 651);
             tabControl.TabIndex = 20;
             // 
-            // tabPage3
+            // tabPageSender
             // 
-            tabPage3.Controls.Add(buttonSenderSettings);
-            tabPage3.Controls.Add(label1);
-            tabPage3.Controls.Add(buttonActivitySettings);
-            tabPage3.Controls.Add(richTextBoxJson);
-            tabPage3.Controls.Add(buttonExecuteActivity);
-            tabPage3.Controls.Add(dataGridViewAutoComplete);
-            tabPage3.Controls.Add(buttonConfigMock);
-            tabPage3.Controls.Add(textBoxContract);
-            tabPage3.Controls.Add(labelSelectedContract);
-            tabPage3.Controls.Add(labelContrato);
-            tabPage3.Controls.Add(linkLabelSelectDll);
-            tabPage3.Controls.Add(labelJson);
-            tabPage3.Controls.Add(buttonMockJson);
-            tabPage3.Controls.Add(richTextBoxConnectionString);
-            tabPage3.Controls.Add(buttonPublicar);
-            tabPage3.Controls.Add(button1);
-            tabPage3.Controls.Add(buttonEnviar);
-            tabPage3.Location = new Point(4, 22);
-            tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(723, 625);
-            tabPage3.TabIndex = 0;
-            tabPage3.Text = "Home";
-            tabPage3.UseVisualStyleBackColor = true;
+            tabPageSender.Controls.Add(buttonSenderSettings);
+            tabPageSender.Controls.Add(labelConnectionString);
+            tabPageSender.Controls.Add(buttonActivitySettings);
+            tabPageSender.Controls.Add(richTextBoxJson);
+            tabPageSender.Controls.Add(buttonExecuteActivity);
+            tabPageSender.Controls.Add(dataGridViewAutoComplete);
+            tabPageSender.Controls.Add(buttonConfigMock);
+            tabPageSender.Controls.Add(textBoxContract);
+            tabPageSender.Controls.Add(labelSelectedContract);
+            tabPageSender.Controls.Add(labelContrato);
+            tabPageSender.Controls.Add(linkLabelSelectDll);
+            tabPageSender.Controls.Add(labelJson);
+            tabPageSender.Controls.Add(buttonMockJson);
+            tabPageSender.Controls.Add(richTextBoxConnectionString);
+            tabPageSender.Controls.Add(buttonPublicar);
+            tabPageSender.Controls.Add(buttonEnviar);
+            tabPageSender.Location = new Point(4, 22);
+            tabPageSender.Name = "tabPageSender";
+            tabPageSender.Padding = new Padding(3);
+            tabPageSender.Size = new Size(723, 625);
+            tabPageSender.TabIndex = 0;
+            tabPageSender.Text = "Home";
+            tabPageSender.UseVisualStyleBackColor = true;
             // 
-            // tabPage4
+            // tabPageLog
             // 
-            tabPage4.Location = new Point(4, 22);
-            tabPage4.Name = "tabPage4";
-            tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(723, 577);
-            tabPage4.TabIndex = 1;
-            tabPage4.Text = "Log";
-            tabPage4.UseVisualStyleBackColor = true;
+            tabPageLog.Controls.Add(listBoxLog);
+            tabPageLog.Location = new Point(4, 22);
+            tabPageLog.Name = "tabPageLog";
+            tabPageLog.Padding = new Padding(3);
+            tabPageLog.Size = new Size(723, 625);
+            tabPageLog.TabIndex = 1;
+            tabPageLog.Text = "Log";
+            tabPageLog.UseVisualStyleBackColor = true;
+            // 
+            // listBoxLog
+            // 
+            listBoxLog.Dock = DockStyle.Fill;
+            listBoxLog.FormattingEnabled = true;
+            listBoxLog.Location = new Point(3, 3);
+            listBoxLog.Name = "listBoxLog";
+            listBoxLog.Size = new Size(717, 619);
+            listBoxLog.TabIndex = 0;
             // 
             // FormPublisher
             // 
@@ -335,8 +335,9 @@
             Load += FormPublicador_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).EndInit();
             tabControl.ResumeLayout(false);
-            tabPage3.ResumeLayout(false);
-            tabPage3.PerformLayout();
+            tabPageSender.ResumeLayout(false);
+            tabPageSender.PerformLayout();
+            tabPageLog.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -347,8 +348,7 @@
         private System.Windows.Forms.Label labelContrato;
         private System.Windows.Forms.Label labelJson;
         private System.Windows.Forms.RichTextBox richTextBoxConnectionString;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label labelConnectionString;
         private System.Windows.Forms.Button buttonEnviar;
         private System.Windows.Forms.Button buttonPublicar;
         private System.Windows.Forms.Button buttonMockJson;
@@ -361,8 +361,9 @@
         private Button buttonActivitySettings;
         private Button buttonSenderSettings;
         private TabControl tabControl;
-        private TabPage tabPage3;
-        private TabPage tabPage4;
+        private TabPage tabPageSender;
+        private TabPage tabPageLog;
+        private ListBox listBoxLog;
     }
 }
 

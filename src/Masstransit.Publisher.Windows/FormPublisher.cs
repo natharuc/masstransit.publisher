@@ -1,10 +1,10 @@
 ﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Classes.Statics;
 using Masstransit.Publisher.Domain.Interfaces;
 using Masstransit.Publisher.Windows.Forms;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace Masstransit.Publisher.Windows
@@ -14,18 +14,21 @@ namespace Masstransit.Publisher.Windows
         public List<Contract> Contracts { get; private set; } = new List<Contract>();
         private Contract? _selectedContract { get; set; }
 
-
         private IMockInterfaceService _mockService;
         private IPublisherService _publisherService;
+        private ILogService _logService;
         private bool _genericTypeSelecting;
         private LocalConfiguration _localConfiguration;
 
-        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService)
+        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService,ILogService logService)
         {
             InitializeComponent();
             _localConfiguration = new LocalConfiguration();
             _mockService = mockInterfaceService;
             _publisherService = publisherService;
+            _logService = logService;
+
+            _logService.Subscribe(this.Name, Queues.Log, Log);
         }
 
         private void FormPublicador_Load(object sender, EventArgs e)
@@ -38,6 +41,10 @@ namespace Masstransit.Publisher.Windows
         private async void buttonSend_Click(object sender, EventArgs e)
         {
             Validate();
+
+            tabControl.SelectedTab = tabPageLog;
+
+            await _logService.Send(Queues.Log, "Sending events");
 
             SaveLastConfiguration();
 
@@ -53,9 +60,8 @@ namespace Masstransit.Publisher.Windows
             ConfigurePublisher();
 
             await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
-
-            MessageBox.Show("Event sent successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            
+            await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {_selectedContract}");
         }
 
         private List<ContractMessage> GetMessagesToSend()
@@ -197,28 +203,14 @@ namespace Masstransit.Publisher.Windows
 
             serviceCollection.AddMassTransit((masstransit) =>
             {
-                masstransit.UsingAzureServiceBus((bus, cfg) =>
+                masstransit.UsingAzureServiceBus((context, configuration) =>
                 {
-                    cfg.Host(richTextBoxConnectionString.Text);
+                    configuration.Host(richTextBoxConnectionString.Text);
 
-                    cfg.UseNewtonsoftJsonDeserializer();
-                    cfg.UseNewtonsoftJsonDeserializer();
-                    cfg.ConfigureNewtonsoftJsonDeserializer(s => SerializerPadrao(s));
-                    cfg.ConfigureNewtonsoftJsonSerializer(s => SerializerPadrao(s));
+                    configuration.UseNewtonsoftJsonDeserializer();
+                    configuration.UseNewtonsoftJsonDeserializer();
                 });
             });
-
-            JsonSerializerSettings SerializerPadrao(JsonSerializerSettings settings)
-            {
-                settings.Converters.Add(new StringEnumConverter());
-                settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-                settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
-                settings.DateParseHandling = DateParseHandling.None;
-                settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-
-                return settings;
-            }
 
             var provider = serviceCollection.BuildServiceProvider();
 
@@ -231,6 +223,10 @@ namespace Masstransit.Publisher.Windows
         {
             Validate(true);
 
+            tabControl.SelectedTab = tabPageLog;
+
+            await _logService.Send(Queues.Log, "Publishing events");
+
             SaveLastConfiguration();
 
             var messages = GetMessagesToSend();
@@ -239,7 +235,7 @@ namespace Masstransit.Publisher.Windows
 
             await _publisherService.Publish(messages);
 
-            MessageBox.Show("Event published successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await _logService.Send(Queues.Log, $"{messages.Count} events has been published to {_selectedContract}");
         }
 
         private void buttonMockJson_Click(object sender, EventArgs e)
@@ -440,6 +436,10 @@ namespace Masstransit.Publisher.Windows
 
         private async void buttonExecuteActivity_Click(object sender, EventArgs e)
         {
+            await _logService.Send(Queues.Log, "Executing activity");
+
+            tabControl.SelectedTab = tabPageLog;
+
             var conctractMessage = GetMessagesToSend();
 
             ConfigurePublisher();
@@ -448,7 +448,7 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            MessageBox.Show("Activity executed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await _logService.Send(Queues.Log, $"{conctractMessage.Count} events has been executed as activity");
         }
 
         private void buttonSenderSettings_Click(object sender, EventArgs e)
@@ -461,6 +461,17 @@ namespace Masstransit.Publisher.Windows
 
                 SaveLastConfiguration();
             }
+        }
+
+        private void Log(string log)
+        {
+            var date = DateTime.Now.ToString("HH:mm:ss");
+
+            log = $"[{date}] {log}";
+
+            listBoxLog.Items.Add(log);
+
+            listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
         }
     }
 }

@@ -55,6 +55,7 @@
             // numericUpDownMessageCount
             // 
             numericUpDownMessageCount.Location = new Point(8, 73);
+            numericUpDownMessageCount.Maximum = new decimal(new int[] { 999999999, 0, 0, 0 });
             numericUpDownMessageCount.Name = "numericUpDownMessageCount";
             numericUpDownMessageCount.Size = new Size(137, 23);
             numericUpDownMessageCount.TabIndex = 2;

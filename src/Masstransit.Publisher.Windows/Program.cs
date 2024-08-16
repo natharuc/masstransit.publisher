@@ -20,6 +20,7 @@ namespace Masstransit.Publisher.Windows
 
             services.AddSingleton<IPublisherService, PublisherService>();
             services.AddSingleton<IMockInterfaceService, MockInterfaceService>();
+            services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<FormPublisher>();
 
             var provider = services.BuildServiceProvider();
