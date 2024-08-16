@@ -9,6 +9,10 @@ namespace Masstransit.Publisher.Windows
         public LocalConfiguration()
         {
             MockSettings = new();
+            SenderSettings = new()
+            {
+                MessageCount = 1,
+            };
             ActivitySettings = new()
             {
                 FaultQueue = "fault",
@@ -34,6 +38,7 @@ namespace Masstransit.Publisher.Windows
 
         public MockSettings MockSettings { get; set; }
         public ActivitySettings ActivitySettings { get; set; }
+        public SenderSettings SenderSettings { get; set; }
 
         public static LocalConfiguration LoadFromJsonFile()
         {

@@ -34,8 +34,6 @@
             richTextBoxJson = new RichTextBox();
             labelContrato = new Label();
             labelJson = new Label();
-            labelFila = new Label();
-            textBoxQueue = new TextBox();
             richTextBoxConnectionString = new RichTextBox();
             label1 = new Label();
             button1 = new Button();
@@ -50,16 +48,21 @@
             buttonExecuteActivity = new Button();
             buttonActivitySettings = new Button();
             buttonSenderSettings = new Button();
+            tabControl = new TabControl();
+            tabPage3 = new TabPage();
+            tabPage4 = new TabPage();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
+            tabControl.SuspendLayout();
+            tabPage3.SuspendLayout();
             SuspendLayout();
             // 
             // textBoxContract
             // 
             textBoxContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxContract.Location = new Point(11, 77);
+            textBoxContract.Location = new Point(5, 81);
             textBoxContract.Margin = new Padding(2);
             textBoxContract.Name = "textBoxContract";
-            textBoxContract.Size = new Size(712, 22);
+            textBoxContract.Size = new Size(709, 22);
             textBoxContract.TabIndex = 3;
             textBoxContract.TextChanged += textBoxContract_TextChanged;
             textBoxContract.KeyDown += textBoxContract_KeyDown;
@@ -68,17 +71,17 @@
             // 
             richTextBoxJson.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxJson.BorderStyle = BorderStyle.None;
-            richTextBoxJson.Location = new Point(12, 137);
+            richTextBoxJson.Location = new Point(6, 141);
             richTextBoxJson.Margin = new Padding(2);
             richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(711, 374);
+            richTextBoxJson.Size = new Size(708, 422);
             richTextBoxJson.TabIndex = 5;
             richTextBoxJson.Text = "";
             // 
             // labelContrato
             // 
             labelContrato.AutoSize = true;
-            labelContrato.Location = new Point(12, 62);
+            labelContrato.Location = new Point(6, 66);
             labelContrato.Margin = new Padding(2, 0, 2, 0);
             labelContrato.Name = "labelContrato";
             labelContrato.Size = new Size(86, 13);
@@ -88,48 +91,28 @@
             // labelJson
             // 
             labelJson.AutoSize = true;
-            labelJson.Location = new Point(12, 122);
+            labelJson.Location = new Point(6, 126);
             labelJson.Margin = new Padding(2, 0, 2, 0);
             labelJson.Name = "labelJson";
             labelJson.Size = new Size(34, 13);
             labelJson.TabIndex = 4;
             labelJson.Text = "JSON";
             // 
-            // labelFila
-            // 
-            labelFila.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            labelFila.AutoSize = true;
-            labelFila.Location = new Point(12, 518);
-            labelFila.Margin = new Padding(2, 0, 2, 0);
-            labelFila.Name = "labelFila";
-            labelFila.Size = new Size(41, 13);
-            labelFila.TabIndex = 6;
-            labelFila.Text = "Queue";
-            // 
-            // textBoxQueue
-            // 
-            textBoxQueue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxQueue.Location = new Point(12, 533);
-            textBoxQueue.Margin = new Padding(2);
-            textBoxQueue.Name = "textBoxQueue";
-            textBoxQueue.Size = new Size(712, 22);
-            textBoxQueue.TabIndex = 7;
-            // 
             // richTextBoxConnectionString
             // 
             richTextBoxConnectionString.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxConnectionString.BorderStyle = BorderStyle.None;
-            richTextBoxConnectionString.Location = new Point(12, 24);
+            richTextBoxConnectionString.Location = new Point(6, 28);
             richTextBoxConnectionString.Margin = new Padding(2);
             richTextBoxConnectionString.Name = "richTextBoxConnectionString";
-            richTextBoxConnectionString.Size = new Size(711, 33);
+            richTextBoxConnectionString.Size = new Size(708, 33);
             richTextBoxConnectionString.TabIndex = 1;
             richTextBoxConnectionString.Text = "";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(11, 9);
+            label1.Location = new Point(5, 13);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(101, 13);
@@ -138,7 +121,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(512, 832);
+            button1.Location = new Point(506, 836);
             button1.Margin = new Padding(2);
             button1.Name = "button1";
             button1.Size = new Size(74, 19);
@@ -150,10 +133,10 @@
             // 
             buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonEnviar.FlatStyle = FlatStyle.Flat;
-            buttonEnviar.Location = new Point(599, 559);
+            buttonEnviar.Location = new Point(594, 575);
             buttonEnviar.Margin = new Padding(2);
             buttonEnviar.Name = "buttonEnviar";
-            buttonEnviar.Size = new Size(121, 37);
+            buttonEnviar.Size = new Size(120, 37);
             buttonEnviar.TabIndex = 8;
             buttonEnviar.Text = "Send";
             buttonEnviar.UseVisualStyleBackColor = true;
@@ -163,7 +146,7 @@
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonPublicar.FlatStyle = FlatStyle.Flat;
-            buttonPublicar.Location = new Point(479, 559);
+            buttonPublicar.Location = new Point(474, 575);
             buttonPublicar.Margin = new Padding(2);
             buttonPublicar.Name = "buttonPublicar";
             buttonPublicar.Size = new Size(121, 37);
@@ -176,7 +159,7 @@
             // 
             buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonMockJson.FlatStyle = FlatStyle.Flat;
-            buttonMockJson.Location = new Point(11, 559);
+            buttonMockJson.Location = new Point(6, 575);
             buttonMockJson.Margin = new Padding(2);
             buttonMockJson.Name = "buttonMockJson";
             buttonMockJson.Size = new Size(121, 37);
@@ -195,12 +178,12 @@
             dataGridViewAutoComplete.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewAutoComplete.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewAutoComplete.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dataGridViewAutoComplete.Location = new Point(12, 137);
+            dataGridViewAutoComplete.Location = new Point(6, 141);
             dataGridViewAutoComplete.Margin = new Padding(2);
             dataGridViewAutoComplete.Name = "dataGridViewAutoComplete";
             dataGridViewAutoComplete.RowHeadersVisible = false;
             dataGridViewAutoComplete.RowTemplate.Height = 30;
-            dataGridViewAutoComplete.Size = new Size(711, 374);
+            dataGridViewAutoComplete.Size = new Size(708, 422);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
             dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
@@ -209,7 +192,7 @@
             // linkLabelSelectDll
             // 
             linkLabelSelectDll.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabelSelectDll.Location = new Point(270, 62);
+            linkLabelSelectDll.Location = new Point(262, 66);
             linkLabelSelectDll.Margin = new Padding(2, 0, 2, 0);
             linkLabelSelectDll.Name = "linkLabelSelectDll";
             linkLabelSelectDll.Size = new Size(452, 13);
@@ -221,10 +204,10 @@
             // 
             // labelSelectedContract
             // 
-            labelSelectedContract.Location = new Point(12, 101);
+            labelSelectedContract.Location = new Point(6, 105);
             labelSelectedContract.Margin = new Padding(2, 0, 2, 0);
             labelSelectedContract.Name = "labelSelectedContract";
-            labelSelectedContract.Size = new Size(919, 15);
+            labelSelectedContract.Size = new Size(708, 15);
             labelSelectedContract.TabIndex = 14;
             labelSelectedContract.Text = "...";
             // 
@@ -235,7 +218,7 @@
             buttonConfigMock.BackgroundImageLayout = ImageLayout.Zoom;
             buttonConfigMock.FlatStyle = FlatStyle.Flat;
             buttonConfigMock.Image = Properties.Resources.settings;
-            buttonConfigMock.Location = new Point(131, 559);
+            buttonConfigMock.Location = new Point(126, 575);
             buttonConfigMock.Margin = new Padding(2);
             buttonConfigMock.Name = "buttonConfigMock";
             buttonConfigMock.Size = new Size(35, 37);
@@ -248,7 +231,7 @@
             // 
             buttonExecuteActivity.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonExecuteActivity.FlatStyle = FlatStyle.Flat;
-            buttonExecuteActivity.Location = new Point(320, 559);
+            buttonExecuteActivity.Location = new Point(315, 575);
             buttonExecuteActivity.Margin = new Padding(2);
             buttonExecuteActivity.Name = "buttonExecuteActivity";
             buttonExecuteActivity.Size = new Size(121, 37);
@@ -265,7 +248,7 @@
             buttonActivitySettings.BackgroundImageLayout = ImageLayout.Zoom;
             buttonActivitySettings.FlatStyle = FlatStyle.Flat;
             buttonActivitySettings.Image = Properties.Resources.settings;
-            buttonActivitySettings.Location = new Point(286, 559);
+            buttonActivitySettings.Location = new Point(281, 575);
             buttonActivitySettings.Margin = new Padding(2);
             buttonActivitySettings.Name = "buttonActivitySettings";
             buttonActivitySettings.Size = new Size(35, 37);
@@ -281,7 +264,7 @@
             buttonSenderSettings.BackgroundImageLayout = ImageLayout.Zoom;
             buttonSenderSettings.FlatStyle = FlatStyle.Flat;
             buttonSenderSettings.Image = Properties.Resources.settings;
-            buttonSenderSettings.Location = new Point(445, 559);
+            buttonSenderSettings.Location = new Point(440, 575);
             buttonSenderSettings.Margin = new Padding(2);
             buttonSenderSettings.Name = "buttonSenderSettings";
             buttonSenderSettings.Size = new Size(35, 37);
@@ -290,30 +273,60 @@
             buttonSenderSettings.UseVisualStyleBackColor = false;
             buttonSenderSettings.Click += buttonSenderSettings_Click;
             // 
+            // tabControl
+            // 
+            tabControl.Controls.Add(tabPage3);
+            tabControl.Controls.Add(tabPage4);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Location = new Point(0, 0);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(731, 651);
+            tabControl.TabIndex = 20;
+            // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(buttonSenderSettings);
+            tabPage3.Controls.Add(label1);
+            tabPage3.Controls.Add(buttonActivitySettings);
+            tabPage3.Controls.Add(richTextBoxJson);
+            tabPage3.Controls.Add(buttonExecuteActivity);
+            tabPage3.Controls.Add(dataGridViewAutoComplete);
+            tabPage3.Controls.Add(buttonConfigMock);
+            tabPage3.Controls.Add(textBoxContract);
+            tabPage3.Controls.Add(labelSelectedContract);
+            tabPage3.Controls.Add(labelContrato);
+            tabPage3.Controls.Add(linkLabelSelectDll);
+            tabPage3.Controls.Add(labelJson);
+            tabPage3.Controls.Add(buttonMockJson);
+            tabPage3.Controls.Add(richTextBoxConnectionString);
+            tabPage3.Controls.Add(buttonPublicar);
+            tabPage3.Controls.Add(button1);
+            tabPage3.Controls.Add(buttonEnviar);
+            tabPage3.Location = new Point(4, 22);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(723, 625);
+            tabPage3.TabIndex = 0;
+            tabPage3.Text = "Home";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // tabPage4
+            // 
+            tabPage4.Location = new Point(4, 22);
+            tabPage4.Name = "tabPage4";
+            tabPage4.Padding = new Padding(3);
+            tabPage4.Size = new Size(723, 577);
+            tabPage4.TabIndex = 1;
+            tabPage4.Text = "Log";
+            tabPage4.UseVisualStyleBackColor = true;
+            // 
             // FormPublisher
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(731, 603);
-            Controls.Add(buttonSenderSettings);
-            Controls.Add(buttonActivitySettings);
-            Controls.Add(buttonExecuteActivity);
-            Controls.Add(buttonConfigMock);
-            Controls.Add(labelSelectedContract);
-            Controls.Add(linkLabelSelectDll);
-            Controls.Add(buttonMockJson);
-            Controls.Add(buttonPublicar);
-            Controls.Add(buttonEnviar);
-            Controls.Add(button1);
-            Controls.Add(label1);
-            Controls.Add(richTextBoxConnectionString);
-            Controls.Add(labelFila);
-            Controls.Add(textBoxQueue);
-            Controls.Add(labelJson);
-            Controls.Add(labelContrato);
-            Controls.Add(textBoxContract);
-            Controls.Add(dataGridViewAutoComplete);
-            Controls.Add(richTextBoxJson);
+            ClientSize = new Size(731, 651);
+            Controls.Add(tabControl);
             Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(2, 4, 2, 4);
@@ -321,8 +334,10 @@
             Text = "Masstransit - Publisher";
             Load += FormPublicador_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).EndInit();
+            tabControl.ResumeLayout(false);
+            tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -331,8 +346,6 @@
         private System.Windows.Forms.RichTextBox richTextBoxJson;
         private System.Windows.Forms.Label labelContrato;
         private System.Windows.Forms.Label labelJson;
-        private System.Windows.Forms.Label labelFila;
-        private System.Windows.Forms.TextBox textBoxQueue;
         private System.Windows.Forms.RichTextBox richTextBoxConnectionString;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
@@ -347,6 +360,9 @@
         private Button buttonExecuteActivity;
         private Button buttonActivitySettings;
         private Button buttonSenderSettings;
+        private TabControl tabControl;
+        private TabPage tabPage3;
+        private TabPage tabPage4;
     }
 }
 

@@ -11,5 +11,6 @@ namespace Masstransit.Publisher.Domain.Interfaces
         Task<PublisherServiceResponse> Send(ContractMessage eventoRecebido, string queue);
         Task<List<PublisherServiceResponse>> Send(IEnumerable<ContractMessage> events, string queue);
         Task ExecuteActivity(ContractMessage conctractMessage, ActivitySettings activitySettings);
+        Task ExecuteActivity(IEnumerable<ContractMessage> messages, ActivitySettings activitySettings);
     }
 }

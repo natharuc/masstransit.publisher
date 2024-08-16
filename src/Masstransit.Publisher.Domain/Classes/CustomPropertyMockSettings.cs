@@ -1,21 +1,8 @@
 ﻿namespace Masstransit.Publisher.Domain.Classes
 {
-    public class MockSettings
-    {
-        public int MaxArrayLength { get; set; }
-        public int MinArrayLength { get; set; }
-
-        public List<CustomPropertyMockSettings> CustomProperties { get; set; }
-
-        public MockSettings()
-        {
-            CustomProperties = new List<CustomPropertyMockSettings>();
-        }
-
-    }
     public class CustomPropertyMockSettings
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? Value { get; set; }
         public string? Type { get; set; }
         public bool Ignore { get; set; }
@@ -48,23 +35,10 @@
 
     }
 
-    public class ActivitySettings
+    public class SenderSettings
     {
-        public ActivitySettings()
-        {
-            Activities = new List<Activity>();
-        }
-
-        public string? TrackingNumberProperty { get; set; }
-        public string? SuccessQueue { get; set; }
-        public string? FaultQueue { get; set; }
-        public List<Activity> Activities { get; set; }
-
-    }
-
-    public class Activity
-    {
-        public string? Name { get; set; }
-        public string? Queue { get; set; }
+        public int MessageCount { get; set; }
+        public int Interval { get; set; }
+        public string Queue { get; set; } = string.Empty;
     }
 }

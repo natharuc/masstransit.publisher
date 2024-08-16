@@ -4,6 +4,7 @@ using Masstransit.Publisher.Services.Extensions;
 using MassTransit;
 using MassTransit.Courier.Contracts;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Masstransit.Publisher.Services.Services
 {
@@ -140,7 +141,7 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(json))
                 throw new InvalidOperationException("Json is required to get the tracking number");
 
-            var jsonObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(json);
 
             if (jsonObject == null)
                 throw new InvalidOperationException("Json is invalid");
@@ -148,19 +149,22 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
-            if (jsonObject.ContainsKey(activitySettings.TrackingNumberProperty))
-            {
-                var trackingNumber = jsonObject[activitySettings.TrackingNumberProperty];
+            var token = jsonObject.SelectToken(activitySettings.TrackingNumberProperty);
 
-                if (trackingNumber == null)
-                    throw new InvalidOperationException($"Tracking number property '{activitySettings.TrackingNumberProperty}' is null");
-
-                return Guid.Parse(trackingNumber.ToString());
-            }
-            else
+            if (token != null)
             {
-                throw new InvalidOperationException($"Tracking number property '{activitySettings.TrackingNumberProperty}' not found in json");
+                if (Guid.TryParse(token.ToString(), out var trackingNumber))
+                {
+                    return trackingNumber;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Tracking number is invalid");
+                }
             }
+
+
+            throw new InvalidOperationException("Tracking number property not found");
         }
 
 
@@ -220,6 +224,14 @@ namespace Masstransit.Publisher.Services.Services
             var routingSlip = slipBuilder.Build();
 
             await _busControl.Execute(routingSlip);
+        }
+
+        public async Task ExecuteActivity(IEnumerable<ContractMessage> messages, ActivitySettings activitySettings)
+        {
+            foreach (var message in messages)
+            {
+                await ExecuteActivity(message, activitySettings);
+            }
         }
     }
 }

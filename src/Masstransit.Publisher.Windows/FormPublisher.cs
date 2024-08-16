@@ -48,51 +48,80 @@ namespace Masstransit.Publisher.Windows
                 return;
             }
 
-            var contractMessage = GetContractMessage();
+            var messages = GetMessagesToSend();
 
             ConfigurePublisher();
 
-            await _publisherService.Send(contractMessage, textBoxQueue.Text.Trim());
+            await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
 
             MessageBox.Show("Event sent successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 
-        private ContractMessage GetContractMessage()
+        private List<ContractMessage> GetMessagesToSend()
         {
-            RegenerateJson();
+            var messages = new List<ContractMessage>();
+
+            var initialJson = richTextBoxJson.Text.Trim();
+
+            for (int i = 0; i < _localConfiguration.SenderSettings.MessageCount; i++)
+            {
+                messages.Add(GetContractMessage(initialJson));
+            }
+
+            var lastMessage = messages.LastOrDefault();
+
+            richTextBoxJson.Text = lastMessage?.Body;
+
+            return messages;
+        }
+
+        private ContractMessage GetContractMessage(string initialJson)
+        {
+            if (_selectedContract == null)
+                throw new InvalidOperationException("Contract is required");
 
             return new ContractMessage()
             {
                 Contract = _selectedContract,
-                Body = richTextBoxJson.Text.Trim(),
+                Body = RegenerateJson(initialJson)
             };
         }
 
-        private void RegenerateJson()
+        private string RegenerateJson(string initialJson)
         {
             if (_localConfiguration.MockSettings.CustomProperties.Exists(n => n.RegenerateBeforeSending))
             {
-                var currentObject = JsonConvert.DeserializeObject<JObject>(richTextBoxJson.Text);
+                var currentObject = JsonConvert.DeserializeObject<JObject>(initialJson);
+
+                if (currentObject == null)
+                    throw new InvalidOperationException("Json is invalid");
 
                 var regenerateProperties = _localConfiguration.MockSettings.CustomProperties.FindAll(n => n.RegenerateBeforeSending);
 
+
+
                 if (regenerateProperties.Any())
                 {
-                    foreach (var property in regenerateProperties)
+                    foreach (var regenerateProperty in regenerateProperties)
                     {
-                        var objectProperty = currentObject[property.Name];
-
-                        var type = Type.GetType("System." + property.Type);
+                        var type = Type.GetType($"System.{regenerateProperty.Type}");
 
                         var newValue = _mockService.GetMockValue(type, _localConfiguration.MockSettings);
 
-                        currentObject[property.Name] = JToken.FromObject(newValue);
-                    }
+                        var token = currentObject.SelectToken(regenerateProperty.Name);
 
-                    richTextBoxJson.Text = JsonConvert.SerializeObject(currentObject, Formatting.Indented);
+                        if(token == null)
+                            throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
+
+                        token.Replace(JToken.FromObject(newValue));
+                    }
                 }
+
+                return currentObject.ToString();
             }
+
+            return initialJson;
         }
 
         private void SaveLastConfiguration()
@@ -101,11 +130,11 @@ namespace Masstransit.Publisher.Windows
             {
                 Contract = _selectedContract,
                 Json = richTextBoxJson.Text.Trim(),
-                Queue = textBoxQueue.Text.Trim(),
                 ConnectionString = richTextBoxConnectionString.Text.Trim(),
                 DllFile = linkLabelSelectDll.Tag?.ToString(),
-                MockSettings = _localConfiguration?.MockSettings,
-                ActivitySettings = _localConfiguration?.ActivitySettings
+                MockSettings = _localConfiguration.MockSettings,
+                ActivitySettings = _localConfiguration.ActivitySettings,
+                SenderSettings = _localConfiguration.SenderSettings,
             };
 
             LocalConfiguration.SaveToJsonFile(newConfiguration);
@@ -132,7 +161,6 @@ namespace Masstransit.Publisher.Windows
                 }
 
                 richTextBoxJson.Text = _localConfiguration.Json;
-                textBoxQueue.Text = _localConfiguration.Queue;
                 richTextBoxConnectionString.Text = _localConfiguration.ConnectionString;
 
             }
@@ -146,7 +174,7 @@ namespace Masstransit.Publisher.Windows
             if (string.IsNullOrWhiteSpace(richTextBoxJson.Text))
                 throw new InvalidOperationException("Json is required");
 
-            if (!isPublish && string.IsNullOrWhiteSpace(textBoxQueue.Text))
+            if (!isPublish && string.IsNullOrWhiteSpace(_localConfiguration.SenderSettings.Queue))
                 throw new InvalidOperationException("Queue is required");
 
             if (string.IsNullOrWhiteSpace(richTextBoxConnectionString.Text))
@@ -205,11 +233,11 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            var message = GetContractMessage();
+            var messages = GetMessagesToSend();
 
             ConfigurePublisher();
 
-            await _publisherService.Publish(message);
+            await _publisherService.Publish(messages);
 
             MessageBox.Show("Event published successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -412,7 +440,7 @@ namespace Masstransit.Publisher.Windows
 
         private async void buttonExecuteActivity_Click(object sender, EventArgs e)
         {
-            var conctractMessage = GetContractMessage();
+            var conctractMessage = GetMessagesToSend();
 
             ConfigurePublisher();
 
@@ -425,7 +453,14 @@ namespace Masstransit.Publisher.Windows
 
         private void buttonSenderSettings_Click(object sender, EventArgs e)
         {
+            using (var form = new FormSenderSettings(_localConfiguration.SenderSettings))
+            {
+                form.ShowDialog();
 
+                _localConfiguration.SenderSettings = form.SenderSettings;
+
+                SaveLastConfiguration();
+            }
         }
     }
 }
