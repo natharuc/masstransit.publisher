@@ -35,39 +35,6 @@ namespace Masstransit.Publisher.Windows.Forms
             }
         }
 
-        private void FormMockSettings_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            buttonNewCustomSettings.Focus();
-
-            var newMockSettings = new MockSettings()
-            {
-                MaxArrayLength = (int)numericUpDownMaxArrayLength.Value,
-                MinArrayLength = (int)numericUpDownMinArrayLength.Value,
-                CustomProperties = new List<CustomPropertyMockSettings>()
-            };
-
-            foreach (UserControlMockSettings userControlMockSettings in flowLayoutPanel.Controls)
-            {
-                newMockSettings.CustomProperties.Add(userControlMockSettings.MockSettings);
-            }
-
-            if(newMockSettings.CustomProperties.Exists(n => n.Invalid))
-            {
-                var messages = newMockSettings.CustomProperties
-                    .Where(n => n.Invalid)
-                    .Select(n => n.InvalidMessage)
-                    .ToList();
-
-                MessageBox.Show(string.Join(Environment.NewLine, messages), "Invalid custom properties", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                e.Cancel = true;
-
-                return;
-            }
-
-            LocalConfiguration.MockSettings = newMockSettings;
-        }
-
         private void linkLabelNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             NewCustomPropertySetting();
@@ -88,6 +55,37 @@ namespace Masstransit.Publisher.Windows.Forms
         private void buttonNewCustomSettings_Click(object sender, EventArgs e)
         {
             NewCustomPropertySetting();
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            var newMockSettings = new MockSettings()
+            {
+                MaxArrayLength = (int)numericUpDownMaxArrayLength.Value,
+                MinArrayLength = (int)numericUpDownMinArrayLength.Value,
+                CustomProperties = new List<CustomPropertyMockSettings>()
+            };
+
+            foreach (UserControlMockSettings userControlMockSettings in flowLayoutPanel.Controls)
+            {
+                newMockSettings.CustomProperties.Add(userControlMockSettings.MockSettings);
+            }
+
+            if (newMockSettings.CustomProperties.Exists(n => n.Invalid))
+            {
+                var messages = newMockSettings.CustomProperties
+                    .Where(n => n.Invalid)
+                    .Select(n => n.InvalidMessage)
+                    .ToList();
+
+                MessageBox.Show(string.Join(Environment.NewLine, messages), "Invalid custom properties", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            LocalConfiguration.MockSettings = newMockSettings;
+
+            Close();
         }
     }
 }

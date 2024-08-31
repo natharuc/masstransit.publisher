@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMockSettings));
             flowLayoutPanel = new FlowLayoutPanel();
+            panelBotoes = new Panel();
+            buttonSave = new Button();
             panelTittle = new Panel();
             buttonNewCustomSettings = new Button();
             groupBoxArraySettings = new GroupBox();
@@ -37,6 +39,7 @@
             labelMinElementsOnArrays = new Label();
             numericUpDownMaxArrayLength = new NumericUpDown();
             numericUpDownMinArrayLength = new NumericUpDown();
+            panelBotoes.SuspendLayout();
             panelTittle.SuspendLayout();
             groupBoxArraySettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).BeginInit();
@@ -52,6 +55,29 @@
             flowLayoutPanel.Size = new Size(574, 464);
             flowLayoutPanel.TabIndex = 0;
             // 
+            // panelBotoes
+            // 
+            panelBotoes.Controls.Add(buttonSave);
+            panelBotoes.Dock = DockStyle.Bottom;
+            panelBotoes.Location = new Point(0, 479);
+            panelBotoes.Name = "panelBotoes";
+            panelBotoes.Padding = new Padding(5);
+            panelBotoes.Size = new Size(574, 73);
+            panelBotoes.TabIndex = 1;
+            // 
+            // buttonSave
+            // 
+            buttonSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonSave.FlatStyle = FlatStyle.Flat;
+            buttonSave.Location = new Point(418, 7);
+            buttonSave.Margin = new Padding(2);
+            buttonSave.Name = "buttonSave";
+            buttonSave.Size = new Size(145, 55);
+            buttonSave.TabIndex = 17;
+            buttonSave.Text = "Save";
+            buttonSave.UseVisualStyleBackColor = true;
+            buttonSave.Click += buttonSave_Click;
+            // 
             // panelTittle
             // 
             panelTittle.Controls.Add(buttonNewCustomSettings);
@@ -65,7 +91,7 @@
             // 
             // buttonNewCustomSettings
             // 
-            buttonNewCustomSettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonNewCustomSettings.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonNewCustomSettings.FlatStyle = FlatStyle.Flat;
             buttonNewCustomSettings.Location = new Point(7, 48);
             buttonNewCustomSettings.Margin = new Padding(2);
@@ -129,6 +155,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(574, 552);
+            Controls.Add(panelBotoes);
             Controls.Add(flowLayoutPanel);
             Controls.Add(panelTittle);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -136,7 +163,7 @@
             Name = "FormMockSettings";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Mock Settings";
-            FormClosing += FormMockSettings_FormClosing;
+            panelBotoes.ResumeLayout(false);
             panelTittle.ResumeLayout(false);
             groupBoxArraySettings.ResumeLayout(false);
             groupBoxArraySettings.PerformLayout();
@@ -155,5 +182,7 @@
         private Label labelMinElementsOnArrays;
         private Label labelMaxElementsOnArrays;
         private Button buttonNewCustomSettings;
+        private Panel panelBotoes;
+        private Button buttonSave;
     }
 }

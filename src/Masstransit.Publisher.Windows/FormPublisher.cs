@@ -6,6 +6,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace Masstransit.Publisher.Windows
 {
@@ -20,7 +21,7 @@ namespace Masstransit.Publisher.Windows
         private bool _genericTypeSelecting;
         private LocalConfiguration _localConfiguration;
 
-        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService,ILogService logService)
+        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService, ILogService logService)
         {
             InitializeComponent();
             _localConfiguration = new LocalConfiguration();
@@ -60,7 +61,7 @@ namespace Masstransit.Publisher.Windows
             ConfigurePublisher();
 
             await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
-            
+
             await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {_selectedContract}");
         }
 
@@ -117,7 +118,7 @@ namespace Masstransit.Publisher.Windows
 
                         var token = currentObject.SelectToken(regenerateProperty.Name);
 
-                        if(token == null)
+                        if (token == null)
                             throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
                         token.Replace(JToken.FromObject(newValue));
@@ -373,21 +374,23 @@ namespace Masstransit.Publisher.Windows
 
         private void linkLabelSelectDll_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            string fileName = string.Empty;
+
             using (var selectFile = new OpenFileDialog())
             {
                 selectFile.Filter = "Dll files (*.dll)|*.dll";
 
                 if (selectFile.ShowDialog() == DialogResult.OK)
                 {
-                    var fileName = selectFile.FileName;
-
-                    LoadContractFromDllFile(fileName);
-
-                    SaveLastConfiguration();
-
-                    MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    fileName = selectFile.FileName;
                 }
             }
+
+            LoadContractFromDllFile(fileName);
+
+            SaveLastConfiguration();
+
+            MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void LoadContractFromDllFile(string fileName)
@@ -395,19 +398,23 @@ namespace Masstransit.Publisher.Windows
             if (string.IsNullOrEmpty(fileName))
                 return;
 
-            var file = new System.IO.FileInfo(fileName);
+            byte[] fileBytes = File.ReadAllBytes(fileName);
 
-            var assembly = System.Reflection.Assembly.LoadFrom(fileName);
+            // Carrega o assembly a partir do array de bytes
+            using (var ms = new MemoryStream(fileBytes))
+            {
+                var assembly = Assembly.Load(ms.ToArray());
 
-            var contracts = assembly.GetTypes()
-                .Select(t => new Contract(t))
-                .ToList();
+                var contracts = assembly.GetTypes()
+                    .Select(t => new Contract(t))
+                    .ToList();
 
-            Contracts.Clear();
-            Contracts.AddRange(contracts);
+                Contracts.Clear();
+                Contracts.AddRange(contracts);
+            }
 
-            linkLabelSelectDll.Text = file.Name;
-            linkLabelSelectDll.Tag = file.FullName;
+            linkLabelSelectDll.Text = Path.GetFileName(fileName);
+            linkLabelSelectDll.Tag = fileName;
         }
 
         private void buttonConfigMock_Click(object sender, EventArgs e)
