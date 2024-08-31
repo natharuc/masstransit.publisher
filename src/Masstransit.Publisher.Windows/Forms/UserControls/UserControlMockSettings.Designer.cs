@@ -30,7 +30,7 @@
         {
             panel = new Panel();
             labelValueInfo = new Label();
-            checkBoxAwaysChange = new CheckBox();
+            checkBoxRegenerateBeforeSending = new CheckBox();
             checkBoxIgnore = new CheckBox();
             linkLabelRemove = new LinkLabel();
             labelValue = new Label();
@@ -48,7 +48,7 @@
             panel.Controls.Add(labelType);
             panel.Controls.Add(comboBoxType);
             panel.Controls.Add(labelValueInfo);
-            panel.Controls.Add(checkBoxAwaysChange);
+            panel.Controls.Add(checkBoxRegenerateBeforeSending);
             panel.Controls.Add(checkBoxIgnore);
             panel.Controls.Add(linkLabelRemove);
             panel.Controls.Add(labelValue);
@@ -74,15 +74,15 @@
             // 
             // checkBoxAwaysChange
             // 
-            checkBoxAwaysChange.AutoSize = true;
-            checkBoxAwaysChange.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
-            checkBoxAwaysChange.Location = new Point(8, 171);
-            checkBoxAwaysChange.Name = "checkBoxAwaysChange";
-            checkBoxAwaysChange.Size = new Size(167, 19);
-            checkBoxAwaysChange.TabIndex = 16;
-            checkBoxAwaysChange.Text = "Regenerate before sending";
-            checkBoxAwaysChange.UseVisualStyleBackColor = true;
-            checkBoxAwaysChange.CheckedChanged += checkBoxAwaysChange_CheckedChanged;
+            checkBoxRegenerateBeforeSending.AutoSize = true;
+            checkBoxRegenerateBeforeSending.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            checkBoxRegenerateBeforeSending.Location = new Point(8, 171);
+            checkBoxRegenerateBeforeSending.Name = "checkBoxAwaysChange";
+            checkBoxRegenerateBeforeSending.Size = new Size(167, 19);
+            checkBoxRegenerateBeforeSending.TabIndex = 16;
+            checkBoxRegenerateBeforeSending.Text = "Regenerate before sending";
+            checkBoxRegenerateBeforeSending.UseVisualStyleBackColor = true;
+            checkBoxRegenerateBeforeSending.CheckedChanged += checkBoxAwaysChange_CheckedChanged;
             // 
             // checkBoxIgnore
             // 
@@ -182,7 +182,7 @@
         private TextBox textBoxValue;
         private LinkLabel linkLabelRemove;
         private CheckBox checkBoxIgnore;
-        private CheckBox checkBoxAwaysChange;
+        private CheckBox checkBoxRegenerateBeforeSending;
         private Label labelValueInfo;
         private Label labelType;
         private ComboBox comboBoxType;

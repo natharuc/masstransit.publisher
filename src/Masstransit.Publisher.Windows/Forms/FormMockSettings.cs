@@ -68,7 +68,7 @@ namespace Masstransit.Publisher.Windows.Forms
 
             foreach (UserControlMockSettings userControlMockSettings in flowLayoutPanel.Controls)
             {
-                newMockSettings.CustomProperties.Add(userControlMockSettings.MockSettings);
+                newMockSettings.CustomProperties.Add(userControlMockSettings.CustomPropertyMockSettings);
             }
 
             if (newMockSettings.CustomProperties.Exists(n => n.Invalid))
