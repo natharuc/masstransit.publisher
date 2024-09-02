@@ -13,7 +13,7 @@ namespace Masstransit.Publisher.Windows.Forms
 
             ActivitySettings = activitySettings;
 
-            if(ActivitySettings.Activities.Count == 0)
+            if (ActivitySettings.Activities.Count == 0)
             {
                 ActivitySettings.Activities = new()
                 {
@@ -37,17 +37,22 @@ namespace Masstransit.Publisher.Windows.Forms
 
         private void FormActivitySettings_FormClosing(object sender, FormClosingEventArgs e)
         {
+           
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
             try
             {
                 var activitySettings = JsonConvert.DeserializeObject<ActivitySettings>(richTextBoxActivitySettings.Text);
-                
+
                 ActivitySettings = activitySettings;
 
-                e.Cancel = false;
+                Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                e.Cancel = true;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -23,9 +23,13 @@ namespace Masstransit.Publisher.Windows.Forms
                 this.Close();
         }
 
-        private void FormSenderSettings_FormClosing(object sender, FormClosingEventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            labelQueue.Focus();
+            SenderSettings = new SenderSettings
+            {
+                Queue = textBoxQueue.Text,
+                MessageCount = (int)numericUpDownMessageCount.Value
+            };
         }
     }
 }

@@ -4,33 +4,43 @@ namespace Masstransit.Publisher.Windows.Forms.UserControls
 {
     public partial class UserControlMockSettings : UserControl
     {
-        public CustomPropertyMockSettings MockSettings { get; set; }
+        public CustomPropertyMockSettings CustomPropertyMockSettings
+        {
+            get
+            {
+                return new CustomPropertyMockSettings
+                {
+                    Name = textBoxName.Text,
+                    Type = comboBoxType.SelectedItem.ToString(),
+                    Value = textBoxValue.Text,
+                    Ignore = checkBoxIgnore.Checked,
+                    RegenerateBeforeSending = checkBoxRegenerateBeforeSending.Checked
+                };
+            }
+        }
 
         private Action _remover;
 
-        public UserControlMockSettings(CustomPropertyMockSettings mockSettings, Action remover)
+        public UserControlMockSettings(CustomPropertyMockSettings propertySettings, Action remover)
         {
             InitializeComponent();
 
             _remover = remover;
 
-            MockSettings = mockSettings;
-
             comboBoxType.DataSource = GetPrimitiveTypes();
 
-            textBoxName.DataBindings.Add("Text", MockSettings, "Name", true, DataSourceUpdateMode.OnPropertyChanged);
-            textBoxValue.DataBindings.Add("Text", MockSettings, "Value", true, DataSourceUpdateMode.OnPropertyChanged);
-            comboBoxType.DataBindings.Add("SelectedItem", MockSettings, "Type", true, DataSourceUpdateMode.OnPropertyChanged);
-            checkBoxIgnore.DataBindings.Add("Checked", MockSettings, "Ignore", true, DataSourceUpdateMode.OnPropertyChanged);
-            checkBoxAwaysChange.DataBindings.Add("Checked", MockSettings, "RegenerateBeforeSending", true, DataSourceUpdateMode.OnPropertyChanged);
-
+            textBoxName.Text = propertySettings.Name;
+            comboBoxType.SelectedItem = propertySettings.Type;
+            textBoxValue.Text = propertySettings.Value;
+            checkBoxIgnore.Checked = propertySettings.Ignore;
+            checkBoxRegenerateBeforeSending.Checked = propertySettings.RegenerateBeforeSending;
         }
 
         static List<string> GetPrimitiveTypes()
         {
             return new List<string>
             {
-                "Any", 
+                "Any",
                 typeof(bool).Name,
                 typeof(byte).Name,
                 typeof(sbyte).Name,
@@ -62,23 +72,23 @@ namespace Masstransit.Publisher.Windows.Forms.UserControls
         {
             textBoxValue.Enabled = !checkBoxIgnore.Checked;
 
-            checkBoxAwaysChange.Enabled = !checkBoxIgnore.Checked;
+            checkBoxRegenerateBeforeSending.Enabled = !checkBoxIgnore.Checked;
 
-            if (checkBoxAwaysChange.Checked)
-                checkBoxAwaysChange.Checked = !checkBoxIgnore.Checked;
+            if (checkBoxRegenerateBeforeSending.Checked)
+                checkBoxRegenerateBeforeSending.Checked = !checkBoxIgnore.Checked;
         }
 
         private void textBoxValue_TextChanged(object sender, EventArgs e)
         {
-            checkBoxAwaysChange.Enabled = string.IsNullOrEmpty(textBoxValue.Text);
+            checkBoxRegenerateBeforeSending.Enabled = string.IsNullOrEmpty(textBoxValue.Text);
 
-            if (checkBoxAwaysChange.Checked)
-                checkBoxAwaysChange.Checked = string.IsNullOrEmpty(textBoxValue.Text);
+            if (checkBoxRegenerateBeforeSending.Checked)
+                checkBoxRegenerateBeforeSending.Checked = string.IsNullOrEmpty(textBoxValue.Text);
         }
 
         private void checkBoxAwaysChange_CheckedChanged(object sender, EventArgs e)
         {
-            textBoxValue.Enabled = !checkBoxAwaysChange.Checked;
+            textBoxValue.Enabled = !checkBoxRegenerateBeforeSending.Checked;
         }
 
         private void label1_Click(object sender, EventArgs e)
