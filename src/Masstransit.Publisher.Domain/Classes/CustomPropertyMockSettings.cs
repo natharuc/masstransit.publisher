@@ -19,7 +19,7 @@
         {
             get
             {
-                if (string.IsNullOrEmpty(Name)) 
+                if (string.IsNullOrEmpty(Name))
                 {
                     return "The name could not be null ";
                 }

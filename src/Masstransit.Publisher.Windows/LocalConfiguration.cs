@@ -24,7 +24,7 @@ namespace Masstransit.Publisher.Windows
         public const string ConfigFileName = "config.json";
         public DateTime? LastSave { get; set; }
         public string DllFile { get; set; } = string.Empty;
-        public Contract? Contract { get; set; } 
+        public Contract? Contract { get; set; }
         public string Json { get; set; } = string.Empty;
         public string Queue { get; set; } = string.Empty;
         public BrokerSettings BrokerSettings { get; set; }
@@ -48,7 +48,7 @@ namespace Masstransit.Publisher.Windows
 
                 var savedConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(json);
 
-                if(savedConfiguration == null)
+                if (savedConfiguration == null)
                     return new LocalConfiguration();
 
                 return savedConfiguration;
