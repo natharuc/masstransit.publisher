@@ -109,7 +109,7 @@ namespace Masstransit.Publisher.Services.Services
 
             var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments()[0];
 
-            if(itemType == null) 
+            if (itemType == null)
                 return listInstance;
 
             var count = _random.Next(mockSettings.MinArrayLength, mockSettings.MaxArrayLength);
