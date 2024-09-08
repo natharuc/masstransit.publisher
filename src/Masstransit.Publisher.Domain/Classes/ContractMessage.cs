@@ -2,8 +2,8 @@
 {
     public class ContractMessage
     {
-        public Contract Contract { get; set; }
-        public string Body { get; set; }
+        public Contract Contract { get; set; } = new();
+        public string Body { get; set; } = string.Empty;
         public bool HasContractType
         {
             get

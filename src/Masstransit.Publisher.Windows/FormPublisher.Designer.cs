@@ -65,8 +65,8 @@
             textBoxContract.Name = "textBoxContract";
             textBoxContract.Size = new Size(709, 22);
             textBoxContract.TabIndex = 3;
-            textBoxContract.TextChanged += textBoxContract_TextChanged;
-            textBoxContract.KeyDown += textBoxContract_KeyDown;
+            textBoxContract.TextChanged += TextBoxContract_TextChanged;
+            textBoxContract.KeyDown += TextBoxContract_KeyDown;
             // 
             // richTextBoxJson
             // 
@@ -110,7 +110,7 @@
             buttonEnviar.TabIndex = 8;
             buttonEnviar.Text = "Send";
             buttonEnviar.UseVisualStyleBackColor = true;
-            buttonEnviar.Click += buttonSend_Click;
+            buttonEnviar.Click += ButtonSend_Click;
             // 
             // buttonPublicar
             // 
@@ -123,7 +123,7 @@
             buttonPublicar.TabIndex = 10;
             buttonPublicar.Text = "Publish";
             buttonPublicar.UseVisualStyleBackColor = true;
-            buttonPublicar.Click += buttonPublish_Click;
+            buttonPublicar.Click += ButtonPublish_Click;
             // 
             // buttonMockJson
             // 
@@ -136,7 +136,7 @@
             buttonMockJson.TabIndex = 11;
             buttonMockJson.Text = "Mock";
             buttonMockJson.UseVisualStyleBackColor = true;
-            buttonMockJson.Click += buttonMockJson_Click;
+            buttonMockJson.Click += ButtonMockJson_Click;
             // 
             // dataGridViewAutoComplete
             // 
@@ -156,8 +156,8 @@
             dataGridViewAutoComplete.Size = new Size(708, 423);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
-            dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
-            dataGridViewAutoComplete.KeyDown += dataGridViewAutoComplete_KeyDown;
+            dataGridViewAutoComplete.CellDoubleClick += DataGridViewAutoComplete_CellDoubleClick;
+            dataGridViewAutoComplete.KeyDown += DataGridViewAutoComplete_KeyDown;
             // 
             // linkLabelSelectDll
             // 
@@ -170,7 +170,7 @@
             linkLabelSelectDll.TabStop = true;
             linkLabelSelectDll.Text = "Select .dll";
             linkLabelSelectDll.TextAlign = ContentAlignment.MiddleRight;
-            linkLabelSelectDll.LinkClicked += linkLabelSelectDll_LinkClicked;
+            linkLabelSelectDll.LinkClicked += LinkLabelSelectDll_LinkClicked;
             // 
             // labelSelectedContract
             // 
@@ -195,7 +195,7 @@
             buttonConfigMock.TabIndex = 15;
             toolTip.SetToolTip(buttonConfigMock, "Mock Settings");
             buttonConfigMock.UseVisualStyleBackColor = false;
-            buttonConfigMock.Click += buttonConfigMock_Click;
+            buttonConfigMock.Click += ButtonConfigMock_Click;
             // 
             // buttonExecuteActivity
             // 
@@ -209,7 +209,7 @@
             buttonExecuteActivity.Text = "Execute";
             toolTip.SetToolTip(buttonExecuteActivity, "Execute Activity");
             buttonExecuteActivity.UseVisualStyleBackColor = true;
-            buttonExecuteActivity.Click += buttonExecuteActivity_Click;
+            buttonExecuteActivity.Click += ButtonExecuteActivity_Click;
             // 
             // buttonActivitySettings
             // 
@@ -225,7 +225,7 @@
             buttonActivitySettings.TabIndex = 17;
             toolTip.SetToolTip(buttonActivitySettings, "Execute Activity Settings");
             buttonActivitySettings.UseVisualStyleBackColor = false;
-            buttonActivitySettings.Click += buttonActivitySettings_Click;
+            buttonActivitySettings.Click += ButtonActivitySettings_Click;
             // 
             // buttonSenderSettings
             // 
@@ -241,7 +241,7 @@
             buttonSenderSettings.TabIndex = 18;
             toolTip.SetToolTip(buttonSenderSettings, "Sender Settings");
             buttonSenderSettings.UseVisualStyleBackColor = false;
-            buttonSenderSettings.Click += buttonSenderSettings_Click;
+            buttonSenderSettings.Click += ButtonSenderSettings_Click;
             // 
             // tabControl
             // 

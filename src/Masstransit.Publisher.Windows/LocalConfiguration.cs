@@ -9,6 +9,7 @@ namespace Masstransit.Publisher.Windows
         public LocalConfiguration()
         {
             MockSettings = new();
+            BrokerSettings = new();
             SenderSettings = new()
             {
                 MessageCount = 1,

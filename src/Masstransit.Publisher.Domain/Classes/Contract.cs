@@ -4,10 +4,16 @@
     {
         public Contract() { }
 
-        public Contract? GenericContract { get; set; }
-        public string Name { get; set; }
+        public Contract(Type type)
+        {
+            FillName(type);
+            _type = type;
+        }
 
-        private Type _type { get; set; }
+        public Contract? GenericContract { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        private Type _type { get; set; } = null!;
 
         public Type GetFullType()
         {
@@ -20,12 +26,6 @@
         }
 
         public bool RequiresGeneric => GetFullType().IsGenericType && GenericContract == null;
-
-        public Contract(Type type)
-        {
-            FillName(type);
-            _type = type;
-        }
 
         private void FillName(Type type)
         {

@@ -14,20 +14,21 @@ namespace Masstransit.Publisher.Windows
     public partial class FormPublisher : Form
     {
         public List<Contract> Contracts { get; private set; } = new List<Contract>();
-        private Contract? _selectedContract { get; set; }
+        private Contract? SelectedContract { get; set; }
 
-        private IMockInterfaceService _mockService;
-        private IPublisherService _publisherService;
-        private IBusControlFactory _busControlFactory;
-        private ILogService _logService;
+        private readonly IMockInterfaceService _mockService;
+        private readonly IPublisherService _publisherService;
+        private readonly IBusControlFactory _busControlFactory;
+        private readonly ILogService _logService;
         private bool _genericTypeSelecting;
         private LocalConfiguration _localConfiguration;
         private BrokerSettings _brokerSettings;
-        private IUserControlBrokerSettings? _userControlSettings;
+        private IUserControlBrokerSettings _userControlSettings;
 
         public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService, ILogService logService, IBusControlFactory busControlFactory)
         {
             InitializeComponent();
+            _userControlSettings = new UserControlServiceBusSettings();
             _localConfiguration = new LocalConfiguration();
             _brokerSettings = new BrokerSettings();
             _mockService = mockInterfaceService;
@@ -47,11 +48,11 @@ namespace Masstransit.Publisher.Windows
             dataGridViewAutoComplete.Hide();
         }
 
-        private async void buttonSend_Click(object sender, EventArgs e)
+        private async void ButtonSend_Click(object sender, EventArgs e)
         {
             FillBrokerSettings();
 
-            Validate();
+            ValidateConfiguration();
 
             tabControl.SelectedTab = tabPageLog;
 
@@ -59,7 +60,7 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            if (_selectedContract == null)
+            if (SelectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
@@ -72,7 +73,7 @@ namespace Masstransit.Publisher.Windows
 
             await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
 
-            await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {_selectedContract}");
+            await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {SelectedContract}");
         }
 
         private void PopulateBrokers()
@@ -81,11 +82,11 @@ namespace Masstransit.Publisher.Windows
 
             foreach (var broker in brokers)
             {
-                var buttonImage = (Image)Properties.Resources.ResourceManager.GetObject($"iconButton{broker}");
+                var buttonImage = Properties.Resources.ResourceManager.GetObject($"iconButton{broker}");
 
                 var button = new Button()
                 {
-                    Image = buttonImage,
+                    Image = buttonImage == null ? null : (Image)buttonImage,
                     ImageAlign = ContentAlignment.MiddleLeft,
                     Name = $"buttonBroker{broker}",
                     Text = broker.ToString(),
@@ -127,12 +128,12 @@ namespace Masstransit.Publisher.Windows
 
         private ContractMessage GetContractMessage(string initialJson)
         {
-            if (_selectedContract == null)
+            if (SelectedContract == null)
                 throw new InvalidOperationException("Contract is required");
 
             return new ContractMessage()
             {
-                Contract = _selectedContract,
+                Contract = SelectedContract,
                 Body = RegenerateJson(initialJson)
             };
         }
@@ -141,27 +142,19 @@ namespace Masstransit.Publisher.Windows
         {
             if (_localConfiguration.MockSettings.CustomProperties.Exists(n => n.RegenerateBeforeSending))
             {
-                var currentObject = JsonConvert.DeserializeObject<JObject>(initialJson);
-
-                if (currentObject == null)
-                    throw new InvalidOperationException("Json is invalid");
+                var currentObject = JsonConvert.DeserializeObject<JObject>(initialJson) ?? throw new InvalidOperationException("Json is invalid");
 
                 var regenerateProperties = _localConfiguration.MockSettings.CustomProperties.FindAll(n => n.RegenerateBeforeSending);
-
-
 
                 if (regenerateProperties.Any())
                 {
                     foreach (var regenerateProperty in regenerateProperties)
                     {
-                        var type = Type.GetType($"System.{regenerateProperty.Type}");
+                        var type = Type.GetType($"System.{regenerateProperty.Type}") ?? throw new InvalidOperationException($"Type {regenerateProperty.Type} not found");
 
-                        var newValue = _mockService.GetMockValue(type, _localConfiguration.MockSettings);
+                        var newValue = _mockService.GetMockValue(type, _localConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
 
-                        var token = currentObject.SelectToken(regenerateProperty.Name);
-
-                        if (token == null)
-                            throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
+                        var token = currentObject.SelectToken(regenerateProperty.Name) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
                         token.Replace(JToken.FromObject(newValue));
                     }
@@ -177,10 +170,10 @@ namespace Masstransit.Publisher.Windows
         {
             var newConfiguration = new LocalConfiguration()
             {
-                Contract = _selectedContract,
+                Contract = SelectedContract,
                 Json = richTextBoxJson.Text.Trim(),
                 BrokerSettings = FillBrokerSettings(),
-                DllFile = linkLabelSelectDll.Tag?.ToString(),
+                DllFile = linkLabelSelectDll.Tag?.ToString() ?? string.Empty,
                 MockSettings = _localConfiguration.MockSettings,
                 ActivitySettings = _localConfiguration.ActivitySettings,
                 SenderSettings = _localConfiguration.SenderSettings,
@@ -206,13 +199,13 @@ namespace Masstransit.Publisher.Windows
 
                 if (Contracts.Any())
                 {
-                    _selectedContract = _localConfiguration.Contract;
+                    SelectedContract = _localConfiguration.Contract;
 
-                    if (_selectedContract != null)
+                    if (SelectedContract != null)
                     {
-                        _selectedContract.FillTypes(Contracts);
+                        SelectedContract.FillTypes(Contracts);
 
-                        labelSelectedContract.Text = _selectedContract.ToString();
+                        labelSelectedContract.Text = SelectedContract.ToString();
                     }
                 }
 
@@ -224,9 +217,9 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void Validate(bool isPublish = false)
+        private void ValidateConfiguration(bool isPublish = false)
         {
-            if (_selectedContract == null)
+            if (SelectedContract == null)
                 throw new InvalidOperationException("Contract is required");
 
             if (string.IsNullOrWhiteSpace(richTextBoxJson.Text))
@@ -238,7 +231,7 @@ namespace Masstransit.Publisher.Windows
             if (!string.IsNullOrEmpty(_brokerSettings.ErrorMessage))
                 throw new InvalidOperationException(_brokerSettings.ErrorMessage);
 
-            if (_selectedContract != null && _selectedContract.RequiresGeneric && _selectedContract.GenericContract == null)
+            if (SelectedContract.RequiresGeneric && SelectedContract.GenericContract == null)
                 throw new InvalidOperationException("Select a type for the generic type");
         }
 
@@ -249,9 +242,9 @@ namespace Masstransit.Publisher.Windows
             _publisherService.Setup(buscontrol);
         }
 
-        private async void buttonPublish_Click(object sender, EventArgs e)
+        private async void ButtonPublish_Click(object sender, EventArgs e)
         {
-            Validate(true);
+            ValidateConfiguration(true);
 
             tabControl.SelectedTab = tabPageLog;
 
@@ -265,26 +258,26 @@ namespace Masstransit.Publisher.Windows
 
             await _publisherService.Publish(messages);
 
-            await _logService.Send(Queues.Log, $"{messages.Count} events has been published to {_selectedContract}");
+            await _logService.Send(Queues.Log, $"{messages.Count} events has been published to {SelectedContract}");
         }
 
-        private void buttonMockJson_Click(object sender, EventArgs e)
+        private void ButtonMockJson_Click(object sender, EventArgs e)
         {
-            if (_selectedContract == null)
+            if (SelectedContract == null)
             {
                 MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
-            if (_selectedContract.RequiresGeneric && _selectedContract.GenericContract == null)
+            if (SelectedContract.RequiresGeneric && SelectedContract.GenericContract == null)
             {
                 MessageBox.Show("Select a type for the generic type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
-            var tipo = _selectedContract.GetFullType();
+            var tipo = SelectedContract.GetFullType();
 
             var mockObject = _mockService.Mock(tipo, _localConfiguration.MockSettings);
 
@@ -295,7 +288,7 @@ namespace Masstransit.Publisher.Windows
             richTextBoxJson.Text = json;
         }
 
-        private void textBoxContract_TextChanged(object sender, EventArgs e)
+        private void TextBoxContract_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxContract.Text.Trim()))
             {
@@ -329,7 +322,7 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void textBoxContract_KeyDown(object sender, KeyEventArgs e)
+        private void TextBoxContract_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -343,7 +336,7 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void dataGridViewAutoComplete_KeyDown(object sender, KeyEventArgs e)
+        private void DataGridViewAutoComplete_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -359,7 +352,7 @@ namespace Masstransit.Publisher.Windows
 
             var contract = (Contract)dataGridViewAutoComplete.CurrentRow.DataBoundItem;
 
-            if (_genericTypeSelecting)
+            if (_genericTypeSelecting && SelectedContract != null)
             {
                 if (contract.RequiresGeneric)
                 {
@@ -367,14 +360,14 @@ namespace Masstransit.Publisher.Windows
                     return;
                 }
 
-                _selectedContract.GenericContract = contract;
+                SelectedContract.GenericContract = contract;
                 _genericTypeSelecting = false;
             }
             else
             {
 
 
-                _selectedContract = contract;
+                SelectedContract = contract;
 
                 richTextBoxJson.Text = string.Empty;
 
@@ -393,15 +386,15 @@ namespace Masstransit.Publisher.Windows
 
             dataGridViewAutoComplete.Hide();
 
-            labelSelectedContract.Text = _selectedContract.ToString();
+            labelSelectedContract.Text = SelectedContract.ToString();
         }
 
-        private void dataGridViewAutoComplete_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridViewAutoComplete_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             SelectFocuseGridContract();
         }
 
-        private void linkLabelSelectDll_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkLabelSelectDll_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string fileName = string.Empty;
 
@@ -446,31 +439,29 @@ namespace Masstransit.Publisher.Windows
             linkLabelSelectDll.Tag = fileName;
         }
 
-        private void buttonConfigMock_Click(object sender, EventArgs e)
+        private void ButtonConfigMock_Click(object sender, EventArgs e)
         {
-            using (var form = new FormMockSettings(_mockService, _localConfiguration ?? new LocalConfiguration()))
-            {
-                form.ShowDialog();
+            using var form = new FormMockSettings(_mockService, _localConfiguration ?? new LocalConfiguration());
 
-                _localConfiguration = form.LocalConfiguration;
+            form.ShowDialog();
 
-                SaveLastConfiguration();
-            }
+            _localConfiguration = form.LocalConfiguration;
+
+            SaveLastConfiguration();
         }
 
-        private void buttonActivitySettings_Click(object sender, EventArgs e)
+        private void ButtonActivitySettings_Click(object sender, EventArgs e)
         {
-            using (var form = new FormActivitySettings(_localConfiguration.ActivitySettings))
-            {
-                form.ShowDialog();
+            using var form = new FormActivitySettings(_localConfiguration.ActivitySettings);
 
-                _localConfiguration.ActivitySettings = form.ActivitySettings;
+            form.ShowDialog();
 
-                SaveLastConfiguration();
-            }
+            _localConfiguration.ActivitySettings = form.ActivitySettings;
+
+            SaveLastConfiguration();
         }
 
-        private async void buttonExecuteActivity_Click(object sender, EventArgs e)
+        private async void ButtonExecuteActivity_Click(object sender, EventArgs e)
         {
             await _logService.Send(Queues.Log, "Executing activity");
 
@@ -487,16 +478,14 @@ namespace Masstransit.Publisher.Windows
             await _logService.Send(Queues.Log, $"{conctractMessage.Count} events has been executed as activity");
         }
 
-        private void buttonSenderSettings_Click(object sender, EventArgs e)
+        private void ButtonSenderSettings_Click(object sender, EventArgs e)
         {
-            using (var form = new FormSenderSettings(_localConfiguration.SenderSettings))
-            {
-                form.ShowDialog();
+            using var form = new FormSenderSettings(_localConfiguration.SenderSettings);
+            form.ShowDialog();
 
-                _localConfiguration.SenderSettings = form.SenderSettings;
+            _localConfiguration.SenderSettings = form.SenderSettings;
 
-                SaveLastConfiguration();
-            }
+            SaveLastConfiguration();
         }
 
         private void Log(string log)
@@ -517,9 +506,7 @@ namespace Masstransit.Publisher.Windows
                 button.FlatAppearance.BorderSize = 1;
             }
 
-            var buttonBroker = panelBrokers.Controls.Find($"buttonBroker{broker}", false).FirstOrDefault() as Button;
-
-            if (buttonBroker != null)
+            if (panelBrokers.Controls.Find($"buttonBroker{broker}", false).FirstOrDefault() is Button buttonBroker)
                 buttonBroker.FlatAppearance.BorderSize = 2;
 
             UserControl? userControlSettings = null;

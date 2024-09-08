@@ -1,7 +1,6 @@
 ﻿using MassTransit.Serialization.JsonConverters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Globalization;
 
 namespace Masstransit.Publisher.Services.Services
 {
@@ -20,8 +19,7 @@ namespace Masstransit.Publisher.Services.Services
                             new InternalTypeConverter(),
                             new InterfaceProxyConverter(),
                             new NewtonsoftMessageDataJsonConverter(),
-                            new StringDecimalConverter(),
-                            new MultiFormatDateConverter())
+                            new StringDecimalConverter())
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             },
@@ -30,12 +28,12 @@ namespace Masstransit.Publisher.Services.Services
             DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
         };
 
-        public static T Deserialize<T>(string json)
+        public static T? Deserialize<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, _settings);
         }
 
-        public static object Deserialize(string json, Type contractType)
+        public static object? Deserialize(string json, Type contractType)
         {
             return JsonConvert.DeserializeObject(json, contractType, _settings);
         }
@@ -46,48 +44,6 @@ namespace Masstransit.Publisher.Services.Services
         }
 
         internal static object Deserialize(object dadosEvento, Type tipo)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    class MultiFormatDateConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(DateTime) || objectType == typeof(DateTime?);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            string dateString = reader.Value as string;
-
-            if (dateString == null)
-            {
-                if (objectType == typeof(DateTime?))
-                    return null;
-
-                throw new JsonException("Unable to parse null as a date.");
-            }
-
-            DateTime date;
-
-            if (DateTime.TryParse(dateString, out date))
-                return date;
-
-            if (DateTime.TryParseExact(dateString, "M/d/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
-                return date;
-
-
-            throw new JsonException("Unable to parse \"" + dateString + "\" as a date.");
-        }
-
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
