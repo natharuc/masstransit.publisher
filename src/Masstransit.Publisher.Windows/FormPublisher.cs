@@ -1,9 +1,10 @@
 ﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Classes.Enumns;
 using Masstransit.Publisher.Domain.Classes.Statics;
 using Masstransit.Publisher.Domain.Interfaces;
 using Masstransit.Publisher.Windows.Forms;
-using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
+using Masstransit.Publisher.Windows.Forms.UserControls.BrokersSettings;
+using Masstransit.Publisher.Windows.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
@@ -17,23 +18,30 @@ namespace Masstransit.Publisher.Windows
 
         private IMockInterfaceService _mockService;
         private IPublisherService _publisherService;
+        private IBusControlFactory _busControlFactory;
         private ILogService _logService;
         private bool _genericTypeSelecting;
         private LocalConfiguration _localConfiguration;
+        private BrokerSettings _brokerSettings;
+        private IUserControlBrokerSettings? _userControlSettings;
 
-        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService, ILogService logService)
+        public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService, ILogService logService, IBusControlFactory busControlFactory)
         {
             InitializeComponent();
             _localConfiguration = new LocalConfiguration();
+            _brokerSettings = new BrokerSettings();
             _mockService = mockInterfaceService;
             _publisherService = publisherService;
             _logService = logService;
 
             _logService.Subscribe(this.Name, Queues.Log, Log);
+            _busControlFactory = busControlFactory;
         }
 
         private void FormPublicador_Load(object sender, EventArgs e)
         {
+            PopulateBrokers();
+
             LoadLastConfiguration();
 
             dataGridViewAutoComplete.Hide();
@@ -41,6 +49,8 @@ namespace Masstransit.Publisher.Windows
 
         private async void buttonSend_Click(object sender, EventArgs e)
         {
+            FillBrokerSettings();
+
             Validate();
 
             tabControl.SelectedTab = tabPageLog;
@@ -63,6 +73,38 @@ namespace Masstransit.Publisher.Windows
             await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
 
             await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {_selectedContract}");
+        }
+
+        private void PopulateBrokers()
+        {
+            var brokers = Enum.GetValues(typeof(Broker)).Cast<Broker>().ToList();
+
+            foreach (var broker in brokers)
+            {
+                var buttonImage = (Image)Properties.Resources.ResourceManager.GetObject($"iconButton{broker}");
+
+                var button = new Button()
+                {
+                    Image = buttonImage,
+                    ImageAlign = ContentAlignment.MiddleLeft,
+                    Name = $"buttonBroker{broker}",
+                    Text = broker.ToString(),
+                    Tag = broker,
+                    Enabled = _busControlFactory.IsBrokerSupported(broker),
+                    Height = 40,
+                    Width = 120,
+                    TextAlign = ContentAlignment.MiddleRight,
+                    FlatStyle = FlatStyle.Flat,
+                    FlatAppearance = {
+
+                        BorderSize = 1
+                    },
+                };
+
+                button.Click += (ss, ee) => SelectBroker(broker);
+
+                panelBrokers.Controls.Add(button);
+            }
         }
 
         private List<ContractMessage> GetMessagesToSend()
@@ -137,7 +179,7 @@ namespace Masstransit.Publisher.Windows
             {
                 Contract = _selectedContract,
                 Json = richTextBoxJson.Text.Trim(),
-                ConnectionString = richTextBoxConnectionString.Text.Trim(),
+                BrokerSettings = FillBrokerSettings(),
                 DllFile = linkLabelSelectDll.Tag?.ToString(),
                 MockSettings = _localConfiguration.MockSettings,
                 ActivitySettings = _localConfiguration.ActivitySettings,
@@ -145,6 +187,13 @@ namespace Masstransit.Publisher.Windows
             };
 
             LocalConfiguration.SaveToJsonFile(newConfiguration);
+        }
+
+        private BrokerSettings FillBrokerSettings()
+        {
+            _brokerSettings = _userControlSettings.GetSettings();
+
+            return _brokerSettings;
         }
 
         private void LoadLastConfiguration()
@@ -168,8 +217,10 @@ namespace Masstransit.Publisher.Windows
                 }
 
                 richTextBoxJson.Text = _localConfiguration.Json;
-                richTextBoxConnectionString.Text = _localConfiguration.ConnectionString;
 
+                _brokerSettings = _localConfiguration.BrokerSettings ?? new BrokerSettings();
+
+                SelectBroker(_brokerSettings.Broker);
             }
         }
 
@@ -184,8 +235,8 @@ namespace Masstransit.Publisher.Windows
             if (!isPublish && string.IsNullOrWhiteSpace(_localConfiguration.SenderSettings.Queue))
                 throw new InvalidOperationException("Queue is required");
 
-            if (string.IsNullOrWhiteSpace(richTextBoxConnectionString.Text))
-                throw new InvalidOperationException("Connection string is required");
+            if (!string.IsNullOrEmpty(_brokerSettings.ErrorMessage))
+                throw new InvalidOperationException(_brokerSettings.ErrorMessage);
 
             if (_selectedContract != null && _selectedContract.RequiresGeneric && _selectedContract.GenericContract == null)
                 throw new InvalidOperationException("Select a type for the generic type");
@@ -193,31 +244,9 @@ namespace Masstransit.Publisher.Windows
 
         private void ConfigurePublisher()
         {
-            var buscontrol = GetBusControl();
+            var buscontrol = _busControlFactory.Create(_brokerSettings);
 
             _publisherService.Setup(buscontrol);
-        }
-
-        private IBusControl GetBusControl()
-        {
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddMassTransit((masstransit) =>
-            {
-                masstransit.UsingAzureServiceBus((context, configuration) =>
-                {
-                    configuration.Host(richTextBoxConnectionString.Text);
-
-                    configuration.UseNewtonsoftJsonDeserializer();
-                    configuration.UseNewtonsoftJsonDeserializer();
-                });
-            });
-
-            var provider = serviceCollection.BuildServiceProvider();
-
-            var buscontrol = provider.GetRequiredService<IBusControl>();
-
-            return buscontrol;
         }
 
         private async void buttonPublish_Click(object sender, EventArgs e)
@@ -479,6 +508,48 @@ namespace Masstransit.Publisher.Windows
             listBoxLog.Items.Add(log);
 
             listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
+        }
+
+        private void SelectBroker(Broker broker)
+        {
+            foreach (var button in panelBrokers.Controls.OfType<Button>())
+            {
+                button.FlatAppearance.BorderSize = 1;
+            }
+
+            var buttonBroker = panelBrokers.Controls.Find($"buttonBroker{broker}", false).FirstOrDefault() as Button;
+
+            if (buttonBroker != null)
+                buttonBroker.FlatAppearance.BorderSize = 2;
+
+            UserControl? userControlSettings = null;
+
+            switch (broker)
+            {
+                case Broker.AzureServiceBus:
+                    userControlSettings = new UserControlServiceBusSettings();
+                    break;
+                case Broker.RabbitMq:
+                    userControlSettings = new UserControlRabbitMqSettings();
+                    break;
+                case Broker.Kafka:
+                    throw new InvalidOperationException("Kafka not implemented yet");
+                case Broker.AmazonSqs:
+                    userControlSettings = new UserControlAmazonSqsSettings();
+                    break;
+                case Broker.ActiveMq:
+                    userControlSettings = new UserControlActiveMqSettings();
+                    break;
+            }
+
+            if (userControlSettings == null)
+                throw new InvalidOperationException("User control not found");
+
+            _userControlSettings = (IUserControlBrokerSettings)userControlSettings;
+            _userControlSettings.SetSettings(_brokerSettings);
+            panelBrokerSettings.Controls.Clear();
+            userControlSettings.Dock = DockStyle.Fill;
+            panelBrokerSettings.Controls.Add(userControlSettings);
         }
     }
 }
