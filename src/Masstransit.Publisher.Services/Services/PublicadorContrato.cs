@@ -11,7 +11,8 @@ namespace Masstransit.Publisher.Services.Services
 {
     public class PublisherService : IPublisherService
     {
-        private IBusControl? _busControl;
+        private IBusControl _busControl { get; set; } = null!;
+
         private readonly ILogService _logService;
 
         public PublisherService(ILogService logService)
@@ -93,9 +94,9 @@ namespace Masstransit.Publisher.Services.Services
 
             foreach (var message in events)
             {
-                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType());
+                var messageEvent = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType()) ?? throw new InvalidOperationException("Message not found.");
 
-                listaEventos.Add(evento);
+                listaEventos.Add(messageEvent);
             }
 
             await _busControl.PublishBatch(listaEventos, firstMessage.Contract.GetFullType());
@@ -122,9 +123,9 @@ namespace Masstransit.Publisher.Services.Services
 
             foreach (var message in events)
             {
-                var evento = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType());
+                var messageEvent = JsonToInterfaceConverter.Deserialize(message.Body, message.Contract.GetFullType()) ?? throw new InvalidOperationException("Message not found.");
 
-                listaEventos.Add(evento);
+                listaEventos.Add(messageEvent);
             }
 
             var sendEntPoint = await _busControl.GetSendEndpoint(new Uri($"queue:{queue}"));

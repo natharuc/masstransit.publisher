@@ -15,15 +15,12 @@ namespace Masstransit.Publisher.Services.Services
             _random = new Random();
         }
 
-        public object Mock(Type type, MockSettings? mockSettings)
+        public object? Mock(Type type, MockSettings mockSettings)
         {
             if (!type.IsInterface && !type.IsClass)
                 throw new ArgumentException("The type has been a class or inteface.");
 
-            var mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object?>;
-
-            if (mockObject == null)
-                throw new InvalidOperationException("The mock object could not be created.");
+            IDictionary<string, object?>? mockObject = Activator.CreateInstance(typeof(ExpandoObject)) as IDictionary<string, object?> ?? throw new InvalidOperationException("The mock object could not be created.");
 
             foreach (var property in GetAllProperties(type))
             {
@@ -41,7 +38,7 @@ namespace Masstransit.Publisher.Services.Services
             return mockObject;
         }
 
-        private bool Ignore(PropertyInfo property, MockSettings? mockSettings)
+        private static bool Ignore(PropertyInfo property, MockSettings mockSettings)
         {
             if (mockSettings == null) return false;
 
@@ -51,52 +48,51 @@ namespace Masstransit.Publisher.Services.Services
                 .Any(x => x.Ignore);
         }
 
-        private object? ConfigValue(PropertyInfo property, MockSettings? mockSettings)
+        private static object? ConfigValue(PropertyInfo property, MockSettings mockSettings)
         {
             if (mockSettings == null) return null;
 
             return mockSettings.CustomProperties
                 .Where(x => !x.RegenerateBeforeSending)
                 .Where(x => x.Name == property.Name)
-                .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
-                .FirstOrDefault()?.Value;
+                .FirstOrDefault(x => x.Type == property.PropertyType.Name || x.Type == "Any");
         }
 
-        public object? GetMockValue(Type propertyType, MockSettings? mockSettings)
+        public object? GetMockValue(Type type, MockSettings mockSettings)
         {
-            if (propertyType == typeof(int))
+            if (type == typeof(int))
                 return _random.Next();
-            if (propertyType == typeof(Uri))
+            if (type == typeof(Uri))
                 return new Uri($@"https://{Guid.NewGuid()}.com");
-            if (propertyType == typeof(long))
+            if (type == typeof(long))
                 return _random.Next();
-            if (propertyType == typeof(Guid))
+            if (type == typeof(Guid))
                 return Guid.NewGuid();
-            if (propertyType == typeof(string))
-                return propertyType.Name + Guid.NewGuid().ToString();
-            if (propertyType == typeof(DateTime))
+            if (type == typeof(string))
+                return type.Name + Guid.NewGuid().ToString();
+            if (type == typeof(DateTime))
                 return DateTime.Now;
-            if (propertyType == typeof(bool))
+            if (type == typeof(bool))
                 return _random.Next(0, 1) == 1;
-            if (propertyType == typeof(double))
+            if (type == typeof(double))
                 return _random.NextDouble();
-            if (propertyType == typeof(decimal))
+            if (type == typeof(decimal))
                 return Convert.ToDecimal(_random.NextDouble());
-            if (propertyType.IsEnum)
-                return GetRandomEnumPosition(propertyType);
-            if (propertyType.IsArray)
-                return MockList(propertyType, mockSettings);
-            if (typeof(IEnumerable).IsAssignableFrom(propertyType) && propertyType.IsGenericType)
-                return MockList(propertyType, mockSettings);
-            if (propertyType.IsClass || propertyType.IsInterface)
-                return Mock(propertyType, mockSettings);
+            if (type.IsEnum)
+                return GetRandomEnumPosition(type);
+            if (type.IsArray)
+                return MockList(type, mockSettings);
+            if (typeof(IEnumerable).IsAssignableFrom(type) && type.IsGenericType)
+                return MockList(type, mockSettings);
+            if (type.IsClass || type.IsInterface)
+                return Mock(type, mockSettings);
 
-            var instance = Activator.CreateInstance(propertyType);
+            var instance = Activator.CreateInstance(type);
 
             return instance;
         }
 
-        private object GetRandomEnumPosition(Type propertyType)
+        private object? GetRandomEnumPosition(Type propertyType)
         {
             var enumValues = Enum.GetValues(propertyType);
 
@@ -104,29 +100,34 @@ namespace Masstransit.Publisher.Services.Services
 
             var randomEnumValue = enumValues.GetValue(randomIndex);
 
-            if (randomEnumValue == null)
-                throw new InvalidOperationException("The random enum value could not be created.");
-
-            return randomEnumValue;
-
+            return randomEnumValue ?? throw new InvalidOperationException("The random enum value could not be created.");
         }
 
-        private object MockList(Type listType, MockSettings? mockSettings)
+        private object? MockList(Type listType, MockSettings mockSettings)
         {
-            var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
             var listInstance = new List<object>();
+
+            var itemType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments()[0];
+
+            if(itemType == null) 
+                return listInstance;
 
             var count = _random.Next(mockSettings.MinArrayLength, mockSettings.MaxArrayLength);
 
             for (int i = 0; i < count; i++)
             {
-                listInstance.Add(GetMockValue(itemType, mockSettings));
+                var mockValue = GetMockValue(itemType, mockSettings);
+
+                if (mockValue == null)
+                    continue;
+
+                listInstance.Add(mockValue);
             }
 
             return listInstance;
         }
 
-        private IEnumerable<PropertyInfo> GetAllProperties(Type type)
+        private static IEnumerable<PropertyInfo> GetAllProperties(Type type)
         {
             var propertyInfos = new List<PropertyInfo>();
 

@@ -2,9 +2,9 @@
 {
     public class PublisherServiceResponse
     {
-        public Contract Contract { get; set; }
+        public Contract Contract { get; set; } = new();
         public int SendedEvents { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 
 }

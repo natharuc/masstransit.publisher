@@ -41,7 +41,7 @@ namespace Masstransit.Publisher.Windows.Forms
             {
                 var activitySettings = JsonConvert.DeserializeObject<ActivitySettings>(richTextBoxActivitySettings.Text);
 
-                ActivitySettings = activitySettings;
+                ActivitySettings = activitySettings ?? throw new InvalidOperationException("Activity settings is required");
 
                 Close();
             }
