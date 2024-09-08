@@ -34,8 +34,6 @@
             richTextBoxJson = new RichTextBox();
             labelContrato = new Label();
             labelJson = new Label();
-            richTextBoxConnectionString = new RichTextBox();
-            labelConnectionString = new Label();
             buttonEnviar = new Button();
             buttonPublicar = new Button();
             buttonMockJson = new Button();
@@ -49,6 +47,8 @@
             buttonSenderSettings = new Button();
             tabControl = new TabControl();
             tabPageSender = new TabPage();
+            panelBrokerSettings = new Panel();
+            panelBrokers = new FlowLayoutPanel();
             tabPageLog = new TabPage();
             listBoxLog = new ListBox();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
@@ -60,7 +60,7 @@
             // textBoxContract
             // 
             textBoxContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBoxContract.Location = new Point(5, 81);
+            textBoxContract.Location = new Point(6, 150);
             textBoxContract.Margin = new Padding(2);
             textBoxContract.Name = "textBoxContract";
             textBoxContract.Size = new Size(709, 22);
@@ -72,17 +72,17 @@
             // 
             richTextBoxJson.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             richTextBoxJson.BorderStyle = BorderStyle.None;
-            richTextBoxJson.Location = new Point(6, 141);
+            richTextBoxJson.Location = new Point(6, 210);
             richTextBoxJson.Margin = new Padding(2);
             richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(708, 422);
+            richTextBoxJson.Size = new Size(708, 423);
             richTextBoxJson.TabIndex = 5;
             richTextBoxJson.Text = "";
             // 
             // labelContrato
             // 
             labelContrato.AutoSize = true;
-            labelContrato.Location = new Point(6, 66);
+            labelContrato.Location = new Point(7, 135);
             labelContrato.Margin = new Padding(2, 0, 2, 0);
             labelContrato.Name = "labelContrato";
             labelContrato.Size = new Size(86, 13);
@@ -92,39 +92,18 @@
             // labelJson
             // 
             labelJson.AutoSize = true;
-            labelJson.Location = new Point(6, 126);
+            labelJson.Location = new Point(5, 195);
             labelJson.Margin = new Padding(2, 0, 2, 0);
             labelJson.Name = "labelJson";
-            labelJson.Size = new Size(34, 13);
+            labelJson.Size = new Size(52, 13);
             labelJson.TabIndex = 4;
-            labelJson.Text = "JSON";
-            // 
-            // richTextBoxConnectionString
-            // 
-            richTextBoxConnectionString.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            richTextBoxConnectionString.BorderStyle = BorderStyle.None;
-            richTextBoxConnectionString.Location = new Point(6, 28);
-            richTextBoxConnectionString.Margin = new Padding(2);
-            richTextBoxConnectionString.Name = "richTextBoxConnectionString";
-            richTextBoxConnectionString.Size = new Size(708, 33);
-            richTextBoxConnectionString.TabIndex = 1;
-            richTextBoxConnectionString.Text = "";
-            // 
-            // labelConnectionString
-            // 
-            labelConnectionString.AutoSize = true;
-            labelConnectionString.Location = new Point(5, 13);
-            labelConnectionString.Margin = new Padding(2, 0, 2, 0);
-            labelConnectionString.Name = "labelConnectionString";
-            labelConnectionString.Size = new Size(101, 13);
-            labelConnectionString.TabIndex = 0;
-            labelConnectionString.Text = "Connection String";
+            labelJson.Text = "Message";
             // 
             // buttonEnviar
             // 
             buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonEnviar.FlatStyle = FlatStyle.Flat;
-            buttonEnviar.Location = new Point(594, 575);
+            buttonEnviar.Location = new Point(594, 645);
             buttonEnviar.Margin = new Padding(2);
             buttonEnviar.Name = "buttonEnviar";
             buttonEnviar.Size = new Size(120, 37);
@@ -137,7 +116,7 @@
             // 
             buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonPublicar.FlatStyle = FlatStyle.Flat;
-            buttonPublicar.Location = new Point(474, 575);
+            buttonPublicar.Location = new Point(474, 645);
             buttonPublicar.Margin = new Padding(2);
             buttonPublicar.Name = "buttonPublicar";
             buttonPublicar.Size = new Size(121, 37);
@@ -150,7 +129,7 @@
             // 
             buttonMockJson.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonMockJson.FlatStyle = FlatStyle.Flat;
-            buttonMockJson.Location = new Point(6, 575);
+            buttonMockJson.Location = new Point(6, 645);
             buttonMockJson.Margin = new Padding(2);
             buttonMockJson.Name = "buttonMockJson";
             buttonMockJson.Size = new Size(121, 37);
@@ -169,12 +148,12 @@
             dataGridViewAutoComplete.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewAutoComplete.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewAutoComplete.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dataGridViewAutoComplete.Location = new Point(6, 141);
+            dataGridViewAutoComplete.Location = new Point(6, 210);
             dataGridViewAutoComplete.Margin = new Padding(2);
             dataGridViewAutoComplete.Name = "dataGridViewAutoComplete";
             dataGridViewAutoComplete.RowHeadersVisible = false;
             dataGridViewAutoComplete.RowTemplate.Height = 30;
-            dataGridViewAutoComplete.Size = new Size(708, 422);
+            dataGridViewAutoComplete.Size = new Size(708, 423);
             dataGridViewAutoComplete.TabIndex = 12;
             dataGridViewAutoComplete.Visible = false;
             dataGridViewAutoComplete.CellDoubleClick += dataGridViewAutoComplete_CellDoubleClick;
@@ -183,7 +162,7 @@
             // linkLabelSelectDll
             // 
             linkLabelSelectDll.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            linkLabelSelectDll.Location = new Point(262, 66);
+            linkLabelSelectDll.Location = new Point(263, 135);
             linkLabelSelectDll.Margin = new Padding(2, 0, 2, 0);
             linkLabelSelectDll.Name = "linkLabelSelectDll";
             linkLabelSelectDll.Size = new Size(452, 13);
@@ -195,7 +174,7 @@
             // 
             // labelSelectedContract
             // 
-            labelSelectedContract.Location = new Point(6, 105);
+            labelSelectedContract.Location = new Point(5, 174);
             labelSelectedContract.Margin = new Padding(2, 0, 2, 0);
             labelSelectedContract.Name = "labelSelectedContract";
             labelSelectedContract.Size = new Size(708, 15);
@@ -208,8 +187,8 @@
             buttonConfigMock.BackColor = SystemColors.Control;
             buttonConfigMock.BackgroundImageLayout = ImageLayout.Zoom;
             buttonConfigMock.FlatStyle = FlatStyle.Flat;
-            buttonConfigMock.Image = Properties.Resources.settings;
-            buttonConfigMock.Location = new Point(126, 575);
+            buttonConfigMock.Image = Properties.Resources.iconSettings;
+            buttonConfigMock.Location = new Point(126, 645);
             buttonConfigMock.Margin = new Padding(2);
             buttonConfigMock.Name = "buttonConfigMock";
             buttonConfigMock.Size = new Size(35, 37);
@@ -222,7 +201,7 @@
             // 
             buttonExecuteActivity.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonExecuteActivity.FlatStyle = FlatStyle.Flat;
-            buttonExecuteActivity.Location = new Point(315, 575);
+            buttonExecuteActivity.Location = new Point(315, 645);
             buttonExecuteActivity.Margin = new Padding(2);
             buttonExecuteActivity.Name = "buttonExecuteActivity";
             buttonExecuteActivity.Size = new Size(121, 37);
@@ -238,8 +217,8 @@
             buttonActivitySettings.BackColor = SystemColors.Control;
             buttonActivitySettings.BackgroundImageLayout = ImageLayout.Zoom;
             buttonActivitySettings.FlatStyle = FlatStyle.Flat;
-            buttonActivitySettings.Image = Properties.Resources.settings;
-            buttonActivitySettings.Location = new Point(281, 575);
+            buttonActivitySettings.Image = Properties.Resources.iconSettings;
+            buttonActivitySettings.Location = new Point(281, 645);
             buttonActivitySettings.Margin = new Padding(2);
             buttonActivitySettings.Name = "buttonActivitySettings";
             buttonActivitySettings.Size = new Size(35, 37);
@@ -254,8 +233,8 @@
             buttonSenderSettings.BackColor = SystemColors.Control;
             buttonSenderSettings.BackgroundImageLayout = ImageLayout.Zoom;
             buttonSenderSettings.FlatStyle = FlatStyle.Flat;
-            buttonSenderSettings.Image = Properties.Resources.settings;
-            buttonSenderSettings.Location = new Point(440, 575);
+            buttonSenderSettings.Image = Properties.Resources.iconSettings;
+            buttonSenderSettings.Location = new Point(440, 645);
             buttonSenderSettings.Margin = new Padding(2);
             buttonSenderSettings.Name = "buttonSenderSettings";
             buttonSenderSettings.Size = new Size(35, 37);
@@ -272,13 +251,12 @@
             tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(731, 651);
+            tabControl.Size = new Size(731, 721);
             tabControl.TabIndex = 20;
             // 
             // tabPageSender
             // 
             tabPageSender.Controls.Add(buttonSenderSettings);
-            tabPageSender.Controls.Add(labelConnectionString);
             tabPageSender.Controls.Add(buttonActivitySettings);
             tabPageSender.Controls.Add(richTextBoxJson);
             tabPageSender.Controls.Add(buttonExecuteActivity);
@@ -290,24 +268,41 @@
             tabPageSender.Controls.Add(linkLabelSelectDll);
             tabPageSender.Controls.Add(labelJson);
             tabPageSender.Controls.Add(buttonMockJson);
-            tabPageSender.Controls.Add(richTextBoxConnectionString);
             tabPageSender.Controls.Add(buttonPublicar);
             tabPageSender.Controls.Add(buttonEnviar);
+            tabPageSender.Controls.Add(panelBrokerSettings);
+            tabPageSender.Controls.Add(panelBrokers);
             tabPageSender.Location = new Point(4, 22);
             tabPageSender.Name = "tabPageSender";
             tabPageSender.Padding = new Padding(3);
-            tabPageSender.Size = new Size(723, 625);
+            tabPageSender.Size = new Size(723, 695);
             tabPageSender.TabIndex = 0;
             tabPageSender.Text = "Home";
             tabPageSender.UseVisualStyleBackColor = true;
             // 
+            // panelBrokerSettings
+            // 
+            panelBrokerSettings.Dock = DockStyle.Top;
+            panelBrokerSettings.Location = new Point(3, 57);
+            panelBrokerSettings.Name = "panelBrokerSettings";
+            panelBrokerSettings.Size = new Size(717, 61);
+            panelBrokerSettings.TabIndex = 19;
+            // 
+            // panelBrokers
+            // 
+            panelBrokers.Dock = DockStyle.Top;
+            panelBrokers.Location = new Point(3, 3);
+            panelBrokers.Name = "panelBrokers";
+            panelBrokers.Size = new Size(717, 54);
+            panelBrokers.TabIndex = 0;
+            // 
             // tabPageLog
             // 
             tabPageLog.Controls.Add(listBoxLog);
-            tabPageLog.Location = new Point(4, 22);
+            tabPageLog.Location = new Point(4, 24);
             tabPageLog.Name = "tabPageLog";
             tabPageLog.Padding = new Padding(3);
-            tabPageLog.Size = new Size(723, 625);
+            tabPageLog.Size = new Size(723, 693);
             tabPageLog.TabIndex = 1;
             tabPageLog.Text = "Log";
             tabPageLog.UseVisualStyleBackColor = true;
@@ -318,14 +313,14 @@
             listBoxLog.FormattingEnabled = true;
             listBoxLog.Location = new Point(3, 3);
             listBoxLog.Name = "listBoxLog";
-            listBoxLog.Size = new Size(717, 619);
+            listBoxLog.Size = new Size(717, 687);
             listBoxLog.TabIndex = 0;
             // 
             // FormPublisher
             // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(731, 651);
+            ClientSize = new Size(731, 721);
             Controls.Add(tabControl);
             Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -347,8 +342,6 @@
         private System.Windows.Forms.RichTextBox richTextBoxJson;
         private System.Windows.Forms.Label labelContrato;
         private System.Windows.Forms.Label labelJson;
-        private System.Windows.Forms.RichTextBox richTextBoxConnectionString;
-        private System.Windows.Forms.Label labelConnectionString;
         private System.Windows.Forms.Button buttonEnviar;
         private System.Windows.Forms.Button buttonPublicar;
         private System.Windows.Forms.Button buttonMockJson;
@@ -364,6 +357,8 @@
         private TabPage tabPageSender;
         private TabPage tabPageLog;
         private ListBox listBoxLog;
+        private Panel panelBrokerSettings;
+        private FlowLayoutPanel panelBrokers;
     }
 }
 

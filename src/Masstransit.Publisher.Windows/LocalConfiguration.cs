@@ -27,7 +27,7 @@ namespace Masstransit.Publisher.Windows
         public Contract? Contract { get; set; } 
         public string Json { get; set; } = string.Empty;
         public string Queue { get; set; } = string.Empty;
-        public string ConnectionString { get; set; } = string.Empty;
+        public BrokerSettings BrokerSettings { get; set; }
         public bool HasConfiguration
         {
             get

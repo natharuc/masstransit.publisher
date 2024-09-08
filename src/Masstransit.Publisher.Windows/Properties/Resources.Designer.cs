@@ -63,9 +63,59 @@ namespace Masstransit.Publisher.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings {
+        internal static System.Drawing.Bitmap iconButtonActiveMq {
             get {
-                object obj = ResourceManager.GetObject("settings", resourceCulture);
+                object obj = ResourceManager.GetObject("iconButtonActiveMq", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconButtonAmazonSqs {
+            get {
+                object obj = ResourceManager.GetObject("iconButtonAmazonSqs", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconButtonAzureServiceBus {
+            get {
+                object obj = ResourceManager.GetObject("iconButtonAzureServiceBus", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconButtonKafka {
+            get {
+                object obj = ResourceManager.GetObject("iconButtonKafka", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconButtonRabbitMq {
+            get {
+                object obj = ResourceManager.GetObject("iconButtonRabbitMq", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconSettings {
+            get {
+                object obj = ResourceManager.GetObject("iconSettings", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
