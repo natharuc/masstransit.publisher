@@ -35,11 +35,6 @@ namespace Masstransit.Publisher.Windows.Forms
                 this.Close();
         }
 
-        private void FormActivitySettings_FormClosing(object sender, FormClosingEventArgs e)
-        {
-           
-        }
-
         private void buttonSave_Click(object sender, EventArgs e)
         {
             try

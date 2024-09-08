@@ -2,16 +2,13 @@
 {
     public class Contract
     {
-        public Contract()
-        {
-            
-        }
+        public Contract() { }
 
         public Contract? GenericContract { get; set; }
         public string Name { get; set; }
 
         private Type _type { get; set; }
-        
+
         public Type GetFullType()
         {
             if (GenericContract != null)

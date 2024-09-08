@@ -233,7 +233,7 @@ namespace Masstransit.Publisher.Services.Services
             slipBuilder.SetVariables(message);
 
             var routingSlip = slipBuilder.Build();
-            
+
             await _busControl.Execute(routingSlip);
 
             await _logService.Send(Queues.Log, $"Activity {activitySettings.Activities[0].Name} started with tracking number {trakingNumber}");
