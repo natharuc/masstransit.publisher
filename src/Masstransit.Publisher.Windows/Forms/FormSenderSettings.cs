@@ -30,6 +30,8 @@ namespace Masstransit.Publisher.Windows.Forms
                 Queue = textBoxQueue.Text,
                 MessageCount = (int)numericUpDownMessageCount.Value
             };
+
+            Close();
         }
     }
 }
