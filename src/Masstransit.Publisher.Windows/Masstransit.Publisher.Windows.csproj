@@ -32,6 +32,9 @@
   <ItemGroup>
     <Compile Update="FormPublisher.cs" />
     <Compile Update="Forms\FormSenderSettings.cs" />
+    <Compile Update="Forms\UserControls\BrokersSettings\UserControlKafkaSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Forms\UserControls\BrokersSettings\UserControlAmazonSqsSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
