@@ -55,7 +55,8 @@ namespace Masstransit.Publisher.Services.Services
             return mockSettings.CustomProperties
                 .Where(x => !x.RegenerateBeforeSending)
                 .Where(x => x.Name == property.Name)
-                .FirstOrDefault(x => x.Type == property.PropertyType.Name || x.Type == "Any");
+                .FirstOrDefault(x => x.Type == property.PropertyType.Name || x.Type == "Any")?
+                .Value;
         }
 
         public object? GetMockValue(Type type, MockSettings mockSettings)

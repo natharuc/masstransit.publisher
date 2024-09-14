@@ -405,14 +405,14 @@ namespace Masstransit.Publisher.Windows
                 if (selectFile.ShowDialog() == DialogResult.OK)
                 {
                     fileName = selectFile.FileName;
+
+                    LoadContractFromDllFile(fileName);
+
+                    SaveLastConfiguration();
+
+                    MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-
-            LoadContractFromDllFile(fileName);
-
-            SaveLastConfiguration();
-
-            MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void LoadContractFromDllFile(string fileName)
@@ -520,7 +520,8 @@ namespace Masstransit.Publisher.Windows
                     userControlSettings = new UserControlRabbitMqSettings();
                     break;
                 case Broker.Kafka:
-                    throw new InvalidOperationException("Kafka not implemented yet");
+                    userControlSettings = new UserControlKafkaSettings();
+                    break;
                 case Broker.AmazonSqs:
                     userControlSettings = new UserControlAmazonSqsSettings();
                     break;

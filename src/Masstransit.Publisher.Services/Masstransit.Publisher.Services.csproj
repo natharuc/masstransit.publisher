@@ -11,6 +11,7 @@
     <PackageReference Include="MassTransit.ActiveMQ" Version="8.2.5" />
     <PackageReference Include="MassTransit.AmazonSQS" Version="8.2.5" />
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.2.5" />
+    <PackageReference Include="MassTransit.Kafka" Version="8.2.5" />
     <PackageReference Include="MassTransit.Newtonsoft" Version="8.2.5" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />

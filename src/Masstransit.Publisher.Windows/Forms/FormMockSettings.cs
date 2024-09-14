@@ -87,5 +87,13 @@ namespace Masstransit.Publisher.Windows.Forms
 
             Close();
         }
+
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                this.Close();
+        }
     }
+
+
 }

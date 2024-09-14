@@ -11,7 +11,7 @@ namespace Masstransit.Publisher.Windows.Forms.UserControls
                 return new CustomPropertyMockSettings
                 {
                     Name = textBoxName.Text,
-                    Type = comboBoxType.SelectedItem.ToString(),
+                    Type = comboBoxType.SelectedItem?.ToString() ?? "Any",
                     Value = textBoxValue.Text,
                     Ignore = checkBoxIgnore.Checked,
                     RegenerateBeforeSending = checkBoxRegenerateBeforeSending.Checked

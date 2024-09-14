@@ -16,11 +16,12 @@ namespace Masstransit.Publisher.Services.Services
                 Broker.RabbitMq => GetBusControlAzureRabbitMq(brokerSettings),
                 Broker.AmazonSqs => GetBusControlAmazonSqs(brokerSettings),
                 Broker.ActiveMq => GetBusControlActiveMq(brokerSettings),
+                Broker.Kafka => GetBusControlKafka(brokerSettings),
                 _ => throw new System.NotImplementedException()
             };
         }
 
-        private IBusControl GetBusControlAzureRabbitMq(BrokerSettings brokerSettings)
+        private static IBusControl GetBusControlAzureRabbitMq(BrokerSettings brokerSettings)
         {
             var serviceCollection = new ServiceCollection();
 
@@ -43,7 +44,7 @@ namespace Masstransit.Publisher.Services.Services
             return buscontrol;
         }
 
-        private IBusControl GetBusControlAzureServiceBus(BrokerSettings brokerSettings)
+        private static IBusControl GetBusControlAzureServiceBus(BrokerSettings brokerSettings)
         {
             var serviceCollection = new ServiceCollection();
 
@@ -65,7 +66,7 @@ namespace Masstransit.Publisher.Services.Services
             return buscontrol;
         }
 
-        private IBusControl GetBusControlAmazonSqs(BrokerSettings brokerSettings)
+        private static IBusControl GetBusControlAmazonSqs(BrokerSettings brokerSettings)
         {
             var serviceCollection = new ServiceCollection();
 
@@ -88,7 +89,7 @@ namespace Masstransit.Publisher.Services.Services
             return buscontrol;
         }
 
-        private IBusControl GetBusControlActiveMq(BrokerSettings brokerSettings)
+        private static IBusControl GetBusControlActiveMq(BrokerSettings brokerSettings)
         {
             var serviceCollection = new ServiceCollection();
 
@@ -113,6 +114,30 @@ namespace Masstransit.Publisher.Services.Services
             return buscontrol;
         }
 
+        private static IBusControl GetBusControlKafka(BrokerSettings brokerSettings)
+        {
+            var services = new ServiceCollection();
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingInMemory();
+
+                x.AddRider(rider =>
+                {
+                    rider.UsingKafka((context, k) =>
+                    {
+                        k.Host($"{brokerSettings.Host}:{brokerSettings.Port}");
+                    });
+                });
+            });
+
+            var provider = services.BuildServiceProvider();
+
+            var buscontrol = provider.GetRequiredService<IBusControl>();
+
+            return buscontrol;
+        }
+
         public bool IsBrokerSupported(Broker broker)
         {
             return broker switch
@@ -121,6 +146,7 @@ namespace Masstransit.Publisher.Services.Services
                 Broker.RabbitMq => true,
                 Broker.AmazonSqs => true,
                 Broker.ActiveMq => true,
+                Broker.Kafka => true,
                 _ => false
             };
         }

@@ -36,6 +36,7 @@
             buttonSave = new Button();
             panelBotoes = new Panel();
             button1 = new Button();
+            KeyDown += Form_KeyDown;
             ((System.ComponentModel.ISupportInitialize)numericUpDownMessageCount).BeginInit();
             panelBotoes.SuspendLayout();
             SuspendLayout();

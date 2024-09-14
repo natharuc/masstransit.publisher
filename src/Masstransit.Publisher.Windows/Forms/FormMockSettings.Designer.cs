@@ -42,6 +42,7 @@
             panelBotoes.SuspendLayout();
             panelTittle.SuspendLayout();
             groupBoxArraySettings.SuspendLayout();
+            KeyDown += Form_KeyDown;
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMinArrayLength).BeginInit();
             SuspendLayout();
@@ -159,6 +160,7 @@
             Controls.Add(flowLayoutPanel);
             Controls.Add(panelTittle);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            KeyPreview = true;
             MinimizeBox = false;
             Name = "FormMockSettings";
             StartPosition = FormStartPosition.CenterScreen;
