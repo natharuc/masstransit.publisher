@@ -62,7 +62,7 @@ namespace Masstransit.Publisher.Windows
 
             if (SelectedContract == null)
             {
-                MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Alert.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
@@ -265,14 +265,14 @@ namespace Masstransit.Publisher.Windows
         {
             if (SelectedContract == null)
             {
-                MessageBox.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Alert.Show("Select a contract", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
 
             if (SelectedContract.RequiresGeneric && SelectedContract.GenericContract == null)
             {
-                MessageBox.Show("Select a type for the generic type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Alert.Show("Select a type for the generic type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxContract.Focus();
                 return;
             }
@@ -356,7 +356,7 @@ namespace Masstransit.Publisher.Windows
             {
                 if (contract.RequiresGeneric)
                 {
-                    MessageBox.Show("You cannot select a contract that requires a generic type as a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Alert.Show("You cannot select a contract that requires a generic type as a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -375,7 +375,7 @@ namespace Masstransit.Publisher.Windows
 
                 if (contract.RequiresGeneric)
                 {
-                    MessageBox.Show("This contract requires a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Alert.Show("This contract requires a generic type", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                     _genericTypeSelecting = true;
 
@@ -410,7 +410,7 @@ namespace Masstransit.Publisher.Windows
 
                     SaveLastConfiguration();
 
-                    MessageBox.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Alert.Show("Dll success loaded", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
