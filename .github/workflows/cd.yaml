@@ -25,7 +25,7 @@ jobs:
         run: dotnet restore src
       - name: Build
         run: dotnet build -c Release --no-restore src
-      - run: Compress-Archive -Path src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows/* -Destination Masstransit.Publisher.zip
+      - run: Compress-Archive -Path src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows7.0/* -Destination Masstransit.Publisher.zip
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "Masstransit.Publisher.zip,src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows/*.exe"
+          artifacts: "Masstransit.Publisher.zip,src/Masstransit.Publisher.Windows/bin/Release/net8.0-windows7.0/*.exe"
