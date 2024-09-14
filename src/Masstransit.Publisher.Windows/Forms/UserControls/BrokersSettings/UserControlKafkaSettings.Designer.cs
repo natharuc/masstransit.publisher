@@ -97,10 +97,7 @@
 
         private GroupBox groupBoxHost;
         private TextBox textBoxHost;
-        private GroupBox groupBoxUser;
-        private TextBox textBoxUser;
         private GroupBox groupBoxPort;
         private NumericUpDown numericUpDownPort;
-        private TextBox textBoxPassword;
     }
 }
