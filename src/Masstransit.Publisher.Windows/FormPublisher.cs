@@ -21,15 +21,39 @@ namespace Masstransit.Publisher.Windows
         private readonly IBusControlFactory _busControlFactory;
         private readonly ILogService _logService;
         private bool _genericTypeSelecting;
-        private LocalConfiguration _localConfiguration;
+
         private BrokerSettings _brokerSettings;
+
+        private LocalConfiguration _localConfiguration { get; set; }
+        private LocalConfiguration LocalConfiguration
+        {
+            get
+            {
+                return _localConfiguration;
+            }
+            set
+            {
+                ApplyConfiguration(value);
+
+                _localConfiguration = value;
+            }
+        }
+
+        private void ApplyConfiguration(LocalConfiguration value)
+        {
+            buttonExecuteActivity.Text = $"Execute ({value.SenderSettings.MessageCount})";
+            buttonPublish.Text = $"Publish ({value.SenderSettings.MessageCount})";
+            buttonSend.Text = $"Send ({value.SenderSettings.MessageCount})";
+        }
+
+
         private IUserControlBrokerSettings _userControlSettings;
 
         public FormPublisher(IMockInterfaceService mockInterfaceService, IPublisherService publisherService, ILogService logService, IBusControlFactory busControlFactory)
         {
             InitializeComponent();
             _userControlSettings = new UserControlServiceBusSettings();
-            _localConfiguration = new LocalConfiguration();
+            LocalConfiguration = new LocalConfiguration();
             _brokerSettings = new BrokerSettings();
             _mockService = mockInterfaceService;
             _publisherService = publisherService;
@@ -71,7 +95,7 @@ namespace Masstransit.Publisher.Windows
 
             ConfigurePublisher();
 
-            await _publisherService.Send(messages, _localConfiguration.SenderSettings.Queue);
+            await _publisherService.Send(messages, LocalConfiguration.SenderSettings.Queue);
 
             await _logService.Send(Queues.Log, $"{messages.Count} events has been sent to {SelectedContract}");
         }
@@ -114,7 +138,7 @@ namespace Masstransit.Publisher.Windows
 
             var initialJson = richTextBoxJson.Text.Trim();
 
-            for (int i = 0; i < _localConfiguration.SenderSettings.MessageCount; i++)
+            for (int i = 0; i < LocalConfiguration.SenderSettings.MessageCount; i++)
             {
                 messages.Add(GetContractMessage(initialJson));
             }
@@ -140,11 +164,11 @@ namespace Masstransit.Publisher.Windows
 
         private string RegenerateJson(string initialJson)
         {
-            if (_localConfiguration.MockSettings.CustomProperties.Exists(n => n.RegenerateBeforeSending))
+            if (LocalConfiguration.MockSettings.CustomProperties.Exists(n => n.RegenerateBeforeSending))
             {
                 var currentObject = JsonConvert.DeserializeObject<JObject>(initialJson) ?? throw new InvalidOperationException("Json is invalid");
 
-                var regenerateProperties = _localConfiguration.MockSettings.CustomProperties.FindAll(n => n.RegenerateBeforeSending);
+                var regenerateProperties = LocalConfiguration.MockSettings.CustomProperties.FindAll(n => n.RegenerateBeforeSending);
 
                 if (regenerateProperties.Any())
                 {
@@ -152,7 +176,7 @@ namespace Masstransit.Publisher.Windows
                     {
                         var type = Type.GetType($"System.{regenerateProperty.Type}") ?? throw new InvalidOperationException($"Type {regenerateProperty.Type} not found");
 
-                        var newValue = _mockService.GetMockValue(type, _localConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
+                        var newValue = _mockService.GetMockValue(type, LocalConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
 
                         var token = currentObject.SelectToken(regenerateProperty.Name) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
@@ -174,9 +198,9 @@ namespace Masstransit.Publisher.Windows
                 Json = richTextBoxJson.Text.Trim(),
                 BrokerSettings = FillBrokerSettings(),
                 DllFile = linkLabelSelectDll.Tag?.ToString() ?? string.Empty,
-                MockSettings = _localConfiguration.MockSettings,
-                ActivitySettings = _localConfiguration.ActivitySettings,
-                SenderSettings = _localConfiguration.SenderSettings,
+                MockSettings = LocalConfiguration.MockSettings,
+                ActivitySettings = LocalConfiguration.ActivitySettings,
+                SenderSettings = LocalConfiguration.SenderSettings,
             };
 
             LocalConfiguration.SaveToJsonFile(newConfiguration);
@@ -191,15 +215,15 @@ namespace Masstransit.Publisher.Windows
 
         private void LoadLastConfiguration()
         {
-            _localConfiguration = LocalConfiguration.LoadFromJsonFile();
+            LocalConfiguration = LocalConfiguration.LoadFromJsonFile();
 
-            if (_localConfiguration.HasConfiguration)
+            if (LocalConfiguration.HasConfiguration)
             {
-                LoadContractFromDllFile(_localConfiguration.DllFile);
+                LoadContractFromDllFile(LocalConfiguration.DllFile);
 
                 if (Contracts.Any())
                 {
-                    SelectedContract = _localConfiguration.Contract;
+                    SelectedContract = LocalConfiguration.Contract;
 
                     if (SelectedContract != null)
                     {
@@ -209,9 +233,9 @@ namespace Masstransit.Publisher.Windows
                     }
                 }
 
-                richTextBoxJson.Text = _localConfiguration.Json;
+                richTextBoxJson.Text = LocalConfiguration.Json;
 
-                _brokerSettings = _localConfiguration.BrokerSettings ?? new BrokerSettings();
+                _brokerSettings = LocalConfiguration.BrokerSettings ?? new BrokerSettings();
 
                 SelectBroker(_brokerSettings.Broker);
             }
@@ -225,7 +249,7 @@ namespace Masstransit.Publisher.Windows
             if (string.IsNullOrWhiteSpace(richTextBoxJson.Text))
                 throw new InvalidOperationException("Json is required");
 
-            if (!isPublish && string.IsNullOrWhiteSpace(_localConfiguration.SenderSettings.Queue))
+            if (!isPublish && string.IsNullOrWhiteSpace(LocalConfiguration.SenderSettings.Queue))
                 throw new InvalidOperationException("Queue is required");
 
             if (!string.IsNullOrEmpty(_brokerSettings.ErrorMessage))
@@ -279,7 +303,7 @@ namespace Masstransit.Publisher.Windows
 
             var tipo = SelectedContract.GetFullType();
 
-            var mockObject = _mockService.Mock(tipo, _localConfiguration.MockSettings);
+            var mockObject = _mockService.Mock(tipo, LocalConfiguration.MockSettings);
 
             var json = JsonConvert.SerializeObject(mockObject, Formatting.Indented);
 
@@ -441,22 +465,22 @@ namespace Masstransit.Publisher.Windows
 
         private void ButtonConfigMock_Click(object sender, EventArgs e)
         {
-            using var form = new FormMockSettings(_mockService, _localConfiguration ?? new LocalConfiguration());
+            using var form = new FormMockSettings(_mockService, LocalConfiguration ?? new LocalConfiguration());
 
             form.ShowDialog();
 
-            _localConfiguration = form.LocalConfiguration;
+            LocalConfiguration = form.LocalConfiguration;
 
             SaveLastConfiguration();
         }
 
         private void ButtonActivitySettings_Click(object sender, EventArgs e)
         {
-            using var form = new FormActivitySettings(_localConfiguration.ActivitySettings);
+            using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings);
 
             form.ShowDialog();
 
-            _localConfiguration.ActivitySettings = form.ActivitySettings;
+            LocalConfiguration.ActivitySettings = form.ActivitySettings;
 
             SaveLastConfiguration();
         }
@@ -471,7 +495,7 @@ namespace Masstransit.Publisher.Windows
 
             ConfigurePublisher();
 
-            await _publisherService.ExecuteActivity(conctractMessage, _localConfiguration.ActivitySettings);
+            await _publisherService.ExecuteActivity(conctractMessage, LocalConfiguration.ActivitySettings);
 
             SaveLastConfiguration();
 
@@ -480,10 +504,13 @@ namespace Masstransit.Publisher.Windows
 
         private void ButtonSenderSettings_Click(object sender, EventArgs e)
         {
-            using var form = new FormSenderSettings(_localConfiguration.SenderSettings);
+            using var form = new FormSenderSettings(LocalConfiguration.SenderSettings);
+
             form.ShowDialog();
 
-            _localConfiguration.SenderSettings = form.SenderSettings;
+            LocalConfiguration.SenderSettings = form.SenderSettings;
+
+            ApplyConfiguration(LocalConfiguration);
 
             SaveLastConfiguration();
         }

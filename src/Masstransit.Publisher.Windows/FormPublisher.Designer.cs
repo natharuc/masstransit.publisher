@@ -34,8 +34,8 @@
             richTextBoxJson = new RichTextBox();
             labelContrato = new Label();
             labelJson = new Label();
-            buttonEnviar = new Button();
-            buttonPublicar = new Button();
+            buttonSend = new Button();
+            buttonPublish = new Button();
             buttonMockJson = new Button();
             dataGridViewAutoComplete = new DataGridView();
             linkLabelSelectDll = new LinkLabel();
@@ -101,29 +101,29 @@
             // 
             // buttonEnviar
             // 
-            buttonEnviar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonEnviar.FlatStyle = FlatStyle.Flat;
-            buttonEnviar.Location = new Point(594, 645);
-            buttonEnviar.Margin = new Padding(2);
-            buttonEnviar.Name = "buttonEnviar";
-            buttonEnviar.Size = new Size(120, 37);
-            buttonEnviar.TabIndex = 8;
-            buttonEnviar.Text = "Send";
-            buttonEnviar.UseVisualStyleBackColor = true;
-            buttonEnviar.Click += ButtonSend_Click;
+            buttonSend.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonSend.FlatStyle = FlatStyle.Flat;
+            buttonSend.Location = new Point(594, 645);
+            buttonSend.Margin = new Padding(2);
+            buttonSend.Name = "buttonEnviar";
+            buttonSend.Size = new Size(120, 37);
+            buttonSend.TabIndex = 8;
+            buttonSend.Text = "Send";
+            buttonSend.UseVisualStyleBackColor = true;
+            buttonSend.Click += ButtonSend_Click;
             // 
             // buttonPublicar
             // 
-            buttonPublicar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonPublicar.FlatStyle = FlatStyle.Flat;
-            buttonPublicar.Location = new Point(474, 645);
-            buttonPublicar.Margin = new Padding(2);
-            buttonPublicar.Name = "buttonPublicar";
-            buttonPublicar.Size = new Size(121, 37);
-            buttonPublicar.TabIndex = 10;
-            buttonPublicar.Text = "Publish";
-            buttonPublicar.UseVisualStyleBackColor = true;
-            buttonPublicar.Click += ButtonPublish_Click;
+            buttonPublish.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonPublish.FlatStyle = FlatStyle.Flat;
+            buttonPublish.Location = new Point(474, 645);
+            buttonPublish.Margin = new Padding(2);
+            buttonPublish.Name = "buttonPublicar";
+            buttonPublish.Size = new Size(121, 37);
+            buttonPublish.TabIndex = 10;
+            buttonPublish.Text = "Publish";
+            buttonPublish.UseVisualStyleBackColor = true;
+            buttonPublish.Click += ButtonPublish_Click;
             // 
             // buttonMockJson
             // 
@@ -268,8 +268,8 @@
             tabPageSender.Controls.Add(linkLabelSelectDll);
             tabPageSender.Controls.Add(labelJson);
             tabPageSender.Controls.Add(buttonMockJson);
-            tabPageSender.Controls.Add(buttonPublicar);
-            tabPageSender.Controls.Add(buttonEnviar);
+            tabPageSender.Controls.Add(buttonPublish);
+            tabPageSender.Controls.Add(buttonSend);
             tabPageSender.Controls.Add(panelBrokerSettings);
             tabPageSender.Controls.Add(panelBrokers);
             tabPageSender.Location = new Point(4, 22);
@@ -342,8 +342,8 @@
         private System.Windows.Forms.RichTextBox richTextBoxJson;
         private System.Windows.Forms.Label labelContrato;
         private System.Windows.Forms.Label labelJson;
-        private System.Windows.Forms.Button buttonEnviar;
-        private System.Windows.Forms.Button buttonPublicar;
+        private System.Windows.Forms.Button buttonSend;
+        private System.Windows.Forms.Button buttonPublish;
         private System.Windows.Forms.Button buttonMockJson;
         private System.Windows.Forms.DataGridView dataGridViewAutoComplete;
         private System.Windows.Forms.LinkLabel linkLabelSelectDll;
