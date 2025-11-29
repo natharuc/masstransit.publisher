@@ -178,7 +178,10 @@ namespace Masstransit.Publisher.Windows
 
                         var newValue = _mockService.GetMockValue(type, LocalConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
 
-                        var token = currentObject.SelectToken(regenerateProperty.Name) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
+                        //select token with ignore case
+                        var token = currentObject.Descendants()
+                            .OfType<JProperty>()
+                            .FirstOrDefault(p => string.Equals(p.Name, regenerateProperty.Name, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
                         token.Replace(JToken.FromObject(newValue));
                     }

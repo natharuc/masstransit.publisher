@@ -161,7 +161,9 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
-            var token = jsonObject.SelectToken(activitySettings.TrackingNumberProperty);
+            var token = jsonObject.Properties()
+                .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase))?
+                .Value;
 
             if (token != null)
             {

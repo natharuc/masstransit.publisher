@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
-    Microsoft ResX Schema 
+    Microsoft ResX Schema
 
     Version 2.0
 
@@ -48,7 +48,7 @@
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -117,29 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="richTextBoxActivitySettings.Text" xml:space="preserve">
-    <value>{
-	"successQueue": "integrador_eventos",
-	"faultQueue": "integrador_eventos",
-	"activities": [
-		{
-			"name": "activity1",
-			"queue": "activity1_execute"
-		},
-		{
-			"name": "activity2",
-			"queue": "activity2_execute"
-		}
-	]
-}</value>
-  </data>
-  <data name="labelInfo.Text" xml:space="preserve">
-    <value>If activity has faulted, a message type ActivityFaulted has been sended to "faultedQueue"
-
-If activity has been completed, a message type ActivityCompleted has been sended to "successQueue"
-
-In your json message, must contain a Guid property with a same name the TrackingNumberProperty value</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
