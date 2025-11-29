@@ -35,6 +35,8 @@ namespace Masstransit.Publisher.Windows.Forms
             textBoxSuccessQueue.Text = ActivitySettings.SuccessQueue ?? string.Empty;
             textBoxFaultQueue.Text = ActivitySettings.FaultQueue ?? string.Empty;
 
+            checkBoxListenToFaultQueue.Checked = ActivitySettings.ListenToFaultQueue;
+
             LoadContracts();
             LoadActivities();
         }
@@ -192,6 +194,8 @@ namespace Masstransit.Publisher.Windows.Forms
                     MessageBox.Show("At least one activity is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
+                ActivitySettings.ListenToFaultQueue = checkBoxListenToFaultQueue.Checked;
 
                 Close();
             }

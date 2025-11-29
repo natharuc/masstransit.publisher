@@ -132,7 +132,7 @@ namespace Masstransit.Publisher.Services.Services
 
             await sendEntPoint.SendBatch(listaEventos, firstMessage.Contract.GetFullType());
 
-            await _logService.Send(Queues.Log, $"{listaEventos.Count} events has been seended to {queue}");
+            await _logService.Send(Queues.Log, new LogMessage($"{listaEventos.Count} events has been seended to {queue}", string.Empty));
 
             return new PublisherServiceResponse
             {

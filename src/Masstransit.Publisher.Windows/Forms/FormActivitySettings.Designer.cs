@@ -49,6 +49,7 @@
             comboBoxSuccessContract = new ComboBox();
             labelSuccessContract = new Label();
             groupBoxGeneral = new GroupBox();
+            checkBoxListenToFaultQueue = new CheckBox();
             textBoxFaultQueue = new TextBox();
             labelFaultQueue = new Label();
             textBoxSuccessQueue = new TextBox();
@@ -68,7 +69,7 @@
             // 
             panelBotoes.Controls.Add(buttonSave);
             panelBotoes.Dock = DockStyle.Bottom;
-            panelBotoes.Location = new Point(10, 734);
+            panelBotoes.Location = new Point(10, 685);
             panelBotoes.Name = "panelBotoes";
             panelBotoes.Padding = new Padding(5);
             panelBotoes.Size = new Size(580, 65);
@@ -97,7 +98,7 @@
             panelMain.Location = new Point(10, 10);
             panelMain.Name = "panelMain";
             panelMain.Padding = new Padding(0, 0, 0, 10);
-            panelMain.Size = new Size(580, 724);
+            panelMain.Size = new Size(580, 675);
             panelMain.TabIndex = 3;
             // 
             // groupBoxActivities
@@ -105,10 +106,10 @@
             groupBoxActivities.Controls.Add(dataGridViewActivities);
             groupBoxActivities.Controls.Add(panelActivitiesButtons);
             groupBoxActivities.Dock = DockStyle.Fill;
-            groupBoxActivities.Location = new Point(0, 420);
+            groupBoxActivities.Location = new Point(0, 448);
             groupBoxActivities.Name = "groupBoxActivities";
             groupBoxActivities.Padding = new Padding(10);
-            groupBoxActivities.Size = new Size(580, 294);
+            groupBoxActivities.Size = new Size(580, 217);
             groupBoxActivities.TabIndex = 2;
             groupBoxActivities.TabStop = false;
             groupBoxActivities.Text = "Activities";
@@ -125,7 +126,7 @@
             dataGridViewActivities.Name = "dataGridViewActivities";
             dataGridViewActivities.RowHeadersVisible = false;
             dataGridViewActivities.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewActivities.Size = new Size(560, 198);
+            dataGridViewActivities.Size = new Size(560, 121);
             dataGridViewActivities.TabIndex = 3;
             dataGridViewActivities.CellContentClick += dataGridViewActivities_CellContentClick;
             // 
@@ -154,7 +155,7 @@
             // 
             panelActivitiesButtons.Controls.Add(buttonAddActivity);
             panelActivitiesButtons.Dock = DockStyle.Bottom;
-            panelActivitiesButtons.Location = new Point(10, 224);
+            panelActivitiesButtons.Location = new Point(10, 147);
             panelActivitiesButtons.Name = "panelActivitiesButtons";
             panelActivitiesButtons.Padding = new Padding(0, 5, 0, 0);
             panelActivitiesButtons.Size = new Size(560, 60);
@@ -182,10 +183,10 @@
             groupBoxContracts.Controls.Add(comboBoxSuccessContract);
             groupBoxContracts.Controls.Add(labelSuccessContract);
             groupBoxContracts.Dock = DockStyle.Top;
-            groupBoxContracts.Location = new Point(0, 160);
+            groupBoxContracts.Location = new Point(0, 190);
             groupBoxContracts.Name = "groupBoxContracts";
             groupBoxContracts.Padding = new Padding(10);
-            groupBoxContracts.Size = new Size(580, 260);
+            groupBoxContracts.Size = new Size(580, 258);
             groupBoxContracts.TabIndex = 1;
             groupBoxContracts.TabStop = false;
             groupBoxContracts.Text = "Custom Contracts (Optional)";
@@ -272,6 +273,7 @@
             // 
             // groupBoxGeneral
             // 
+            groupBoxGeneral.Controls.Add(checkBoxListenToFaultQueue);
             groupBoxGeneral.Controls.Add(textBoxFaultQueue);
             groupBoxGeneral.Controls.Add(labelFaultQueue);
             groupBoxGeneral.Controls.Add(textBoxSuccessQueue);
@@ -282,10 +284,20 @@
             groupBoxGeneral.Location = new Point(0, 0);
             groupBoxGeneral.Name = "groupBoxGeneral";
             groupBoxGeneral.Padding = new Padding(10);
-            groupBoxGeneral.Size = new Size(580, 160);
+            groupBoxGeneral.Size = new Size(580, 190);
             groupBoxGeneral.TabIndex = 0;
             groupBoxGeneral.TabStop = false;
             groupBoxGeneral.Text = "General Settings";
+            // 
+            // checkBoxListenToFaultQueue
+            // 
+            checkBoxListenToFaultQueue.AutoSize = true;
+            checkBoxListenToFaultQueue.Location = new Point(13, 147);
+            checkBoxListenToFaultQueue.Name = "checkBoxListenToFaultQueue";
+            checkBoxListenToFaultQueue.Size = new Size(321, 19);
+            checkBoxListenToFaultQueue.TabIndex = 6;
+            checkBoxListenToFaultQueue.Text = "Listen to Fault Queue (Azure Service Bus messages only)";
+            checkBoxListenToFaultQueue.UseVisualStyleBackColor = true;
             // 
             // textBoxFaultQueue
             // 
@@ -342,7 +354,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(600, 809);
+            ClientSize = new Size(600, 760);
             Controls.Add(panelMain);
             Controls.Add(panelBotoes);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -379,6 +391,7 @@
         private Label labelSuccessQueue;
         private TextBox textBoxFaultQueue;
         private Label labelFaultQueue;
+        private CheckBox checkBoxListenToFaultQueue;
         private GroupBox groupBoxActivities;
         private DataGridView dataGridViewActivities;
         private Panel panelActivitiesButtons;

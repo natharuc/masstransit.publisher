@@ -17,6 +17,15 @@
             {
                 components.Dispose();
             }
+
+            // Dispose fault queue listener
+            if (_faultQueueListener != null)
+            {
+                _faultQueueListener.StopListeningAsync().GetAwaiter().GetResult();
+                _faultQueueListener.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                _faultQueueListener = null;
+            }
+
             base.Dispose(disposing);
         }
 
@@ -316,6 +325,7 @@
             listBoxLog.Name = "listBoxLog";
             listBoxLog.Size = new Size(717, 689);
             listBoxLog.TabIndex = 0;
+            listBoxLog.MouseDoubleClick += listBoxLog_MouseDoubleClick;
             // 
             // FormPublisher
             // 

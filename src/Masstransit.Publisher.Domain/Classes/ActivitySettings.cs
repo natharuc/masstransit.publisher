@@ -10,6 +10,7 @@
         public string? TrackingNumberProperty { get; set; }
         public string? SuccessQueue { get; set; }
         public string? FaultQueue { get; set; }
+        public bool ListenToFaultQueue { get; set; }
         public List<Activity> Activities { get; set; }
 
         // Custom contract settings for success/fault messages
