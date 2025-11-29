@@ -1,4 +1,4 @@
-﻿using Masstransit.Publisher.Domain.Classes;
+using Masstransit.Publisher.Domain.Classes;
 using Masstransit.Publisher.Domain.Classes.Statics;
 using Masstransit.Publisher.Domain.Interfaces;
 using Masstransit.Publisher.Services.Extensions;
@@ -132,7 +132,7 @@ namespace Masstransit.Publisher.Services.Services
 
             await sendEntPoint.SendBatch(listaEventos, firstMessage.Contract.GetFullType());
 
-            await _logService.Send(Queues.Log, $"{listaEventos.Count} events has been seended to {queue}");
+            await _logService.Send(Queues.Log, new LogMessage($"{listaEventos.Count} events has been seended to {queue}", string.Empty));
 
             return new PublisherServiceResponse
             {
@@ -161,7 +161,9 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
-            var token = jsonObject.SelectToken(activitySettings.TrackingNumberProperty);
+            var token = jsonObject.Properties()
+                .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase))?
+                .Value;
 
             if (token != null)
             {
@@ -211,24 +213,25 @@ namespace Masstransit.Publisher.Services.Services
                 slipBuilder.AddActivity(activity.Name, new Uri($"queue:{activity.Queue}"));
             }
 
+            // Get the original message type for generic resolution
+            var originalMessageType = conctractMessage.Contract.GetFullType();
+
+            // Add Fault subscription with custom or default contract
             await slipBuilder.AddSubscription(new Uri($"queue:{activitySettings.FaultQueue}"),
                   RoutingSlipEvents.Faulted, RoutingSlipEventContents.All, x =>
                   {
-                      return x.Send(new ActivityFaulted()
-                      {
-                          TrackingNumber = trakingNumber,
-                          Message = message
-                      });
+                      var (faultType, faultMessage) = CreateFaultMessage(conctractMessage, activitySettings, trakingNumber, message);
+
+                      return x.Send(faultType, faultMessage);
                   });
 
+            // Add Success subscription with custom or default contract
             await slipBuilder.AddSubscription(new Uri($"queue:{activitySettings.SuccessQueue}"),
                  RoutingSlipEvents.Completed, RoutingSlipEventContents.All, x =>
                  {
-                     return x.Send(new ActivityCompleted()
-                     {
-                         TrackingNumber = trakingNumber,
-                         Message = message
-                     });
+                     var (successType, successMessage) = CreateSuccessMessage(conctractMessage, activitySettings, trakingNumber, message);
+
+                     return x.Send(successType, successMessage);
                  });
 
             slipBuilder.SetVariables(message);
@@ -238,6 +241,101 @@ namespace Masstransit.Publisher.Services.Services
             await _busControl.Execute(routingSlip);
 
             await _logService.Send(Queues.Log, $"Activity {activitySettings.Activities[0].Name} started with tracking number {trakingNumber}");
+        }
+
+        private (Type, object) CreateSuccessMessage(ContractMessage conctractMessage, ActivitySettings activitySettings, Guid trackingNumber, object? originalMessage)
+        {
+            if (activitySettings.SuccessContract != null && !string.IsNullOrEmpty(activitySettings.FaultMessageProperty))
+            {
+                try
+                {
+                    var successContract = new Contract(activitySettings.SuccessContract.GetFullType())
+                    {
+                        Name = activitySettings.SuccessContract.Name,
+                        GenericContract = conctractMessage.Contract
+                    };
+
+                    var faultFullType = successContract.GetFullType();
+
+                    var expandoObjectFaultMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
+                    {
+                        CustomProperties =
+                        [
+                            new CustomPropertyMockSettings()
+                            {
+                                Name = activitySettings.FaultMessageProperty,
+                                Value = JsonConvert.SerializeObject(originalMessage),
+                            }
+                        ]
+                    });
+
+                    if (expandoObjectFaultMessage == null)
+                        throw new InvalidOperationException($"Failed to create instance of {faultFullType.Name}");
+
+                    return (faultFullType, expandoObjectFaultMessage);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Error creating custom fault message: {ex.Message}", ex);
+                }
+            }
+
+            // Fallback to default ActivityFaulted
+            var result = new ActivityCompleted
+            {
+                TrackingNumber = trackingNumber,
+                Message = originalMessage
+            };
+
+            return (typeof(ActivityCompleted), result);
+        }
+
+
+        private (Type, object) CreateFaultMessage(ContractMessage conctractMessage, ActivitySettings activitySettings, Guid trackingNumber, object? originalMessage)
+        {
+            if (activitySettings.FaultContract != null && !string.IsNullOrEmpty(activitySettings.FaultMessageProperty))
+            {
+                try
+                {
+                    var faultContract = new Contract(activitySettings.FaultContract.GetFullType())
+                    {
+                        Name = activitySettings.FaultContract.Name,
+                        GenericContract = conctractMessage.Contract
+                    };
+
+                    var faultFullType = faultContract.GetFullType();
+
+                    var expandoObjectFaultMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
+                    {
+                        CustomProperties =
+                        [
+                            new CustomPropertyMockSettings()
+                            {
+                                Name = activitySettings.FaultMessageProperty,
+                                Value = JsonConvert.SerializeObject(originalMessage),
+                            }
+                        ]
+                    });
+
+                    if (expandoObjectFaultMessage == null)
+                        throw new InvalidOperationException($"Failed to create instance of {faultFullType.Name}");
+
+                    return (faultFullType, expandoObjectFaultMessage);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Error creating custom fault message: {ex.Message}", ex);
+                }
+            }
+
+            // Fallback to default ActivityFaulted
+            var result = new ActivityFaulted
+            {
+                TrackingNumber = trackingNumber,
+                Message = originalMessage
+            };
+
+            return (typeof(ActivityFaulted), result);
         }
 
         public async Task ExecuteActivity(IEnumerable<ContractMessage> messages, ActivitySettings activitySettings)

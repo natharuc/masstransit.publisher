@@ -2,6 +2,7 @@
 using Masstransit.Publisher.Domain.Classes.Enumns;
 using Masstransit.Publisher.Domain.Classes.Statics;
 using Masstransit.Publisher.Domain.Interfaces;
+using Masstransit.Publisher.Services.Services;
 using Masstransit.Publisher.Windows.Forms;
 using Masstransit.Publisher.Windows.Forms.UserControls.BrokersSettings;
 using Masstransit.Publisher.Windows.Interfaces;
@@ -23,6 +24,7 @@ namespace Masstransit.Publisher.Windows
         private bool _genericTypeSelecting;
 
         private BrokerSettings _brokerSettings;
+        private FaultQueueListenerService? _faultQueueListener;
 
         private LocalConfiguration _localConfiguration { get; set; }
         private LocalConfiguration LocalConfiguration
@@ -178,9 +180,13 @@ namespace Masstransit.Publisher.Windows
 
                         var newValue = _mockService.GetMockValue(type, LocalConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
 
-                        var token = currentObject.SelectToken(regenerateProperty.Name) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
+                        //select token with ignore case
+                        JToken token = currentObject.Descendants()
+                            .OfType<JProperty>()
+                            .FirstOrDefault(p => string.Equals(p.Name, regenerateProperty.Name, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
-                        token.Replace(JToken.FromObject(newValue));
+                        //atualizar valor do token
+                        token.Replace(new JProperty(token.Path, JToken.FromObject(newValue)));
                     }
                 }
 
@@ -231,6 +237,9 @@ namespace Masstransit.Publisher.Windows
 
                         labelSelectedContract.Text = SelectedContract.ToString();
                     }
+
+                    LocalConfiguration.ActivitySettings.FaultContract?.FillTypes(Contracts);
+                    LocalConfiguration.ActivitySettings.SuccessContract?.FillTypes(Contracts);
                 }
 
                 richTextBoxJson.Text = LocalConfiguration.Json;
@@ -476,7 +485,7 @@ namespace Masstransit.Publisher.Windows
 
         private void ButtonActivitySettings_Click(object sender, EventArgs e)
         {
-            using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings);
+            using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings, Contracts);
 
             form.ShowDialog();
 
@@ -494,6 +503,32 @@ namespace Masstransit.Publisher.Windows
             var conctractMessage = GetMessagesToSend();
 
             ConfigurePublisher();
+
+            // Start fault queue listener if enabled
+            if (LocalConfiguration.ActivitySettings.ListenToFaultQueue &&
+                _brokerSettings.Broker == Broker.AzureServiceBus &&
+                !string.IsNullOrEmpty(_brokerSettings.ConnectionString) &&
+                !string.IsNullOrEmpty(LocalConfiguration.ActivitySettings.FaultQueue))
+            {
+                try
+                {
+                    // Stop existing listener if any
+                    if (_faultQueueListener != null)
+                    {
+                        await _faultQueueListener.StopListeningAsync();
+                        await _faultQueueListener.DisposeAsync();
+                    }
+
+                    _faultQueueListener = new FaultQueueListenerService(_logService);
+                    await _faultQueueListener.StartListeningAsync(
+                        _brokerSettings.ConnectionString,
+                        LocalConfiguration.ActivitySettings.FaultQueue);
+                }
+                catch (Exception ex)
+                {
+                    await _logService.Send(Queues.Log, $"Failed to start fault queue listener: {ex.Message}");
+                }
+            }
 
             await _publisherService.ExecuteActivity(conctractMessage, LocalConfiguration.ActivitySettings);
 
@@ -515,15 +550,16 @@ namespace Masstransit.Publisher.Windows
             SaveLastConfiguration();
         }
 
-        private void Log(string log)
+        private void Log(LogMessage message)
         {
-            var date = DateTime.Now.ToString("HH:mm:ss");
+            this.BeginInvoke(new Action(() =>
+            {
+                var date = DateTime.Now.ToString("HH:mm:ss");
 
-            log = $"[{date}] {log}";
+                listBoxLog.Items.Add(message);
 
-            listBoxLog.Items.Add(log);
-
-            listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
+                listBoxLog.SelectedIndex = listBoxLog.Items.Count - 1;
+            }));
         }
 
         private void SelectBroker(Broker broker)
@@ -565,6 +601,17 @@ namespace Masstransit.Publisher.Windows
             panelBrokerSettings.Controls.Clear();
             userControlSettings.Dock = DockStyle.Fill;
             panelBrokerSettings.Controls.Add(userControlSettings);
+        }
+
+        private void listBoxLog_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var selctedItem = listBoxLog.SelectedItem as LogMessage;
+
+            if (selctedItem != null)
+            {
+                using var form = new FormLogDetails(selctedItem);
+                form.ShowDialog();
+            }
         }
     }
 }

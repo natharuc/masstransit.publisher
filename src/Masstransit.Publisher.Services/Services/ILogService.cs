@@ -4,9 +4,9 @@ namespace Masstransit.Publisher.Services.Services
 {
     public class LogService : ILogService
     {
-        private readonly Dictionary<string, Dictionary<string, Action<string>>> _subscribers = new Dictionary<string, Dictionary<string, Action<string>>>();
+        private readonly Dictionary<string, Dictionary<string, Action<LogMessage>>> _subscribers = new Dictionary<string, Dictionary<string, Action<LogMessage>>>();
 
-        public Task Send(string queue, string message)
+        public Task Send(string queue, LogMessage message)
         {
             if (_subscribers.ContainsKey(queue))
             {
@@ -19,7 +19,12 @@ namespace Masstransit.Publisher.Services.Services
             return Task.CompletedTask;
         }
 
-        public Task Subscribe(string name, string queue, Action<string> action)
+        public async Task Send(string queue, string message)
+        {
+            await Send(queue, new LogMessage(message, string.Empty));
+        }
+
+        public Task Subscribe(string name, string queue, Action<LogMessage> action)
         {
             if (_subscribers.ContainsKey(queue))
             {
@@ -35,7 +40,7 @@ namespace Masstransit.Publisher.Services.Services
             }
             else
             {
-                _subscribers.Add(queue, new Dictionary<string, Action<string>> { { name, action } });
+                _subscribers.Add(queue, new Dictionary<string, Action<LogMessage>> { { name, action } });
             }
 
             return Task.CompletedTask;

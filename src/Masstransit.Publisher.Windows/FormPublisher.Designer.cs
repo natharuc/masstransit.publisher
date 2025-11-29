@@ -17,6 +17,15 @@
             {
                 components.Dispose();
             }
+
+            // Dispose fault queue listener
+            if (_faultQueueListener != null)
+            {
+                _faultQueueListener.StopListeningAsync().GetAwaiter().GetResult();
+                _faultQueueListener.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                _faultQueueListener = null;
+            }
+
             base.Dispose(disposing);
         }
 
@@ -99,26 +108,26 @@
             labelJson.TabIndex = 4;
             labelJson.Text = "Message";
             // 
-            // buttonEnviar
+            // buttonSend
             // 
             buttonSend.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonSend.FlatStyle = FlatStyle.Flat;
             buttonSend.Location = new Point(594, 645);
             buttonSend.Margin = new Padding(2);
-            buttonSend.Name = "buttonEnviar";
+            buttonSend.Name = "buttonSend";
             buttonSend.Size = new Size(120, 37);
             buttonSend.TabIndex = 8;
             buttonSend.Text = "Send";
             buttonSend.UseVisualStyleBackColor = true;
             buttonSend.Click += ButtonSend_Click;
             // 
-            // buttonPublicar
+            // buttonPublish
             // 
             buttonPublish.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonPublish.FlatStyle = FlatStyle.Flat;
             buttonPublish.Location = new Point(474, 645);
             buttonPublish.Margin = new Padding(2);
-            buttonPublish.Name = "buttonPublicar";
+            buttonPublish.Name = "buttonPublish";
             buttonPublish.Size = new Size(121, 37);
             buttonPublish.TabIndex = 10;
             buttonPublish.Text = "Publish";
@@ -299,10 +308,10 @@
             // tabPageLog
             // 
             tabPageLog.Controls.Add(listBoxLog);
-            tabPageLog.Location = new Point(4, 24);
+            tabPageLog.Location = new Point(4, 22);
             tabPageLog.Name = "tabPageLog";
             tabPageLog.Padding = new Padding(3);
-            tabPageLog.Size = new Size(723, 693);
+            tabPageLog.Size = new Size(723, 695);
             tabPageLog.TabIndex = 1;
             tabPageLog.Text = "Log";
             tabPageLog.UseVisualStyleBackColor = true;
@@ -311,10 +320,12 @@
             // 
             listBoxLog.Dock = DockStyle.Fill;
             listBoxLog.FormattingEnabled = true;
+            listBoxLog.ItemHeight = 13;
             listBoxLog.Location = new Point(3, 3);
             listBoxLog.Name = "listBoxLog";
-            listBoxLog.Size = new Size(717, 687);
+            listBoxLog.Size = new Size(717, 689);
             listBoxLog.TabIndex = 0;
+            listBoxLog.MouseDoubleClick += listBoxLog_MouseDoubleClick;
             // 
             // FormPublisher
             // 
@@ -322,7 +333,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(731, 721);
             Controls.Add(tabControl);
-            Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Segoe UI", 8.25F);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(2, 4, 2, 4);
             Name = "FormPublisher";

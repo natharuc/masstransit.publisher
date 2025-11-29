@@ -43,7 +43,7 @@ namespace Masstransit.Publisher.Services.Services
             if (mockSettings == null) return false;
 
             return mockSettings.CustomProperties
-                .Where(x => x.Name == property.Name)
+                .Where(x => x.Name.Equals(property.Name, StringComparison.OrdinalIgnoreCase))
                 .Where(x => x.Type == property.PropertyType.Name || x.Type == "Any")
                 .Any(x => x.Ignore);
         }
@@ -54,7 +54,7 @@ namespace Masstransit.Publisher.Services.Services
 
             return mockSettings.CustomProperties
                 .Where(x => !x.RegenerateBeforeSending)
-                .Where(x => x.Name == property.Name)
+                .Where(x => x.Name.Equals(property.Name, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault(x => x.Type == property.PropertyType.Name || x.Type == "Any")?
                 .Value;
         }
