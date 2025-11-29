@@ -31,7 +31,7 @@ namespace Masstransit.Publisher.Windows.Forms.UserControls
 
             textBoxName.Text = propertySettings.Name;
             comboBoxType.SelectedItem = propertySettings.Type;
-            textBoxValue.Text = propertySettings.Value;
+            textBoxValue.Text = propertySettings.Value?.ToString();
             checkBoxIgnore.Checked = propertySettings.Ignore;
             checkBoxRegenerateBeforeSending.Checked = propertySettings.RegenerateBeforeSending;
         }

@@ -215,8 +215,6 @@ namespace Masstransit.Publisher.Services.Services
                 slipBuilder.AddActivity(activity.Name, new Uri($"queue:{activity.Queue}"));
             }
 
-            // Get the original message type for generic resolution
-            var originalMessageType = conctractMessage.Contract.GetFullType();
 
             // Add Fault subscription with custom or default contract
             await slipBuilder.AddSubscription(new Uri($"queue:{activitySettings.FaultQueue}"),
@@ -247,7 +245,7 @@ namespace Masstransit.Publisher.Services.Services
 
         private (Type, object) CreateSuccessMessage(ContractMessage conctractMessage, ActivitySettings activitySettings, Guid trackingNumber, object? originalMessage)
         {
-            if (activitySettings.SuccessContract != null && !string.IsNullOrEmpty(activitySettings.FaultMessageProperty))
+            if (activitySettings.SuccessContract != null && !string.IsNullOrEmpty(activitySettings.SuccessMessageProperty))
             {
                 try
                 {
@@ -259,22 +257,23 @@ namespace Masstransit.Publisher.Services.Services
 
                     var faultFullType = successContract.GetFullType();
 
-                    var expandoObjectFaultMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
+                    var expandoObjectSubscriptionMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
                     {
                         CustomProperties =
                         [
                             new CustomPropertyMockSettings()
                             {
-                                Name = activitySettings.FaultMessageProperty,
-                                Value = JsonConvert.SerializeObject(originalMessage),
+                                Type = "Any",
+                                Name = activitySettings.SuccessMessageProperty,
+                                Value = originalMessage
                             }
                         ]
                     });
 
-                    if (expandoObjectFaultMessage == null)
+                    if (expandoObjectSubscriptionMessage == null)
                         throw new InvalidOperationException($"Failed to create instance of {faultFullType.Name}");
 
-                    return (faultFullType, expandoObjectFaultMessage);
+                    return (faultFullType, expandoObjectSubscriptionMessage);
                 }
                 catch (Exception ex)
                 {
@@ -307,22 +306,23 @@ namespace Masstransit.Publisher.Services.Services
 
                     var faultFullType = faultContract.GetFullType();
 
-                    var expandoObjectFaultMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
+                    var expandoObjectSubscriptionMessage = new MockInterfaceService().Mock(faultFullType, new MockSettings()
                     {
                         CustomProperties =
                         [
                             new CustomPropertyMockSettings()
                             {
+                                Type = "Any",
                                 Name = activitySettings.FaultMessageProperty,
-                                Value = JsonConvert.SerializeObject(originalMessage),
+                                Value = originalMessage,
                             }
                         ]
                     });
 
-                    if (expandoObjectFaultMessage == null)
+                    if (expandoObjectSubscriptionMessage == null)
                         throw new InvalidOperationException($"Failed to create instance of {faultFullType.Name}");
 
-                    return (faultFullType, expandoObjectFaultMessage);
+                    return (faultFullType, expandoObjectSubscriptionMessage);
                 }
                 catch (Exception ex)
                 {
