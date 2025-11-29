@@ -42,18 +42,19 @@
             panelBotoes.SuspendLayout();
             panelTittle.SuspendLayout();
             groupBoxArraySettings.SuspendLayout();
-            KeyDown += Form_KeyDown;
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMinArrayLength).BeginInit();
             SuspendLayout();
             // 
             // flowLayoutPanel
             // 
+            flowLayoutPanel.AutoScroll = true;
+            flowLayoutPanel.AutoSize = true;
             flowLayoutPanel.Dock = DockStyle.Fill;
             flowLayoutPanel.Location = new Point(0, 88);
             flowLayoutPanel.Name = "flowLayoutPanel";
-            flowLayoutPanel.Padding = new Padding(5);
-            flowLayoutPanel.Size = new Size(574, 464);
+            flowLayoutPanel.Padding = new Padding(10);
+            flowLayoutPanel.Size = new Size(574, 391);
             flowLayoutPanel.TabIndex = 0;
             // 
             // panelBotoes
@@ -122,7 +123,7 @@
             labelMaxElementsOnArrays.AutoSize = true;
             labelMaxElementsOnArrays.Location = new Point(110, 25);
             labelMaxElementsOnArrays.Name = "labelMaxElementsOnArrays";
-            labelMaxElementsOnArrays.Size = new Size(30, 15);
+            labelMaxElementsOnArrays.Size = new Size(29, 15);
             labelMaxElementsOnArrays.TabIndex = 3;
             labelMaxElementsOnArrays.Text = "Max";
             // 
@@ -155,16 +156,18 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             ClientSize = new Size(574, 552);
-            Controls.Add(panelBotoes);
             Controls.Add(flowLayoutPanel);
             Controls.Add(panelTittle);
+            Controls.Add(panelBotoes);
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             MinimizeBox = false;
             Name = "FormMockSettings";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Mock Settings";
+            KeyDown += Form_KeyDown;
             panelBotoes.ResumeLayout(false);
             panelTittle.ResumeLayout(false);
             groupBoxArraySettings.ResumeLayout(false);
@@ -172,6 +175,7 @@
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxArrayLength).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMinArrayLength).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

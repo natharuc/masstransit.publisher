@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             panel = new Panel();
+            labelType = new Label();
+            comboBoxType = new ComboBox();
             labelValueInfo = new Label();
             checkBoxRegenerateBeforeSending = new CheckBox();
             checkBoxIgnore = new CheckBox();
@@ -37,8 +39,6 @@
             textBoxValue = new TextBox();
             labelName = new Label();
             textBoxName = new TextBox();
-            comboBoxType = new ComboBox();
-            labelType = new Label();
             panel.SuspendLayout();
             SuspendLayout();
             // 
@@ -56,15 +56,33 @@
             panel.Controls.Add(labelName);
             panel.Controls.Add(textBoxName);
             panel.Dock = DockStyle.Fill;
-            panel.Location = new Point(0, 0);
+            panel.Location = new Point(2, 2);
             panel.Name = "panel";
-            panel.Size = new Size(212, 210);
+            panel.Size = new Size(208, 206);
             panel.TabIndex = 2;
+            // 
+            // labelType
+            // 
+            labelType.AutoSize = true;
+            labelType.Location = new Point(8, 11);
+            labelType.Name = "labelType";
+            labelType.Size = new Size(32, 15);
+            labelType.TabIndex = 19;
+            labelType.Text = "Type";
+            labelType.Click += label1_Click;
+            // 
+            // comboBoxType
+            // 
+            comboBoxType.FormattingEnabled = true;
+            comboBoxType.Location = new Point(8, 29);
+            comboBoxType.Name = "comboBoxType";
+            comboBoxType.Size = new Size(189, 23);
+            comboBoxType.TabIndex = 18;
             // 
             // labelValueInfo
             // 
             labelValueInfo.AutoSize = true;
-            labelValueInfo.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            labelValueInfo.Font = new Font("Segoe UI", 8F);
             labelValueInfo.ForeColor = SystemColors.ControlDarkDark;
             labelValueInfo.Location = new Point(8, 143);
             labelValueInfo.Name = "labelValueInfo";
@@ -72,12 +90,12 @@
             labelValueInfo.TabIndex = 17;
             labelValueInfo.Text = "If empty, the value will be random.";
             // 
-            // checkBoxAwaysChange
+            // checkBoxRegenerateBeforeSending
             // 
             checkBoxRegenerateBeforeSending.AutoSize = true;
-            checkBoxRegenerateBeforeSending.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            checkBoxRegenerateBeforeSending.Font = new Font("Segoe UI", 9F);
             checkBoxRegenerateBeforeSending.Location = new Point(8, 171);
-            checkBoxRegenerateBeforeSending.Name = "checkBoxAwaysChange";
+            checkBoxRegenerateBeforeSending.Name = "checkBoxRegenerateBeforeSending";
             checkBoxRegenerateBeforeSending.Size = new Size(167, 19);
             checkBoxRegenerateBeforeSending.TabIndex = 16;
             checkBoxRegenerateBeforeSending.Text = "Regenerate before sending";
@@ -100,7 +118,7 @@
             linkLabelRemove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             linkLabelRemove.AutoSize = true;
             linkLabelRemove.LinkColor = Color.Brown;
-            linkLabelRemove.Location = new Point(150, 9);
+            linkLabelRemove.Location = new Point(146, 9);
             linkLabelRemove.Margin = new Padding(2, 0, 2, 0);
             linkLabelRemove.Name = "linkLabelRemove";
             linkLabelRemove.Size = new Size(47, 15);
@@ -143,24 +161,6 @@
             textBoxName.Size = new Size(189, 23);
             textBoxName.TabIndex = 2;
             // 
-            // comboBoxType
-            // 
-            comboBoxType.FormattingEnabled = true;
-            comboBoxType.Location = new Point(8, 29);
-            comboBoxType.Name = "comboBoxType";
-            comboBoxType.Size = new Size(189, 23);
-            comboBoxType.TabIndex = 18;
-            // 
-            // labelType
-            // 
-            labelType.AutoSize = true;
-            labelType.Location = new Point(8, 11);
-            labelType.Name = "labelType";
-            labelType.Size = new Size(31, 15);
-            labelType.TabIndex = 19;
-            labelType.Text = "Type";
-            labelType.Click += label1_Click;
-            // 
             // UserControlMockSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -168,6 +168,7 @@
             Controls.Add(panel);
             Margin = new Padding(0);
             Name = "UserControlMockSettings";
+            Padding = new Padding(2);
             Size = new Size(212, 210);
             panel.ResumeLayout(false);
             panel.PerformLayout();

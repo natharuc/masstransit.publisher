@@ -179,11 +179,12 @@ namespace Masstransit.Publisher.Windows
                         var newValue = _mockService.GetMockValue(type, LocalConfiguration.MockSettings) ?? throw new InvalidOperationException("New value not found");
 
                         //select token with ignore case
-                        var token = currentObject.Descendants()
+                        JToken token = currentObject.Descendants()
                             .OfType<JProperty>()
                             .FirstOrDefault(p => string.Equals(p.Name, regenerateProperty.Name, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException($"Property {regenerateProperty.Name} not found in json");
 
-                        token.Replace(JToken.FromObject(newValue));
+                        //atualizar valor do token
+                        token.Replace(new JProperty(token.Path, JToken.FromObject(newValue)));
                     }
                 }
 
@@ -234,6 +235,9 @@ namespace Masstransit.Publisher.Windows
 
                         labelSelectedContract.Text = SelectedContract.ToString();
                     }
+
+                    LocalConfiguration.ActivitySettings.FaultContract?.FillTypes(Contracts);
+                    LocalConfiguration.ActivitySettings.SuccessContract?.FillTypes(Contracts);
                 }
 
                 richTextBoxJson.Text = LocalConfiguration.Json;
@@ -479,7 +483,7 @@ namespace Masstransit.Publisher.Windows
 
         private void ButtonActivitySettings_Click(object sender, EventArgs e)
         {
-            using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings);
+            using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings, Contracts);
 
             form.ShowDialog();
 

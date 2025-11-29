@@ -39,6 +39,15 @@
             ColumnDelete = new DataGridViewButtonColumn();
             panelActivitiesButtons = new Panel();
             buttonAddActivity = new Button();
+            groupBoxContracts = new GroupBox();
+            comboBoxFaultMessageProperty = new ComboBox();
+            labelFaultMessageProperty = new Label();
+            comboBoxFaultContract = new ComboBox();
+            labelFaultContract = new Label();
+            comboBoxSuccessMessageProperty = new ComboBox();
+            labelSuccessMessageProperty = new Label();
+            comboBoxSuccessContract = new ComboBox();
+            labelSuccessContract = new Label();
             groupBoxGeneral = new GroupBox();
             textBoxFaultQueue = new TextBox();
             labelFaultQueue = new Label();
@@ -51,6 +60,7 @@
             groupBoxActivities.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridViewActivities).BeginInit();
             panelActivitiesButtons.SuspendLayout();
+            groupBoxContracts.SuspendLayout();
             groupBoxGeneral.SuspendLayout();
             SuspendLayout();
             // 
@@ -58,7 +68,7 @@
             // 
             panelBotoes.Controls.Add(buttonSave);
             panelBotoes.Dock = DockStyle.Bottom;
-            panelBotoes.Location = new Point(10, 474);
+            panelBotoes.Location = new Point(10, 734);
             panelBotoes.Name = "panelBotoes";
             panelBotoes.Padding = new Padding(5);
             panelBotoes.Size = new Size(580, 65);
@@ -79,13 +89,15 @@
             // 
             // panelMain
             // 
+            panelMain.AutoScroll = true;
             panelMain.Controls.Add(groupBoxActivities);
+            panelMain.Controls.Add(groupBoxContracts);
             panelMain.Controls.Add(groupBoxGeneral);
             panelMain.Dock = DockStyle.Fill;
             panelMain.Location = new Point(10, 10);
             panelMain.Name = "panelMain";
             panelMain.Padding = new Padding(0, 0, 0, 10);
-            panelMain.Size = new Size(580, 464);
+            panelMain.Size = new Size(580, 724);
             panelMain.TabIndex = 3;
             // 
             // groupBoxActivities
@@ -93,11 +105,11 @@
             groupBoxActivities.Controls.Add(dataGridViewActivities);
             groupBoxActivities.Controls.Add(panelActivitiesButtons);
             groupBoxActivities.Dock = DockStyle.Fill;
-            groupBoxActivities.Location = new Point(0, 160);
+            groupBoxActivities.Location = new Point(0, 420);
             groupBoxActivities.Name = "groupBoxActivities";
             groupBoxActivities.Padding = new Padding(10);
             groupBoxActivities.Size = new Size(580, 294);
-            groupBoxActivities.TabIndex = 1;
+            groupBoxActivities.TabIndex = 2;
             groupBoxActivities.TabStop = false;
             groupBoxActivities.Text = "Activities";
             // 
@@ -158,6 +170,105 @@
             buttonAddActivity.Text = "Add Activity";
             buttonAddActivity.UseVisualStyleBackColor = true;
             buttonAddActivity.Click += buttonAddActivity_Click;
+            // 
+            // groupBoxContracts
+            // 
+            groupBoxContracts.Controls.Add(comboBoxFaultMessageProperty);
+            groupBoxContracts.Controls.Add(labelFaultMessageProperty);
+            groupBoxContracts.Controls.Add(comboBoxFaultContract);
+            groupBoxContracts.Controls.Add(labelFaultContract);
+            groupBoxContracts.Controls.Add(comboBoxSuccessMessageProperty);
+            groupBoxContracts.Controls.Add(labelSuccessMessageProperty);
+            groupBoxContracts.Controls.Add(comboBoxSuccessContract);
+            groupBoxContracts.Controls.Add(labelSuccessContract);
+            groupBoxContracts.Dock = DockStyle.Top;
+            groupBoxContracts.Location = new Point(0, 160);
+            groupBoxContracts.Name = "groupBoxContracts";
+            groupBoxContracts.Padding = new Padding(10);
+            groupBoxContracts.Size = new Size(580, 260);
+            groupBoxContracts.TabIndex = 1;
+            groupBoxContracts.TabStop = false;
+            groupBoxContracts.Text = "Custom Contracts (Optional)";
+            // 
+            // comboBoxFaultMessageProperty
+            // 
+            comboBoxFaultMessageProperty.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            comboBoxFaultMessageProperty.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxFaultMessageProperty.Enabled = false;
+            comboBoxFaultMessageProperty.FormattingEnabled = true;
+            comboBoxFaultMessageProperty.Location = new Point(13, 215);
+            comboBoxFaultMessageProperty.Name = "comboBoxFaultMessageProperty";
+            comboBoxFaultMessageProperty.Size = new Size(554, 23);
+            comboBoxFaultMessageProperty.TabIndex = 7;
+            // 
+            // labelFaultMessageProperty
+            // 
+            labelFaultMessageProperty.AutoSize = true;
+            labelFaultMessageProperty.Location = new Point(13, 197);
+            labelFaultMessageProperty.Name = "labelFaultMessageProperty";
+            labelFaultMessageProperty.Size = new Size(133, 15);
+            labelFaultMessageProperty.TabIndex = 6;
+            labelFaultMessageProperty.Text = "Fault Message Property:";
+            // 
+            // comboBoxFaultContract
+            // 
+            comboBoxFaultContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            comboBoxFaultContract.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxFaultContract.FormattingEnabled = true;
+            comboBoxFaultContract.Location = new Point(13, 165);
+            comboBoxFaultContract.Name = "comboBoxFaultContract";
+            comboBoxFaultContract.Size = new Size(554, 23);
+            comboBoxFaultContract.TabIndex = 5;
+            comboBoxFaultContract.SelectedIndexChanged += comboBoxFaultContract_SelectedIndexChanged;
+            // 
+            // labelFaultContract
+            // 
+            labelFaultContract.AutoSize = true;
+            labelFaultContract.Location = new Point(13, 147);
+            labelFaultContract.Name = "labelFaultContract";
+            labelFaultContract.Size = new Size(85, 15);
+            labelFaultContract.TabIndex = 4;
+            labelFaultContract.Text = "Fault Contract:";
+            // 
+            // comboBoxSuccessMessageProperty
+            // 
+            comboBoxSuccessMessageProperty.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            comboBoxSuccessMessageProperty.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxSuccessMessageProperty.Enabled = false;
+            comboBoxSuccessMessageProperty.FormattingEnabled = true;
+            comboBoxSuccessMessageProperty.Location = new Point(13, 104);
+            comboBoxSuccessMessageProperty.Name = "comboBoxSuccessMessageProperty";
+            comboBoxSuccessMessageProperty.Size = new Size(554, 23);
+            comboBoxSuccessMessageProperty.TabIndex = 3;
+            // 
+            // labelSuccessMessageProperty
+            // 
+            labelSuccessMessageProperty.AutoSize = true;
+            labelSuccessMessageProperty.Location = new Point(13, 86);
+            labelSuccessMessageProperty.Name = "labelSuccessMessageProperty";
+            labelSuccessMessageProperty.Size = new Size(148, 15);
+            labelSuccessMessageProperty.TabIndex = 2;
+            labelSuccessMessageProperty.Text = "Success Message Property:";
+            // 
+            // comboBoxSuccessContract
+            // 
+            comboBoxSuccessContract.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            comboBoxSuccessContract.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxSuccessContract.FormattingEnabled = true;
+            comboBoxSuccessContract.Location = new Point(13, 47);
+            comboBoxSuccessContract.Name = "comboBoxSuccessContract";
+            comboBoxSuccessContract.Size = new Size(554, 23);
+            comboBoxSuccessContract.TabIndex = 1;
+            comboBoxSuccessContract.SelectedIndexChanged += comboBoxSuccessContract_SelectedIndexChanged;
+            // 
+            // labelSuccessContract
+            // 
+            labelSuccessContract.AutoSize = true;
+            labelSuccessContract.Location = new Point(13, 29);
+            labelSuccessContract.Name = "labelSuccessContract";
+            labelSuccessContract.Size = new Size(100, 15);
+            labelSuccessContract.TabIndex = 0;
+            labelSuccessContract.Text = "Success Contract:";
             // 
             // groupBoxGeneral
             // 
@@ -231,7 +342,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(600, 549);
+            ClientSize = new Size(600, 809);
             Controls.Add(panelMain);
             Controls.Add(panelBotoes);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -242,12 +353,15 @@
             Padding = new Padding(10);
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Activity Settings";
+            Load += FormActivitySettings_Load;
             KeyDown += FormActivitySettings_KeyDown;
             panelBotoes.ResumeLayout(false);
             panelMain.ResumeLayout(false);
             groupBoxActivities.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridViewActivities).EndInit();
             panelActivitiesButtons.ResumeLayout(false);
+            groupBoxContracts.ResumeLayout(false);
+            groupBoxContracts.PerformLayout();
             groupBoxGeneral.ResumeLayout(false);
             groupBoxGeneral.PerformLayout();
             ResumeLayout(false);
@@ -272,5 +386,14 @@
         private DataGridViewTextBoxColumn ColumnName;
         private DataGridViewTextBoxColumn ColumnQueue;
         private DataGridViewButtonColumn ColumnDelete;
+        private GroupBox groupBoxContracts;
+        private ComboBox comboBoxSuccessContract;
+        private Label labelSuccessContract;
+        private ComboBox comboBoxSuccessMessageProperty;
+        private Label labelSuccessMessageProperty;
+        private ComboBox comboBoxFaultContract;
+        private Label labelFaultContract;
+        private ComboBox comboBoxFaultMessageProperty;
+        private Label labelFaultMessageProperty;
     }
 }
