@@ -21,8 +21,8 @@
             // Dispose fault queue listener
             if (_faultQueueListener != null)
             {
-                _faultQueueListener.StopListeningAsync().GetAwaiter().GetResult();
-                _faultQueueListener.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                _ = _faultQueueListener.StopListeningAsync();
+                _ = _faultQueueListener.DisposeAsync();
                 _faultQueueListener = null;
             }
 

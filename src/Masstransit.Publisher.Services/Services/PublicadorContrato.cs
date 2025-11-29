@@ -161,13 +161,15 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
-            var token = jsonObject.Properties()
-                .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase))?
-                .Value;
+            JToken token = jsonObject.Descendants()
+                            .OfType<JProperty>()
+                            .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException("Tracking number property not found");
 
             if (token != null)
             {
-                if (Guid.TryParse(token.ToString(), out var trackingNumber))
+                var tokenValue = (token as JProperty)?.Value ?? token;
+
+                if (Guid.TryParse(tokenValue.ToString(), out var trackingNumber))
                 {
                     return trackingNumber;
                 }
