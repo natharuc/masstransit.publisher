@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monaco Editor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #container {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <!-- Monaco Editor from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script>
+        var editor;
+
+        // Configure Monaco Loader
+        require.config({ 
+            paths: { 
+                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' 
+            } 
+        });
+
+        // Initialize Monaco Editor
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('container'), {
+                value: '',
+                language: 'json',
+                theme: 'vs',
+                automaticLayout: true,
+                minimap: {
+                    enabled: true
+                },
+                fontSize: 14,
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                formatOnPaste: true,
+                formatOnType: true
+            });
+
+            // Notify C# that editor is ready
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({ type: 'editorReady' });
+            }
+        });
+
+        // Function to set JSON content from C#
+        function setJson(jsonContent) {
+            if (editor) {
+                editor.setValue(jsonContent);
+                // Format the JSON automatically
+                editor.getAction('editor.action.formatDocument').run();
+            }
+        }
+
+        // Function to get JSON content for C#
+        function getJson() {
+            if (editor) {
+                return editor.getValue();
+            }
+            return '';
+        }
+
+        // Listen for messages from C#
+        if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.addEventListener('message', function(event) {
+                if (event.data.command === 'setJson') {
+                    setJson(event.data.content);
+                } else if (event.data.command === 'getJson') {
+                    window.chrome.webview.postMessage({ 
+                        type: 'jsonContent', 
+                        content: getJson() 
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

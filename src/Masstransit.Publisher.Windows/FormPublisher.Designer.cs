@@ -40,7 +40,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPublisher));
             textBoxContract = new TextBox();
-            richTextBoxJson = new RichTextBox();
+            webView2Json = new Microsoft.Web.WebView2.WinForms.WebView2();
             labelContrato = new Label();
             labelJson = new Label();
             buttonSend = new Button();
@@ -60,6 +60,7 @@
             panelBrokers = new FlowLayoutPanel();
             tabPageLog = new TabPage();
             listBoxLog = new ListBox();
+            ((System.ComponentModel.ISupportInitialize)webView2Json).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).BeginInit();
             tabControl.SuspendLayout();
             tabPageSender.SuspendLayout();
@@ -77,16 +78,17 @@
             textBoxContract.TextChanged += TextBoxContract_TextChanged;
             textBoxContract.KeyDown += TextBoxContract_KeyDown;
             // 
-            // richTextBoxJson
+            // webView2Json
             // 
-            richTextBoxJson.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            richTextBoxJson.BorderStyle = BorderStyle.None;
-            richTextBoxJson.Location = new Point(6, 210);
-            richTextBoxJson.Margin = new Padding(2);
-            richTextBoxJson.Name = "richTextBoxJson";
-            richTextBoxJson.Size = new Size(708, 423);
-            richTextBoxJson.TabIndex = 5;
-            richTextBoxJson.Text = "";
+            webView2Json.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            webView2Json.CreationProperties = null;
+            webView2Json.DefaultBackgroundColor = Color.White;
+            webView2Json.Location = new Point(6, 210);
+            webView2Json.Margin = new Padding(2);
+            webView2Json.Name = "webView2Json";
+            webView2Json.Size = new Size(708, 423);
+            webView2Json.TabIndex = 5;
+            webView2Json.ZoomFactor = 1D;
             // 
             // labelContrato
             // 
@@ -267,7 +269,7 @@
             // 
             tabPageSender.Controls.Add(buttonSenderSettings);
             tabPageSender.Controls.Add(buttonActivitySettings);
-            tabPageSender.Controls.Add(richTextBoxJson);
+            tabPageSender.Controls.Add(webView2Json);
             tabPageSender.Controls.Add(buttonExecuteActivity);
             tabPageSender.Controls.Add(dataGridViewAutoComplete);
             tabPageSender.Controls.Add(buttonConfigMock);
@@ -339,6 +341,7 @@
             Name = "FormPublisher";
             Text = "Masstransit - Publisher";
             Load += FormPublicador_Load;
+            ((System.ComponentModel.ISupportInitialize)webView2Json).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAutoComplete).EndInit();
             tabControl.ResumeLayout(false);
             tabPageSender.ResumeLayout(false);
@@ -350,7 +353,7 @@
         #endregion
 
         private System.Windows.Forms.TextBox textBoxContract;
-        private System.Windows.Forms.RichTextBox richTextBoxJson;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView2Json;
         private System.Windows.Forms.Label labelContrato;
         private System.Windows.Forms.Label labelJson;
         private System.Windows.Forms.Button buttonSend;
