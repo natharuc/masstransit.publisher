@@ -6,6 +6,7 @@ using Masstransit.Publisher.Services.Services;
 using Masstransit.Publisher.Windows.Forms;
 using Masstransit.Publisher.Windows.Forms.UserControls.BrokersSettings;
 using Masstransit.Publisher.Windows.Interfaces;
+using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
@@ -25,6 +26,11 @@ namespace Masstransit.Publisher.Windows
 
         private BrokerSettings _brokerSettings;
         private FaultQueueListenerService? _faultQueueListener;
+
+        // WebView2 initialization flag
+        private bool _isWebViewInitialized = false;
+        // Pending JSON to set after initialization
+        private string? _pendingJson = null;
 
         private LocalConfiguration _localConfiguration { get; set; }
         private LocalConfiguration LocalConfiguration
@@ -65,26 +71,131 @@ namespace Masstransit.Publisher.Windows
             _busControlFactory = busControlFactory;
         }
 
-        private void FormPublicador_Load(object sender, EventArgs e)
+        private async void FormPublicador_Load(object sender, EventArgs e)
         {
             PopulateBrokers();
+
+            // Initialize WebView2 before loading configuration
+            await InitializeWebView2();
 
             LoadLastConfiguration();
 
             dataGridViewAutoComplete.Hide();
         }
 
+        /// <summary>
+        /// Initializes the WebView2 control and loads the Monaco Editor HTML
+        /// </summary>
+        private async Task InitializeWebView2()
+        {
+            try
+            {
+                // Ensure WebView2 runtime is available
+                await webView2Json.EnsureCoreWebView2Async(null);
+
+                // Get the HTML file path (expects MonacoEditor.html in the application directory)
+                string htmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MonacoEditor.html");
+
+                // Navigate to the HTML file
+                webView2Json.CoreWebView2.Navigate(htmlPath);
+
+                // Wait for navigation to complete
+                webView2Json.CoreWebView2.NavigationCompleted += WebView2Json_NavigationCompleted;
+            }
+            catch (Exception ex)
+            {
+                await _logService.Send(Queues.Log, $"Failed to initialize Monaco Editor: {ex.Message}");
+                MessageBox.Show($"Failed to initialize Monaco Editor: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for WebView2 navigation completed
+        /// </summary>
+        private void WebView2Json_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            _isWebViewInitialized = true;
+
+            // If there was pending JSON to set, set it now
+            if (!string.IsNullOrEmpty(_pendingJson))
+            {
+                SetJson(_pendingJson);
+                _pendingJson = null;
+            }
+        }
+
+        /// <summary>
+        /// Sets JSON content in the Monaco Editor
+        /// </summary>
+        /// <param name="json">JSON string to display in the editor</param>
+        private async void SetJson(string json)
+        {
+            if (!_isWebViewInitialized)
+            {
+                // Store the JSON to set after initialization
+                _pendingJson = json;
+                return;
+            }
+
+            try
+            {
+                // Escape the JSON string for JavaScript
+                string escapedJson = json.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n");
+
+                // Call JavaScript function to set the JSON
+                await webView2Json.CoreWebView2.ExecuteScriptAsync($"setJson(\"{escapedJson}\");");
+            }
+            catch (Exception ex)
+            {
+                await _logService.Send(Queues.Log, $"Failed to set JSON in editor: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets JSON content from the Monaco Editor
+        /// </summary>
+        /// <returns>JSON string from the editor</returns>
+        private async Task<string> GetJson()
+        {
+            if (!_isWebViewInitialized)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                // Call JavaScript function to get the JSON
+                string result = await webView2Json.CoreWebView2.ExecuteScriptAsync("getJson();");
+
+                // Remove the quotes added by ExecuteScriptAsync
+                if (result.StartsWith("\"") && result.EndsWith("\""))
+                {
+                    result = result.Substring(1, result.Length - 2);
+                }
+
+                // Unescape the JSON string
+                result = result.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\\"", "\"").Replace("\\\\", "\\");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _logService.Send(Queues.Log, $"Failed to get JSON from editor: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
         private async void ButtonSend_Click(object sender, EventArgs e)
         {
             FillBrokerSettings();
 
-            ValidateConfiguration();
+            await ValidateConfiguration();
 
             tabControl.SelectedTab = tabPageLog;
 
             await _logService.Send(Queues.Log, "Sending events");
 
-            SaveLastConfiguration();
+            await SaveLastConfiguration();
 
             if (SelectedContract == null)
             {
@@ -93,7 +204,7 @@ namespace Masstransit.Publisher.Windows
                 return;
             }
 
-            var messages = GetMessagesToSend();
+            var messages = await GetMessagesToSend();
 
             ConfigurePublisher();
 
@@ -134,11 +245,11 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private List<ContractMessage> GetMessagesToSend()
+        private async Task<List<ContractMessage>> GetMessagesToSend()
         {
             var messages = new List<ContractMessage>();
 
-            var initialJson = richTextBoxJson.Text.Trim();
+            var initialJson = (await GetJson()).Trim();
 
             for (int i = 0; i < LocalConfiguration.SenderSettings.MessageCount; i++)
             {
@@ -147,7 +258,10 @@ namespace Masstransit.Publisher.Windows
 
             var lastMessage = messages.LastOrDefault();
 
-            richTextBoxJson.Text = lastMessage?.Body;
+            if (lastMessage != null)
+            {
+                SetJson(lastMessage.Body);
+            }
 
             return messages;
         }
@@ -196,12 +310,12 @@ namespace Masstransit.Publisher.Windows
             return initialJson;
         }
 
-        private void SaveLastConfiguration()
+        private async Task SaveLastConfiguration()
         {
             var newConfiguration = new LocalConfiguration()
             {
                 Contract = SelectedContract,
-                Json = richTextBoxJson.Text.Trim(),
+                Json = (await GetJson()).Trim(),
                 BrokerSettings = FillBrokerSettings(),
                 DllFile = linkLabelSelectDll.Tag?.ToString() ?? string.Empty,
                 MockSettings = LocalConfiguration.MockSettings,
@@ -219,7 +333,7 @@ namespace Masstransit.Publisher.Windows
             return _brokerSettings;
         }
 
-        private void LoadLastConfiguration()
+        private async Task LoadLastConfiguration()
         {
             LocalConfiguration = LocalConfiguration.LoadFromJsonFile();
 
@@ -242,7 +356,7 @@ namespace Masstransit.Publisher.Windows
                     LocalConfiguration.ActivitySettings.SuccessContract?.FillTypes(Contracts);
                 }
 
-                richTextBoxJson.Text = LocalConfiguration.Json;
+                SetJson(LocalConfiguration.Json);
 
                 _brokerSettings = LocalConfiguration.BrokerSettings ?? new BrokerSettings();
 
@@ -250,12 +364,14 @@ namespace Masstransit.Publisher.Windows
             }
         }
 
-        private void ValidateConfiguration(bool isPublish = false)
+        private async Task ValidateConfiguration(bool isPublish = false)
         {
             if (SelectedContract == null)
                 throw new InvalidOperationException("Contract is required");
 
-            if (string.IsNullOrWhiteSpace(richTextBoxJson.Text))
+            var json = await GetJson();
+
+            if (string.IsNullOrWhiteSpace(json))
                 throw new InvalidOperationException("Json is required");
 
             if (!isPublish && string.IsNullOrWhiteSpace(LocalConfiguration.SenderSettings.Queue))
@@ -285,7 +401,7 @@ namespace Masstransit.Publisher.Windows
 
             SaveLastConfiguration();
 
-            var messages = GetMessagesToSend();
+            var messages = await GetMessagesToSend();
 
             ConfigurePublisher();
 
@@ -318,7 +434,7 @@ namespace Masstransit.Publisher.Windows
 
             labelJson.Text = $"Json ({json.Length} characters)";
 
-            richTextBoxJson.Text = json;
+            SetJson(json);
         }
 
         private void TextBoxContract_TextChanged(object sender, EventArgs e)
@@ -402,7 +518,7 @@ namespace Masstransit.Publisher.Windows
 
                 SelectedContract = contract;
 
-                richTextBoxJson.Text = string.Empty;
+                SetJson(string.Empty);
 
                 textBoxContract.Text = contract.Name;
 
@@ -483,7 +599,7 @@ namespace Masstransit.Publisher.Windows
             SaveLastConfiguration();
         }
 
-        private void ButtonActivitySettings_Click(object sender, EventArgs e)
+        private async void ButtonActivitySettings_Click(object sender, EventArgs e)
         {
             using var form = new FormActivitySettings(LocalConfiguration.ActivitySettings, Contracts);
 
@@ -491,7 +607,7 @@ namespace Masstransit.Publisher.Windows
 
             LocalConfiguration.ActivitySettings = form.ActivitySettings;
 
-            SaveLastConfiguration();
+            await SaveLastConfiguration();
         }
 
         private async void ButtonExecuteActivity_Click(object sender, EventArgs e)
@@ -500,7 +616,7 @@ namespace Masstransit.Publisher.Windows
 
             tabControl.SelectedTab = tabPageLog;
 
-            var conctractMessage = GetMessagesToSend();
+            var conctractMessage = await GetMessagesToSend();
 
             ConfigurePublisher();
 
@@ -532,7 +648,7 @@ namespace Masstransit.Publisher.Windows
 
             await _publisherService.ExecuteActivity(conctractMessage, LocalConfiguration.ActivitySettings);
 
-            SaveLastConfiguration();
+            await SaveLastConfiguration();
 
             await _logService.Send(Queues.Log, $"{conctractMessage.Count} events has been executed as activity");
         }
