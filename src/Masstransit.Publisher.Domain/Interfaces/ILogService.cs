@@ -7,7 +7,7 @@
         Task Subscribe(string name, string queue, Action<LogMessage> action);
     }
 
-    public sealed record LogMessage (string Message, string Body)
+    public sealed record LogMessage(string Message, string Body)
     {
         public override string ToString()
         {

@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Masstransit.Publisher.Services\Masstransit.Publisher.Services.csproj" />
+  </ItemGroup>
+
 </Project>

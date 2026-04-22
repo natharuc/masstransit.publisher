@@ -86,7 +86,7 @@ namespace Masstransit.Publisher.Services.Services
                 await _logService.Send(Queues.Log, $"Queue '{queueName}' not found (404). Creating it...");
 
                 var adminClient = new ServiceBusAdministrationClient(connectionString);
-                
+
                 var queueOptions = new CreateQueueOptions(queueName)
                 {
                     DefaultMessageTimeToLive = TimeSpan.FromDays(14),
@@ -152,7 +152,7 @@ namespace Masstransit.Publisher.Services.Services
             catch (Exception ex)
             {
                 await _logService.Send(Queues.Log, $"Error processing fault message: {ex.Message}");
-                
+
                 // Abandon the message so it can be retried
                 try
                 {
@@ -205,7 +205,7 @@ namespace Masstransit.Publisher.Services.Services
                     // Use a timeout to prevent hanging
                     var stopTask = _processor.StopProcessingAsync();
                     var completedTask = await Task.WhenAny(stopTask, Task.Delay(TimeSpan.FromSeconds(3)));
-                    
+
                     if (completedTask == stopTask)
                     {
                         await stopTask; // Get any exceptions
