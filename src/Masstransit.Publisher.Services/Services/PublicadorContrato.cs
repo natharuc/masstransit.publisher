@@ -148,7 +148,7 @@ namespace Masstransit.Publisher.Services.Services
         }
 
 
-        private Guid GetTrackingNumber(string json, ActivitySettings activitySettings)
+        internal Guid GetTrackingNumber(string json, ActivitySettings activitySettings)
         {
             if (string.IsNullOrEmpty(json))
                 throw new InvalidOperationException("Json is required to get the tracking number");
@@ -161,26 +161,28 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
-            JToken token = jsonObject.Descendants()
-                            .OfType<JProperty>()
-                            .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException("Tracking number property not found");
+            var rootProperty = jsonObject.Properties()
+                                .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase));
 
-            if (token != null)
+            if (rootProperty != null)
             {
-                var tokenValue = (token as JProperty)?.Value ?? token;
-
-                if (Guid.TryParse(tokenValue.ToString(), out var trackingNumber))
-                {
+                if (Guid.TryParse(rootProperty.Value.ToString(), out var trackingNumber))
                     return trackingNumber;
-                }
-                else
-                {
-                    throw new InvalidOperationException("Tracking number is invalid");
-                }
+
+                throw new InvalidOperationException("Tracking number is invalid");
             }
 
+            var token = jsonObject.Descendants()
+                            .OfType<JProperty>()
+                            .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase))
+                            ?? throw new InvalidOperationException("Tracking number property not found");
 
-            throw new InvalidOperationException("Tracking number property not found");
+            var nestedValue = (token as JProperty)?.Value ?? token;
+
+            if (Guid.TryParse(nestedValue.ToString(), out var nestedTrackingNumber))
+                return nestedTrackingNumber;
+
+            throw new InvalidOperationException("Tracking number is invalid");
         }
 
 
