@@ -134,4 +134,65 @@ public class PublisherServiceGetTrackingNumberTests
 
         Assert.Equal("Tracking number property not found", ex.Message);
     }
+
+    [Fact]
+    public void ReturnsGuid_WhenDotPathPointsToNestedProperty()
+    {
+        var json = $$"""
+            {
+              "Processo": {
+                "Identificador": "{{ValidGuid}}"
+              }
+            }
+            """;
+
+        var result = CreateService().GetTrackingNumber(json, Settings("Processo.Identificador"));
+
+        Assert.Equal(ValidGuid, result);
+    }
+
+    [Fact]
+    public void ReturnsGuid_WhenDotPathIsDeepNested()
+    {
+        var json = $$"""
+            {
+              "Dados": {
+                "FatoGerador": {
+                  "Identificador": "{{ValidGuid}}"
+                }
+              }
+            }
+            """;
+
+        var result = CreateService().GetTrackingNumber(json, Settings("Dados.FatoGerador.Identificador"));
+
+        Assert.Equal(ValidGuid, result);
+    }
+
+    [Fact]
+    public void ReturnsGuid_WhenDotPathIsCaseInsensitive()
+    {
+        var json = $$"""
+            {
+              "processo": {
+                "identificador": "{{ValidGuid}}"
+              }
+            }
+            """;
+
+        var result = CreateService().GetTrackingNumber(json, Settings("Processo.Identificador"));
+
+        Assert.Equal(ValidGuid, result);
+    }
+
+    [Fact]
+    public void Throws_WhenDotPathSegmentNotFound()
+    {
+        var json = """{ "Processo": { "Numero": 123 } }""";
+
+        var ex = Assert.Throws<InvalidOperationException>(
+            () => CreateService().GetTrackingNumber(json, Settings("Processo.Identificador")));
+
+        Assert.Contains("Identificador", ex.Message);
+    }
 }

@@ -161,28 +161,55 @@ namespace Masstransit.Publisher.Services.Services
             if (string.IsNullOrEmpty(activitySettings.TrackingNumberProperty))
                 throw new InvalidOperationException("Activity settings is required to get the tracking number");
 
+            var value = ResolveTrackingValue(jsonObject, activitySettings.TrackingNumberProperty);
+
+            if (Guid.TryParse(value, out var trackingNumber))
+                return trackingNumber;
+
+            throw new InvalidOperationException("Tracking number is invalid");
+        }
+
+        private static string ResolveTrackingValue(JObject jsonObject, string propertyPath)
+        {
+            // Dot-notation path: "Processo.FatoGerador.Identificador"
+            var segments = propertyPath.Split('.');
+
+            if (segments.Length > 1)
+            {
+                JToken? current = jsonObject;
+
+                foreach (var segment in segments)
+                {
+                    if (current is JObject obj)
+                    {
+                        var prop = obj.Properties()
+                            .FirstOrDefault(p => string.Equals(p.Name, segment, StringComparison.OrdinalIgnoreCase))
+                            ?? throw new InvalidOperationException($"Tracking number property not found: path segment '{segment}' not found");
+
+                        current = prop.Value;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Tracking number property not found: path segment '{segment}' not found");
+                    }
+                }
+
+                return current?.ToString() ?? throw new InvalidOperationException("Tracking number property not found");
+            }
+
+            // Single name: search root first, then deep
             var rootProperty = jsonObject.Properties()
-                                .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase));
+                                .FirstOrDefault(p => string.Equals(p.Name, propertyPath, StringComparison.OrdinalIgnoreCase));
 
             if (rootProperty != null)
-            {
-                if (Guid.TryParse(rootProperty.Value.ToString(), out var trackingNumber))
-                    return trackingNumber;
-
-                throw new InvalidOperationException("Tracking number is invalid");
-            }
+                return rootProperty.Value.ToString();
 
             var token = jsonObject.Descendants()
                             .OfType<JProperty>()
-                            .FirstOrDefault(p => string.Equals(p.Name, activitySettings.TrackingNumberProperty, StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault(p => string.Equals(p.Name, propertyPath, StringComparison.OrdinalIgnoreCase))
                             ?? throw new InvalidOperationException("Tracking number property not found");
 
-            var nestedValue = (token as JProperty)?.Value ?? token;
-
-            if (Guid.TryParse(nestedValue.ToString(), out var nestedTrackingNumber))
-                return nestedTrackingNumber;
-
-            throw new InvalidOperationException("Tracking number is invalid");
+            return ((JProperty)token).Value.ToString();
         }
 
 

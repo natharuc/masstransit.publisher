@@ -87,14 +87,13 @@ namespace Masstransit.Publisher.Services.Services
 
                 var adminClient = new ServiceBusAdministrationClient(connectionString);
 
-                var queueOptions
+                var queueOptions = new CreateQueueOptions(queueName)
                 {
                     DefaultMessageTimeToLive = TimeSpan.FromDays(14),
                     MaxDeliveryCount = 10,
                     EnableBatchedOperations = true,
                     LockDuration = TimeSpan.FromMinutes(5)
-                }
-                ;
+                };
 
                 await adminClient.CreateQueueAsync(queueOptions);
                 await _logService.Send(Queues.Log, $"Queue '{queueName}' created successfully");
