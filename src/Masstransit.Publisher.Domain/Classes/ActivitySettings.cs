@@ -16,7 +16,7 @@
         // Custom contract settings for success/fault messages
         public Contract? SuccessContract { get; set; }
         public string? SuccessMessageProperty { get; set; }
-        
+
         public Contract? FaultContract { get; set; }
         public string? FaultMessageProperty { get; set; }
     }
